@@ -1,7 +1,7 @@
 from PIL import Image
 import numpy as np
 
-w, h = 512, 512
+w, h = 10, 10
 data = np.zeros((h, w, 3), dtype=np.uint8)
 data[0:256, 0:256] = [255, 0, 0] # red patch in upper left
 img = Image.fromarray(data, 'RGB')
