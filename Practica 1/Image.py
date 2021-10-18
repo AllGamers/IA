@@ -54,4 +54,6 @@ def textToEscenario(words):
 stage1 = textToEscenario(readFile("lab1.txt"))
 stage1.printStage()
 print(stage1.cellInfo(1, 'A'))
+stage1.changeTerrain(1, 'A', Terrain.Sand)
+stage1.printStage()
 print(stage1.cellInfo(2, 'B'))
