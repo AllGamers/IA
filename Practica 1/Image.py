@@ -27,14 +27,22 @@ class stage():
     def cellInfo(self, num, letter):
         return Terrain(int(self.stage[num - 1][ord(letter) - 65]))
 
+    def escenarioToImage(self):
+        w, h = 750, 750
+        print(len(self.stage))
+        wf, hf = w/len(self.stage),h/len(self.stage)
+        print(wf,hf) 
+        data = np.zeros((h, w, 3), dtype=np.uint8)
+        for countx,frameX in enumerate(self.stage):
+            for county,frameY in enumerate(frameX):
+                if int(frameY)==1:
+                    data[countx*int(wf):(countx+1)*int(wf), county*int(hf):(county+1)*int(hf)] = [255, 0, 0]
+                else:
+                    data[countx*int(wf):(countx+1)+int(wf), county*int(hf):(county+1)*int(hf)] = [0,0,0]
 
-def a():
-    w, h = 750, 750
-    data = np.zeros((h, w, 3), dtype=np.uint8)
-    data[0:256, 0:256] = [255, 0, 0]  # red patch in upper left
-    img = Image.fromarray(data, 'RGB')
-    img.save('my.png')
-    img.show()
+        img = Image.fromarray(data, 'RGB')
+        img.save('my.png')
+        img.show()
 
 
 def readFile(fileName):
@@ -52,3 +60,4 @@ stage1 = textToEscenario(readFile("lab1.txt"))
 stage1.printStage()
 print(stage1.cellInfo(1, 'A'))
 print(stage1.cellInfo(2, 'B'))
+stage1.escenarioToImage()
