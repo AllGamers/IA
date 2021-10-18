@@ -1,5 +1,6 @@
 from PIL import Image
 import numpy as np
+import array
 
 def a():
     w, h = 750, 750 
@@ -14,7 +15,11 @@ def readFile(fileName):
     words = fileObj.read().splitlines() #puts the file into an array
     fileObj.close()
     return words
+def TextToArray(words):
+    res = [word.split(",") for word in words]
+    for x in res:
+        for y in x:
+            print(y, end=" ")
+        print()
 
-words = readFile("lab1.txt")
-for word in words:
-    print (word)
+TextToArray(readFile("lab1.txt"))
