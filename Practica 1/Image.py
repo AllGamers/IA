@@ -13,8 +13,19 @@ class Terrain(enum.Enum):
     Forest = 4
 
 
-def cellInfo(environment, num, letter):
-    print(Terrain(int(environment[num - 1][ord(letter) - 65])))
+class stage():
+
+    def __init__(self, stage):
+        self.stage = stage
+
+    def printStage(self):
+        for x in self.stage:
+            for y in x:
+                print(y, end=" ")
+            print()
+
+    def cellInfo(self, num, letter):
+        return Terrain(int(self.stage[num - 1][ord(letter) - 65]))
 
 
 def a():
@@ -33,18 +44,11 @@ def readFile(fileName):
     return words
 
 
-def textToArray(words):
-    return [word.split(",") for word in words]
+def textToEscenario(words):
+    return stage([word.split(",") for word in words])
 
 
-def printMatrix(matrix):
-    for x in matrix:
-        for y in x:
-            print(y, end=" ")
-        print()
-
-
-matrix = textToArray(readFile("lab1.txt"))
-printMatrix(matrix)
-cellInfo(matrix, 1, 'A')
-cellInfo(matrix, 2, 'B')
+stage1 = textToEscenario(readFile("lab1.txt"))
+stage1.printStage()
+print(stage1.cellInfo(1, 'A'))
+print(stage1.cellInfo(2, 'B'))
