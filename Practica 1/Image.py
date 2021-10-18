@@ -13,7 +13,15 @@ class Terrain(enum.Enum):
     Forest = 4
 
 
-class stage():
+class Stage:
+    # memory of cells (Tree)
+    memory = None
+    # point Initial
+    init = None
+    # point
+    point = None
+    # pont final
+    pointFinal = None
 
     def __init__(self, stage):
         self.stage = stage
@@ -48,7 +56,7 @@ def readFile(fileName):
 
 
 def textToEscenario(words):
-    return stage([[int(x) for x in word.split(",")] for word in words])
+    return Stage([[int(x) for x in word.split(",")] for word in words])
 
 
 stage1 = textToEscenario(readFile("lab1.txt"))
