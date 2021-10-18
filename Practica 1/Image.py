@@ -13,7 +13,15 @@ class Terrain(enum.Enum):
     Forest = 4
 
 
-class stage():
+class Stage:
+    # memory of cells (Tree)
+    memory = None
+    # point Initial
+    init = None
+    # point
+    point = None
+    # pont final
+    pointFinal = None
 
     def __init__(self, stage):
         self.stage = stage
@@ -25,7 +33,10 @@ class stage():
             print()
 
     def cellInfo(self, num, letter):
-        return Terrain(int(self.stage[num - 1][ord(letter) - 65]))
+        return num, letter, Terrain(self.stage[num - 1][ord(letter) - 65])
+
+    def changeTerrain(self, num, letter, terrain):
+        self.stage[num - 1][ord(letter) - 65] = terrain.value
 
     def escenarioToImage(self):
         w, h = 750, 750
@@ -53,11 +64,13 @@ def readFile(fileName):
 
 
 def textToEscenario(words):
-    return stage([word.split(",") for word in words])
+    return Stage([[int(x) for x in word.split(",")] for word in words])
 
 
 stage1 = textToEscenario(readFile("lab1.txt"))
 stage1.printStage()
 print(stage1.cellInfo(1, 'A'))
+stage1.changeTerrain(1, 'A', Terrain.Sand)
+stage1.printStage()
 print(stage1.cellInfo(2, 'B'))
 stage1.escenarioToImage()
