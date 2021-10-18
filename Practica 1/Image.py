@@ -27,6 +27,9 @@ class stage():
     def cellInfo(self, num, letter):
         return Terrain(int(self.stage[num - 1][ord(letter) - 65]))
 
+    def changeTerrain(self, num, letter, terrain):
+        self.stage[num - 1][ord(letter) - 65] = terrain.value
+
 
 def a():
     w, h = 750, 750
