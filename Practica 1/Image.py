@@ -25,7 +25,7 @@ class stage():
             print()
 
     def cellInfo(self, num, letter):
-        return Terrain(int(self.stage[num - 1][ord(letter) - 65]))
+        return num, letter, Terrain(self.stage[num - 1][ord(letter) - 65])
 
     def changeTerrain(self, num, letter, terrain):
         self.stage[num - 1][ord(letter) - 65] = terrain.value
@@ -48,7 +48,7 @@ def readFile(fileName):
 
 
 def textToEscenario(words):
-    return stage([word.split(",") for word in words])
+    return stage([[int(x) for x in word.split(",")] for word in words])
 
 
 stage1 = textToEscenario(readFile("lab1.txt"))
