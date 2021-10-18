@@ -50,7 +50,6 @@ class Stage:
                     data[countx*int(wf):(countx+1)*int(wf), county*int(hf):(county+1)*int(hf)] = [255, 0, 0]
                 else:
                     data[countx*int(wf):(countx+1)+int(wf), county*int(hf):(county+1)*int(hf)] = [0,0,0]
-
         img = Image.fromarray(data, 'RGB')
         img.save('my.png')
         img.show()
