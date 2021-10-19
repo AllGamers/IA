@@ -46,7 +46,6 @@ class Stage:
         w, h = 750, 750
         wf, hf = w/len(self.stage),h/len(self.stage)
         data = np.zeros((h, w, 3), dtype=np.uint8)
-        
         for countx,frameX in enumerate(self.stage):
             for county,frameY in enumerate(frameX):
                 for countc,color in enumerate(colors):
