@@ -6,11 +6,11 @@ import enum
 
 
 class Terrain(enum.Enum):
-    Mountain = 0
-    Land = 1
-    Water = 2
-    Sand = 3
-    Forest = 4
+    Mountain = 0    #128,128,128
+    Land = 1        #250,191,143
+    Water = 2       #0,175,255
+    Sand = 3        #255,192,0
+    Forest = 4      #150,210,80
 
 
 class Stage:
@@ -38,20 +38,24 @@ class Stage:
     def changeTerrain(self, num, letter, terrain):
         self.stage[num - 1][ord(letter) - 65] = terrain.value
 
-    def escenarioToImage(self):
+    def escenarioToImage(self, colors, path):
         w, h = 750, 750
-        print(len(self.stage))
         wf, hf = w/len(self.stage),h/len(self.stage)
-        print(wf,hf) 
         data = np.zeros((h, w, 3), dtype=np.uint8)
+        
         for countx,frameX in enumerate(self.stage):
             for county,frameY in enumerate(frameX):
-                if int(frameY)==1:
-                    data[countx*int(wf):(countx+1)*int(wf), county*int(hf):(county+1)*int(hf)] = [255, 0, 0]
-                else:
-                    data[countx*int(wf):(countx+1)+int(wf), county*int(hf):(county+1)*int(hf)] = [0,0,0]
+                for countc,color in enumerate(colors):
+                    if int(frameY)==countc:
+                        data[countx*int(wf):(countx+1)*int(wf), county*int(hf):(county+1)*int(hf)] = color
+                        #cuadrado
+                        if countx > 0 or countx < 750 and county > 0 or county < 750:
+                            data[countx*int(wf):(countx+1)*int(wf), county*int(hf)] = [0,0,0] #izquierda
+                            data[countx*int(wf), county*int(hf):(county+1)*int(hf)] = [0,0,0] #abajo
+                        break
+                  
         img = Image.fromarray(data, 'RGB')
-        img.save('my.png')
+        img.save(path+'.png')
         img.show()
 
 
@@ -72,4 +76,16 @@ print(stage1.cellInfo(1, 'A'))
 stage1.changeTerrain(1, 'A', Terrain.Sand)
 stage1.printStage()
 print(stage1.cellInfo(2, 'B'))
-stage1.escenarioToImage()
+stage1.escenarioToImage([
+    [128,128,128], 
+    [255,255,255]
+],'lab1')
+
+stage2 = textToEscenario(readFile("lab2.txt"))
+stage2.escenarioToImage([
+    [128,128,128],
+    [250,191,143],
+    [0,175,255],
+    [255,192,0],
+    [150,210,80]
+],'lab2')
