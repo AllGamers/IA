@@ -12,19 +12,23 @@ class Terrain(enum.Enum):
     Sand = 3
     Forest = 4
 
-
 class Stage:
     # memory of cells (Tree)
     memory = None
     # point Initial
     init = None
     # point
-    point = None
+    pointActual = None
     # pont final
     pointFinal = None
 
     def __init__(self, stage):
         self.stage = stage
+
+    def setValuesStage(self, initPoint, finalPoint):
+        self.init = initPoint
+        self.pointActual = initPoint
+        self.pointFinal = finalPoint
 
     def printStage(self):
         for x in self.stage:
@@ -67,6 +71,7 @@ def textToEscenario(words):
 
 
 stage1 = textToEscenario(readFile("lab1.txt"))
+stage1.setValuesStage(initPoint=(7, 'B'), finalPoint=(2, 'B'))
 stage1.printStage()
 print(stage1.cellInfo(1, 'A'))
 stage1.changeTerrain(1, 'A', Terrain.Sand)
