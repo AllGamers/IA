@@ -5,12 +5,161 @@ import numpy as np
 import enum
 
 
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+class Agente():  # Creamos la clase Agente
+    def __init__(self, pos_fin, tipo_agente):
+        self.pos_fin = pos_fin
+        self.tipo_agente = tipo_agente
+
+
+def tipoagente(self, personaje):
+    self.personaje = personaje
+    personaje = input("Que personaje desea seleccionar: h. Humano m. Mono p. Pulpo s. Sasquatch")
+    if personaje == "h":
+        print("Ha seleccionado el agente Humano.")
+        self.tipo_agente = "humano"
+    elif personaje == "m":
+        print("Ha seleccionado el agente Mono.")
+        self.tipo_agente = "mono"
+    elif personaje == "p":
+        print("Ha seleccionado el agente Pulpo.")
+        self.tipo_agente = "pulpo"
+    elif personaje == "s":
+        print("Ha seleccionado el agente Sasquatch.")
+        self.tipo_agente = "sasquatch"
+
+
+class movTerrain():
+    def __init__(self, terrain, cost, type_Agent):
+        self.terrain = terrain
+        self.cost = cost
+        self.typeAgent = typeAgent
+
+    def costototal(self):
+        print(f"Su tipo de agente es, {self.typeAgent}.")
+        if self.typeAgent == typeAgent.humano:
+            print(f"Su tipo de terreno es: {self.tipo_terreno}.")
+            if self.tipo_terreno == "montaña":
+                self.costo += 0
+            elif self.tipo_terreno == "tierra":
+                self.total_terreno += 1
+            elif self.tipo_terreno == "agua":
+                self.total_terreno += 2
+            elif self.tipo_terreno == "arena":
+                self.total_terreno += 3
+            elif self.tipo_terreno == "bosque":
+                self.total_terreno += 4
+            elif self.tipo_terreno == "pantano":
+                self.total_terreno += 5
+            elif self.tipo_terreno == "nieve":
+                self.total_terreno += 5
+        elif self.tipo_agente == "mono":
+            print(f"Su tipo de terreno es: {self.tipo_terreno}.")
+            if self.tipo_terreno == "montaña":
+                self.total_terreno += 0
+            elif self.tipo_terreno == "tierra":
+                self.total_terreno += 2
+            elif self.tipo_terreno == "agua":
+                self.total_terreno += 4
+            elif self.tipo_terreno == "arena":
+                self.total_terreno += 3
+            elif self.tipo_terreno == "bosque":
+                self.total_terreno += 1
+            elif self.tipo_terreno == "pantano":
+                self.total_terreno += 5
+            elif self.tipo_terreno == "nieve":
+                self.total_terreno += 0
+        elif self.tipo_agente == "pulpo":
+            print(f"Su tipo de terreno es: {self.tipo_terreno}.")
+            if self.tipo_terreno == "montaña":
+                self.total_terreno += 0
+            elif self.tipo_terreno == "tierra":
+                self.total_terreno += 2
+            elif self.tipo_terreno == "agua":
+                self.total_terreno += 1
+            elif self.tipo_terreno == "arena":
+                self.total_terreno += 0
+            elif self.tipo_terreno == "bosque":
+                self.total_terreno += 3
+            elif self.tipo_terreno == "pantano":
+                self.total_terreno += 2
+            elif self.tipo_terreno == "nieve":
+                self.total_terreno += 0
+        elif self.tipo_agente == "sasquatch":
+            print(f"Su tipo de terreno es: {self.tipo_terreno}.")
+            if self.tipo_terreno == "montaña":
+                self.total_terreno += 15
+            elif self.tipo_terreno == "tierra":
+                self.total_terreno += 4
+            elif self.tipo_terreno == "agua":
+                self.total_terreno += 0
+            elif self.tipo_terreno == "arena":
+                self.total_terreno += 0
+            elif self.tipo_terreno == "bosque":
+                self.total_terreno += 4
+            elif self.tipo_terreno == "pantano":
+                self.total_terreno += 5
+            elif self.tipo_terreno == "nieve":
+                self.total_terreno += 3
+
+
+class posicion():
+    def __init__(self, pos_ini):
+        self.pos_ini = pos_ini
+
+    def posicionini(self):
+        pos_ini = input("cual es la posicion inicial")
+        print(f"La posicion inicial es, {pos_ini}.")
+
+
+class movimiento():
+    def __init__(self, pos_new, num_mov):
+        self.pos_new = pos_new
+        self.num_mov = num_mov
+
+    def movimientoizquierda(self):
+        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
+        self.pos_ini = self.pos_new
+        print("Su movimiento es a la izquierda.")
+        print(f"Su nueva posicion es:, {self.pos_new}.")
+        self.num_mov += 1
+
+    def movimientoderecha(self):
+        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
+        self.pos_ini = self.pos_new
+        print("Su movimiento es a la derecha.")
+        print(f"Su nueva posicion es:, {self.pos_new}.")
+        self.num_mov += 1
+
+    def movimientoarriba(self):
+        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
+        self.pos_ini = self.pos_new
+        print("Su movimiento es a la arriba.")
+        print(f"Su nueva posicion es:, {self.pos_new}.")
+        self.num_mov += 1
+
+    def movimientoabajo(self):
+        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
+        self.pos_ini = self.pos_new
+        print("Su movimiento es a la abajo.")
+        print(f"Su nueva posicion es:, {self.pos_new}.")
+        self.num_mov += 1
+
+
 class Terrain(enum.Enum):
     Mountain = 0  # 128,128,128
     Land = 1  # 250,191,143
     Water = 2  # 0,175,255
     Sand = 3  # 255,192,0
     Forest = 4  # 150,210,80
+
+
+class typeAgent(enum.Enum):
+    humano = 0
+    mono = 1
+    pulpo = 2
+    sasquatch = 3
 
 
 class Stage:
@@ -49,13 +198,13 @@ class Stage:
     def changeTerrain(self, num, letter, terrain):
         self.stage[num - 1][ord(letter) - 65] = terrain.value
 
-    def textToImage(self, x, y, text ,path):
+    def textToImage(self, x, y, text, path):
         w, h = 750, 750
         wf, hf = w / len(self.stage), h / len(self.stage)
         my_image = Image.open(path)
         image_editable = ImageDraw.Draw(my_image)
-        title_font=ImageFont.truetype("Roboto/Roboto-Light.ttf",25)
-        image_editable.text((int(wf)*x,int(hf)*y),text,(0,0,0),font=title_font)
+        title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 25)
+        image_editable.text((int(wf) * x, int(hf) * y), text, (0, 0, 0), font=title_font)
         my_image.save(path)
 
     def escenarioToImage(self, colors, path):
@@ -109,12 +258,19 @@ stage2.escenarioToImage([
     [150, 210, 80]
 ], 'lab2')
 
-stage2.addCellsHide(1,'A')
+stage2.addCellsHide(1, 'A')
 print(stage2.cellsHide)
-stage2.addCellsHide(1,'A')
+stage2.addCellsHide(1, 'A')
 print(stage2.cellsHide)
-stage2.addCellsHide(1,'B')
+stage2.addCellsHide(1, 'B')
 print(stage2.cellsHide)
-stage2.textToImage(0,0,"a","lab1.png")
-stage2.textToImage(0,1,"b","lab1.png")
-stage2.textToImage(0,2,"c","lab2.png")
+stage2.escenarioToImage([
+    [128, 128, 128],
+    [250, 191, 143],
+    [0, 175, 255],
+    [255, 192, 0],
+    [150, 210, 80]
+], 'lab2')
+stage2.textToImage(0, 0, "a", "lab1.png")
+stage2.textToImage(0, 1, "b", "lab1.png")
+stage2.textToImage(0, 2, "c", "lab2.png")
