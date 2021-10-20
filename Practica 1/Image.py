@@ -31,29 +31,29 @@ def tipoagente(self, personaje):
 
 
 class movTerrain():
-    def __init__(self, terrain, cost, type_Agent):
+    def __init__(self, terrain, cost, agent):
         self.terrain = terrain
-        self.cost = cost
-        self.typeAgent = typeAgent
+        self.agent = agent
+        self.cost = cost(terrain, agent)
 
-    def costototal(self):
-        print(f"Su tipo de agente es, {self.typeAgent}.")
-        if self.typeAgent == typeAgent.humano:
-            print(f"Su tipo de terreno es: {self.tipo_terreno}.")
-            if self.tipo_terreno == "montaña":
-                self.costo += 0
-            elif self.tipo_terreno == "tierra":
-                self.total_terreno += 1
-            elif self.tipo_terreno == "agua":
-                self.total_terreno += 2
-            elif self.tipo_terreno == "arena":
-                self.total_terreno += 3
-            elif self.tipo_terreno == "bosque":
-                self.total_terreno += 4
-            elif self.tipo_terreno == "pantano":
-                self.total_terreno += 5
-            elif self.tipo_terreno == "nieve":
-                self.total_terreno += 5
+    def cost(self, terrain, agent):
+        print(f"Su tipo de agente es, {agent}.")
+        if agent == TypeAgent.humano:
+            print(f"Su tipo de terreno es: {self.terrain}.")
+            if terrain == terrain.Mountain:
+                return 0
+            if terrain == terrain.Land:
+                return 1
+            if terrain == terrain.Water:
+                return 2
+            if terrain == terrain.Sand:
+                return 3
+            if terrain == terrain.Forest:
+                return 4
+            if terrain == terrain.Swamp:
+                return 5
+            if terrain == terrain.Snow:
+                return 5
         elif self.tipo_agente == "mono":
             print(f"Su tipo de terreno es: {self.tipo_terreno}.")
             if self.tipo_terreno == "montaña":
@@ -153,9 +153,11 @@ class Terrain(enum.Enum):
     Water = 2  # 0,175,255
     Sand = 3  # 255,192,0
     Forest = 4  # 150,210,80
+    Swamp = 5  # 178,162,198
+    Snow = 6  # 242,242,242
 
 
-class typeAgent(enum.Enum):
+class TypeAgent(enum.Enum):
     humano = 0
     mono = 1
     pulpo = 2
