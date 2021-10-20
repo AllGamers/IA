@@ -3,44 +3,44 @@ import string
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import enum
+import array as arr
 
 
 class movsTerrain:
     def __init__(self, agent):
-        self.movsCost = []
-        print(f"Su tipo de agente es, {agent.name}.")
+        self.movsCost = arr.array('i', 7 * [0])
         if agent == TypeAgent.humano:
-            self.movsCost[Terrain.Mountain.value].append(0)
-            self.movsCost[Terrain.Land.value].append(1)
-            self.movsCost[Terrain.Water.value].append(2)
-            self.movsCost[Terrain.Sand.value].append(3)
-            self.movsCost[Terrain.Forest.value].append(3)
-            self.movsCost[Terrain.Swamp.value].append(5)
-            self.movsCost[Terrain.Snow.value].append(5)
+            self.movsCost[int(Terrain.Mountain.value)] = 0
+            self.movsCost[int(Terrain.Land.value)] = 1
+            self.movsCost[int(Terrain.Water.value)] = 2
+            self.movsCost[int(Terrain.Sand.value)] = 3
+            self.movsCost[int(Terrain.Forest.value)] = 3
+            self.movsCost[int(Terrain.Swamp.value)] = 5
+            self.movsCost[int(Terrain.Snow.value)] = 5
         elif agent == TypeAgent.mono:
-            self.movsCost[Terrain.Mountain.value].append(0)
-            self.movsCost[Terrain.Land.value].append(2)
-            self.movsCost[Terrain.Water.value].append(4)
-            self.movsCost[Terrain.Sand.value].append(3)
-            self.movsCost[Terrain.Forest.value].append(1)
-            self.movsCost[Terrain.Swamp.value].append(5)
-            self.movsCost[Terrain.Snow.value].append(0)
+            self.movsCost[int(Terrain.Mountain.value)] = 0
+            self.movsCost[int(Terrain.Land.value)] = 2
+            self.movsCost[int(Terrain.Water.value)] = 4
+            self.movsCost[int(Terrain.Sand.value)] = 3
+            self.movsCost[int(Terrain.Forest.value)] = 1
+            self.movsCost[int(Terrain.Swamp.value)] = 5
+            self.movsCost[int(Terrain.Snow.value)] = 0
         elif agent == TypeAgent.pulpo:
-            self.movsCost[Terrain.Mountain.value].append(0)
-            self.movsCost[Terrain.Land.value].append(2)
-            self.movsCost[Terrain.Water.value].append(1)
-            self.movsCost[Terrain.Sand.value].append(0)
-            self.movsCost[Terrain.Forest.value].append(3)
-            self.movsCost[Terrain.Swamp.value].append(2)
-            self.movsCost[Terrain.Snow.value].append(0)
+            self.movsCost[int(Terrain.Mountain.value)] = 0
+            self.movsCost[int(Terrain.Land.value)] = 2
+            self.movsCost[int(Terrain.Water.value)] = 1
+            self.movsCost[int(Terrain.Sand.value)] = 0
+            self.movsCost[int(Terrain.Forest.value)] = 3
+            self.movsCost[int(Terrain.Swamp.value)] = 2
+            self.movsCost[int(Terrain.Snow.value)] = 0
         elif agent == TypeAgent.sasquatch:
-            self.movsCost[Terrain.Mountain.value].append(15)
-            self.movsCost[Terrain.Land.value].append(4)
-            self.movsCost[Terrain.Water.value].append(0)
-            self.movsCost[Terrain.Sand.value].append(0)
-            self.movsCost[Terrain.Forest.value].append(4)
-            self.movsCost[Terrain.Swamp.value].append(5)
-            self.movsCost[Terrain.Snow.value].append(3)
+            self.movsCost[int(Terrain.Mountain.value)] = 15
+            self.movsCost[int(Terrain.Land.value)] = 4
+            self.movsCost[int(Terrain.Water.value)] = 0
+            self.movsCost[int(Terrain.Sand.value)] = 0
+            self.movsCost[int(Terrain.Forest.value)] = 4
+            self.movsCost[int(Terrain.Swamp.value)] = 5
+            self.movsCost[int(Terrain.Snow.value)] = 3
 
 
 class Agent(movsTerrain):  # Creamos la clase Agente
@@ -48,6 +48,9 @@ class Agent(movsTerrain):  # Creamos la clase Agente
         self.Name = Name
         self.TypeAgent = TypeAgent
         self.movs = movsTerrain(TypeAgent)
+
+    def printAgent(self):
+        print(f"Nombre:{self.Name} {self.TypeAgent.name} {self.movs}")
 
 
 class posicion():
@@ -123,7 +126,6 @@ class Stage:
     cellsHide = []
     # options
     optionsStage = [[]]
-    
 
     def __init__(self, stage):
         self.stage = stage
@@ -154,24 +156,25 @@ class Stage:
         wf, hf = w / len(self.stage), h / len(self.stage)
         my_image = Image.open(path)
         image_editable = ImageDraw.Draw(my_image)
-        title_font=ImageFont.truetype("Roboto/Roboto-Light.ttf",25)
+        title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 25)
         for countx, frameX in enumerate(self.stage):
             for county, frameY in enumerate(frameX):
                 if x == countx and y == county:
-                    if  len(str(self.optionsStage[countx][county])) == 1:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) +","+ text
-                        image_editable.text((int(wf)*x,int(hf)*y),text,(0,0,0),font=title_font)
+                    if len(str(self.optionsStage[countx][county])) == 1:
+                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
+                        image_editable.text((int(wf) * x, int(hf) * y), text, (0, 0, 0), font=title_font)
                     elif len(str(self.optionsStage[countx][county])) == 3:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) +","+ text
-                        image_editable.text((int(wf)*x+wf/2,int(hf)*y),text,(0,0,0),font=title_font)
+                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
+                        image_editable.text((int(wf) * x + wf / 2, int(hf) * y), text, (0, 0, 0), font=title_font)
                     elif len(str(self.optionsStage[countx][county])) == 5:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) +","+ text
-                        image_editable.text((int(wf)*x,int(hf)*y+hf/2),text,(0,0,0),font=title_font)
+                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
+                        image_editable.text((int(wf) * x, int(hf) * y + hf / 2), text, (0, 0, 0), font=title_font)
                     elif len(str(self.optionsStage[countx][county])) == 7:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) +","+ text
-                        image_editable.text((int(wf)*x+wf/2,int(hf)*y+hf/2),text,(0,0,0),font=title_font)     
+                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
+                        image_editable.text((int(wf) * x + wf / 2, int(hf) * y + hf / 2), text, (0, 0, 0),
+                                            font=title_font)
         my_image.save(path)
-        
+
     def escenarioToImage(self, colors, path):
         w, h = 750, 750
         wf, hf = w / len(self.stage), h / len(self.stage)
@@ -246,9 +249,12 @@ stage2.addCellsHide(1, 'A')
 print(stage2.cellsHide)
 stage2.addCellsHide(1, 'B')
 print(stage2.cellsHide)
-#stage2.textToImage(0,0,"a","lab1.png")
-#stage2.textToImage(0,1,"b","lab1.png")
-stage2.textToImage(0,2,"c","lab2.png")
-stage2.textToImage(0,2,"b","lab2.png")
-stage2.textToImage(0,2,"a","lab2.png")
-stage2.textToImage(0,2,"d","lab2.png")
+# stage2.textToImage(0,0,"a","lab1.png")
+# stage2.textToImage(0,1,"b","lab1.png")
+stage2.textToImage(0, 2, "c", "lab2.png")
+stage2.textToImage(0, 2, "b", "lab2.png")
+stage2.textToImage(0, 2, "a", "lab2.png")
+stage2.textToImage(0, 2, "d", "lab2.png")
+
+agent1 = Agent("A1", TypeAgent.humano)
+print(agent1)
