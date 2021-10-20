@@ -1,6 +1,6 @@
 import string
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import enum
 
@@ -48,6 +48,15 @@ class Stage:
 
     def changeTerrain(self, num, letter, terrain):
         self.stage[num - 1][ord(letter) - 65] = terrain.value
+
+    def textToImage(self, x, y, text ,path):
+        w, h = 750, 750
+        wf, hf = w / len(self.stage), h / len(self.stage)
+        my_image = Image.open(path)
+        image_editable = ImageDraw.Draw(my_image)
+        title_font=ImageFont.truetype("Roboto/Roboto-Light.ttf",25)
+        image_editable.text((int(wf)*x,int(hf)*y),text,(0,0,0),font=title_font)
+        my_image.save(path)
 
     def escenarioToImage(self, colors, path):
         w, h = 750, 750
@@ -106,3 +115,6 @@ stage2.addCellsHide(1,'A')
 print(stage2.cellsHide)
 stage2.addCellsHide(1,'B')
 print(stage2.cellsHide)
+stage2.textToImage(0,0,"a","lab1.png")
+stage2.textToImage(0,1,"b","lab1.png")
+stage2.textToImage(0,2,"c","lab2.png")
