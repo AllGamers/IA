@@ -5,55 +5,49 @@ import numpy as np
 import enum
 
 
-# !/usr/bin/env python
-# -*- coding: utf-8 -*-
-class Agente():  # Creamos la clase Agente
-    def __init__(self, pos_fin, agent):
-        self.pos_fin = pos_fin
-        self.tipo_agente = agent
-        self.movs = movsTerrain(agent)
-
-
 class movsTerrain:
-    def __init__(self, cost, agent):
-        self.cost = cost(agent)
-
-    def cost(self, agent):
-        movsCost = []
+    def __init__(self, agent):
+        self.movsCost = []
         print(f"Su tipo de agente es, {agent.name}.")
         if agent == TypeAgent.humano:
-            movsCost[Terrain.Mountain.value].append(0)
-            movsCost[Terrain.Land.value].append(1)
-            movsCost[Terrain.Water.value].append(2)
-            movsCost[Terrain.Sand.value].append(3)
-            movsCost[Terrain.Forest.value].append(3)
-            movsCost[Terrain.Swamp.value].append(5)
-            movsCost[Terrain.Snow.value].append(5)
+            self.movsCost[Terrain.Mountain.value].append(0)
+            self.movsCost[Terrain.Land.value].append(1)
+            self.movsCost[Terrain.Water.value].append(2)
+            self.movsCost[Terrain.Sand.value].append(3)
+            self.movsCost[Terrain.Forest.value].append(3)
+            self.movsCost[Terrain.Swamp.value].append(5)
+            self.movsCost[Terrain.Snow.value].append(5)
         elif agent == TypeAgent.mono:
-            movsCost[Terrain.Mountain.value].append(0)
-            movsCost[Terrain.Land.value].append(2)
-            movsCost[Terrain.Water.value].append(4)
-            movsCost[Terrain.Sand.value].append(3)
-            movsCost[Terrain.Forest.value].append(1)
-            movsCost[Terrain.Swamp.value].append(5)
-            movsCost[Terrain.Snow.value].append(0)
+            self.movsCost[Terrain.Mountain.value].append(0)
+            self.movsCost[Terrain.Land.value].append(2)
+            self.movsCost[Terrain.Water.value].append(4)
+            self.movsCost[Terrain.Sand.value].append(3)
+            self.movsCost[Terrain.Forest.value].append(1)
+            self.movsCost[Terrain.Swamp.value].append(5)
+            self.movsCost[Terrain.Snow.value].append(0)
         elif agent == TypeAgent.pulpo:
-            movsCost[Terrain.Mountain.value].append(0)
-            movsCost[Terrain.Land.value].append(2)
-            movsCost[Terrain.Water.value].append(1)
-            movsCost[Terrain.Sand.value].append(0)
-            movsCost[Terrain.Forest.value].append(3)
-            movsCost[Terrain.Swamp.value].append(2)
-            movsCost[Terrain.Snow.value].append(0)
+            self.movsCost[Terrain.Mountain.value].append(0)
+            self.movsCost[Terrain.Land.value].append(2)
+            self.movsCost[Terrain.Water.value].append(1)
+            self.movsCost[Terrain.Sand.value].append(0)
+            self.movsCost[Terrain.Forest.value].append(3)
+            self.movsCost[Terrain.Swamp.value].append(2)
+            self.movsCost[Terrain.Snow.value].append(0)
         elif agent == TypeAgent.sasquatch:
-            movsCost[Terrain.Mountain.value].append(15)
-            movsCost[Terrain.Land.value].append(4)
-            movsCost[Terrain.Water.value].append(0)
-            movsCost[Terrain.Sand.value].append(0)
-            movsCost[Terrain.Forest.value].append(4)
-            movsCost[Terrain.Swamp.value].append(5)
-            movsCost[Terrain.Snow.value].append(3)
-        return movsCost
+            self.movsCost[Terrain.Mountain.value].append(15)
+            self.movsCost[Terrain.Land.value].append(4)
+            self.movsCost[Terrain.Water.value].append(0)
+            self.movsCost[Terrain.Sand.value].append(0)
+            self.movsCost[Terrain.Forest.value].append(4)
+            self.movsCost[Terrain.Swamp.value].append(5)
+            self.movsCost[Terrain.Snow.value].append(3)
+
+
+class Agent(movsTerrain):  # Creamos la clase Agente
+    def __init__(self, Name, TypeAgent):
+        self.Name = Name
+        self.TypeAgent = TypeAgent
+        self.movs = movsTerrain(TypeAgent)
 
 
 class posicion():
