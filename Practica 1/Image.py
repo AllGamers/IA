@@ -53,9 +53,10 @@ class Agent(movsTerrain):  # Creamos la clase Agente
         return self.movs.movsCost[typeTerrain.value]
 
     def printAgent(self):
-        print(f"Nombre:{self.Name} \nTipo:{self.TypeAgent.name} \nMovs")
+        print(f"~~~~~~~~~~~~\nNombre:{self.Name} \nTipo:{self.TypeAgent.name} \nMovs")
         for num, x in enumerate(self.movs.movsCost):
-            print("{}: {}".format(Terrain(num).name, x))
+            print("- {}: {}".format(Terrain(num).name, x))
+        print("~~~~~~~~~~~~")
 
 
 class posicion():
