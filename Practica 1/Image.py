@@ -68,7 +68,7 @@ class posicion():
         print(f"La posicion inicial es, {pos_ini}.")
 
 
-class movimiento():
+class movimiento:
     def __init__(self, pos_new, num_mov):
         self.pos_new = pos_new
         self.num_mov = num_mov
@@ -133,8 +133,8 @@ class Stage:
     # options
     optionsStage = [[]]
 
-    def __init__(self, stage):
-        self.stage = stage
+    def __init__(self, textPlain):
+        self.stage = [[int(x) for x in word.split(",")] for word in textPlain]
 
     def addCellsHide(self, number, letter):
         if not self.cellsHide.__contains__((number, letter)):
@@ -208,8 +208,6 @@ def readFile(fileName):
     return words
 
 
-def textToEscenario(words):
-    return Stage([[int(x) for x in word.split(",")] for word in words])
 
 
 def tipoagente(self, personaje):
@@ -229,7 +227,7 @@ def tipoagente(self, personaje):
         self.tipo_agente = "sasquatch"
 
 
-stage1 = textToEscenario(readFile("lab1.txt"))
+stage1 = Stage(readFile("lab1.txt"))
 stage1.setValuesStage(initPoint=(7, 'B'), finalPoint=(2, 'B'))
 stage1.printStage()
 print(stage1.cellInfo(1, 'A'))
@@ -240,7 +238,7 @@ stage1.escenarioToImage([
     [255, 255, 255]
 ], 'lab1')
 
-stage2 = textToEscenario(readFile("lab2.txt"))
+stage2 = Stage(readFile("lab2.txt"))
 stage2.escenarioToImage([
     [128, 128, 128],
     [250, 191, 143],
