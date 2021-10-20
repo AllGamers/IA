@@ -8,100 +8,52 @@ import enum
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 class Agente():  # Creamos la clase Agente
-    def __init__(self, pos_fin, tipo_agente):
+    def __init__(self, pos_fin, agent):
         self.pos_fin = pos_fin
-        self.tipo_agente = tipo_agente
+        self.tipo_agente = agent
+        self.movs = movsTerrain(agent)
 
 
-def tipoagente(self, personaje):
-    self.personaje = personaje
-    personaje = input("Que personaje desea seleccionar: h. Humano m. Mono p. Pulpo s. Sasquatch")
-    if personaje == "h":
-        print("Ha seleccionado el agente Humano.")
-        self.tipo_agente = "humano"
-    elif personaje == "m":
-        print("Ha seleccionado el agente Mono.")
-        self.tipo_agente = "mono"
-    elif personaje == "p":
-        print("Ha seleccionado el agente Pulpo.")
-        self.tipo_agente = "pulpo"
-    elif personaje == "s":
-        print("Ha seleccionado el agente Sasquatch.")
-        self.tipo_agente = "sasquatch"
+class movsTerrain:
+    def __init__(self, cost, agent):
+        self.cost = cost(agent)
 
-
-class movTerrain():
-    def __init__(self, terrain, cost, agent):
-        self.terrain = terrain
-        self.agent = agent
-        self.cost = cost(terrain, agent)
-
-    def cost(self, terrain, agent):
-        print(f"Su tipo de agente es, {agent}.")
+    def cost(self, agent):
+        movsCost = []
+        print(f"Su tipo de agente es, {agent.name}.")
         if agent == TypeAgent.humano:
-            print(f"Su tipo de terreno es: {self.terrain}.")
-            if terrain == terrain.Mountain:
-                return 0
-            if terrain == terrain.Land:
-                return 1
-            if terrain == terrain.Water:
-                return 2
-            if terrain == terrain.Sand:
-                return 3
-            if terrain == terrain.Forest:
-                return 4
-            if terrain == terrain.Swamp:
-                return 5
-            if terrain == terrain.Snow:
-                return 5
-        elif self.tipo_agente == "mono":
-            print(f"Su tipo de terreno es: {self.tipo_terreno}.")
-            if self.tipo_terreno == "montaña":
-                self.total_terreno += 0
-            elif self.tipo_terreno == "tierra":
-                self.total_terreno += 2
-            elif self.tipo_terreno == "agua":
-                self.total_terreno += 4
-            elif self.tipo_terreno == "arena":
-                self.total_terreno += 3
-            elif self.tipo_terreno == "bosque":
-                self.total_terreno += 1
-            elif self.tipo_terreno == "pantano":
-                self.total_terreno += 5
-            elif self.tipo_terreno == "nieve":
-                self.total_terreno += 0
-        elif self.tipo_agente == "pulpo":
-            print(f"Su tipo de terreno es: {self.tipo_terreno}.")
-            if self.tipo_terreno == "montaña":
-                self.total_terreno += 0
-            elif self.tipo_terreno == "tierra":
-                self.total_terreno += 2
-            elif self.tipo_terreno == "agua":
-                self.total_terreno += 1
-            elif self.tipo_terreno == "arena":
-                self.total_terreno += 0
-            elif self.tipo_terreno == "bosque":
-                self.total_terreno += 3
-            elif self.tipo_terreno == "pantano":
-                self.total_terreno += 2
-            elif self.tipo_terreno == "nieve":
-                self.total_terreno += 0
-        elif self.tipo_agente == "sasquatch":
-            print(f"Su tipo de terreno es: {self.tipo_terreno}.")
-            if self.tipo_terreno == "montaña":
-                self.total_terreno += 15
-            elif self.tipo_terreno == "tierra":
-                self.total_terreno += 4
-            elif self.tipo_terreno == "agua":
-                self.total_terreno += 0
-            elif self.tipo_terreno == "arena":
-                self.total_terreno += 0
-            elif self.tipo_terreno == "bosque":
-                self.total_terreno += 4
-            elif self.tipo_terreno == "pantano":
-                self.total_terreno += 5
-            elif self.tipo_terreno == "nieve":
-                self.total_terreno += 3
+            movsCost[Terrain.Mountain.value].append(0)
+            movsCost[Terrain.Land.value].append(1)
+            movsCost[Terrain.Water.value].append(2)
+            movsCost[Terrain.Sand.value].append(3)
+            movsCost[Terrain.Forest.value].append(3)
+            movsCost[Terrain.Swamp.value].append(5)
+            movsCost[Terrain.Snow.value].append(5)
+        elif agent == TypeAgent.mono:
+            movsCost[Terrain.Mountain.value].append(0)
+            movsCost[Terrain.Land.value].append(2)
+            movsCost[Terrain.Water.value].append(4)
+            movsCost[Terrain.Sand.value].append(3)
+            movsCost[Terrain.Forest.value].append(1)
+            movsCost[Terrain.Swamp.value].append(5)
+            movsCost[Terrain.Snow.value].append(0)
+        elif agent == TypeAgent.pulpo:
+            movsCost[Terrain.Mountain.value].append(0)
+            movsCost[Terrain.Land.value].append(2)
+            movsCost[Terrain.Water.value].append(1)
+            movsCost[Terrain.Sand.value].append(0)
+            movsCost[Terrain.Forest.value].append(3)
+            movsCost[Terrain.Swamp.value].append(2)
+            movsCost[Terrain.Snow.value].append(0)
+        elif agent == TypeAgent.sasquatch:
+            movsCost[Terrain.Mountain.value].append(15)
+            movsCost[Terrain.Land.value].append(4)
+            movsCost[Terrain.Water.value].append(0)
+            movsCost[Terrain.Sand.value].append(0)
+            movsCost[Terrain.Forest.value].append(4)
+            movsCost[Terrain.Swamp.value].append(5)
+            movsCost[Terrain.Snow.value].append(3)
+        return movsCost
 
 
 class posicion():
@@ -238,6 +190,23 @@ def readFile(fileName):
 
 def textToEscenario(words):
     return Stage([[int(x) for x in word.split(",")] for word in words])
+
+
+def tipoagente(self, personaje):
+    self.personaje = personaje
+    personaje = input("Que personaje desea seleccionar: h. Humano m. Mono p. Pulpo s. Sasquatch")
+    if personaje == "h":
+        print("Ha seleccionado el agente Humano.")
+        self.tipo_agente = "humano"
+    elif personaje == "m":
+        print("Ha seleccionado el agente Mono.")
+        self.tipo_agente = "mono"
+    elif personaje == "p":
+        print("Ha seleccionado el agente Pulpo.")
+        self.tipo_agente = "pulpo"
+    elif personaje == "s":
+        print("Ha seleccionado el agente Sasquatch.")
+        self.tipo_agente = "sasquatch"
 
 
 stage1 = textToEscenario(readFile("lab1.txt"))
