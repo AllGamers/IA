@@ -49,8 +49,13 @@ class Agent(movsTerrain):  # Creamos la clase Agente
         self.TypeAgent = TypeAgent
         self.movs = movsTerrain(TypeAgent)
 
+    def returnCost(self, typeTerrain):
+        return self.movs.movsCost[typeTerrain.value]
+
     def printAgent(self):
-        print(f"Nombre:{self.Name} {self.TypeAgent.name} {self.movs}")
+        print(f"Nombre:{self.Name} \nTipo:{self.TypeAgent.name} \nMovs")
+        for num, x in enumerate(self.movs.movsCost):
+            print("{}: {}".format(Terrain(num).name, x))
 
 
 class posicion():
@@ -257,4 +262,5 @@ stage2.textToImage(0, 2, "a", "lab2.png")
 stage2.textToImage(0, 2, "d", "lab2.png")
 
 agent1 = Agent("A1", TypeAgent.humano)
-print(agent1)
+agent1.printAgent()
+print(f"Costo snow {agent1.returnCost(typeTerrain=Terrain.Snow)}")
