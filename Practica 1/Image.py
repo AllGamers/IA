@@ -181,7 +181,7 @@ class Stage:
                                             font=title_font)
         my_image.save(path)
 
-    def escenarioToImage(self, colors, path):
+    def stageToImage(self, colors, path):
         w, h = 750, 750
         wf, hf = w / len(self.stage), h / len(self.stage)
         data = np.zeros((h, w, 3), dtype=np.uint8)
@@ -208,8 +208,6 @@ def readFile(fileName):
     return words
 
 
-
-
 def tipoagente(self, personaje):
     self.personaje = personaje
     personaje = input("Que personaje desea seleccionar: h. Humano m. Mono p. Pulpo s. Sasquatch")
@@ -233,13 +231,13 @@ stage1.printStage()
 print(stage1.cellInfo(1, 'A'))
 stage1.printStage()
 print(stage1.cellInfo(2, 'B'))
-stage1.escenarioToImage([
+stage1.stageToImage([
     [128, 128, 128],
     [255, 255, 255]
 ], 'lab1')
 
 stage2 = Stage(readFile("lab2.txt"))
-stage2.escenarioToImage([
+stage2.stageToImage([
     [128, 128, 128],
     [250, 191, 143],
     [0, 175, 255],
