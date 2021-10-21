@@ -144,6 +144,8 @@ class Stage:
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
     # Memory
     memoryCells = []
+    # Memory Decisions
+    memoryCellsDecisions = []
 
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None):
         self.Name = Name
