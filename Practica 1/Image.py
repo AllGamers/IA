@@ -155,7 +155,7 @@ class Stage:
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
 
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None):
-        # Memory
+            # Memory
         self.memoryCells = []
         # Memory Decisions
         self.memoryCellsDecisions = []
@@ -173,6 +173,7 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             print(f"Error con Cordenadas finales")
             exit()
         else:
+            self.addToMemory(giveCords(InitalCords))
             self.InitialCords = giveCords(InitalCords)
             self.ActualCords = giveCords(InitalCords)
             self.FinalCords = giveCords(FinalCords)
@@ -181,7 +182,8 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             self.Stage.textToImage(self.FinalCords[0], self.FinalCords[1], " F", self.Name + ".png")
 
     def addToMemory(self, coords):
-        self.memoryCells.append(coords)
+        if not self.existsInMemory(coords):
+            self.memoryCells.append(coords)
 
     def existsInMemory(self, coords):
         return self.memoryCells.__contains__(coords)
@@ -229,28 +231,28 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
     def movLeft(self):
         if self.isValidPosition(self.leftCord()):
             self.ActualCords = self.leftCord()
-            self.memoryCells.append(giveNumLetter(self.ActualCords))
+            self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
             self.numMovs += 1
 
     def movRight(self):
         if self.isValidPosition(self.rightCord()):
             self.ActualCords = self.rightCord()
-            self.memoryCells.append(giveNumLetter(self.ActualCords))
+            self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
             self.numMovs += 1
 
     def movUp(self):
         if self.isValidPosition(self.upCord()):
             self.ActualCords = self.upCord()
-            self.memoryCells.append(giveNumLetter(self.ActualCords))
+            self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
             self.numMovs += 1
 
     def movDown(self):
         if self.isValidPosition(self.downCord()):
             self.ActualCords = self.downCord()
-            self.memoryCells.append(giveNumLetter(self.ActualCords))
+            self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
             self.numMovs += 1
 
