@@ -63,14 +63,19 @@ class TypeAgent(enum.Enum):
 
 class Stage:
     # cells hide
-    cellsHide = []
 
     def __init__(self, textPlain):
         self.stage = [[int(x) for x in word.split(",")] for word in textPlain]
+        self.cellsHide = []
 
     def addCellsHide(self, number, letter):
         if not self.cellsHide.__contains__((number, letter)):
             self.cellsHide.append((number, letter))
+
+    def existsInCellsHide(self, Coords):
+        if self.cellsHide.__contains__(giveNumLetter(Coords)):
+            return True
+        return False
 
     def printStage(self):
         for x in self.stage:
@@ -129,7 +134,12 @@ class Stage:
             for county, frameY in enumerate(frameX):
                 for countc, color in enumerate(colors):
                     if int(frameY) == countc:
-                        data[countx * int(wf):(countx + 1) * int(wf), county * int(hf):(county + 1) * int(hf)] = color
+                        if self.existsInCellsHide((countx, county)):
+                            data[countx * int(wf):(countx + 1) * int(wf),
+                            county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]
+                        else:
+                            data[countx * int(wf):(countx + 1) * int(wf),
+                            county * int(hf):(county + 1) * int(hf)] = color
                         # cuadrado
                         if countx > 0 or countx < 750 and county > 0 or county < 750:
                             data[countx * int(wf):(countx + 1) * int(wf), county * int(hf)] = [0, 0, 0]  # izquierda
@@ -142,12 +152,12 @@ class Stage:
 
 
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
-    # Memory
-    memoryCells = []
-    # Memory Decisions
-    memoryCellsDecisions = []
 
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None):
+        # Memory
+        self.memoryCells = []
+        # Memory Decisions
+        self.memoryCellsDecisions = []
         self.Name = Name
         self.TypeAgent = TypeAgent
         self.movsCosts = MovsTerrainCosts(TypeAgent)
@@ -190,16 +200,16 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             print("- {}: {}".format(Terrain(num).name, x))
         print("~~~~~~~~~~~~")
 
-    def LeftCord(self):
-        return (self.ActualCords[0]-1,self.ActualCords[1])
+    """def LeftCord(self):
+        return (self.ActualCords[0] - 1, self.ActualCords[1])
+
     def RifhtCord(self):
-        return (self.ActualCords[0]+1,self.ActualCords[1])
+        return (self.ActualCords[0] + 1, self.ActualCords[1])
 
     def validCaminos(self):
-        arrayValid = [ ]
+        arrayValid = []
         if isValidPosition(self.LeftCord)
-            arrayValid.append()
-
+            arrayValid.append()"""
 
     def movimientoizquierda(self):
         print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
@@ -256,3 +266,7 @@ def tipoagente(self, personaje):
 
 def giveCords(tuplaNumLetter):
     return (tuplaNumLetter[0] - 1), (ord(tuplaNumLetter[1]) - 65)
+
+
+def giveNumLetter(Coords):
+    return (Coords[0] + 1), chr(Coords[1] + 65)
