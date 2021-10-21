@@ -102,13 +102,13 @@ while running:
     # Move the player if an arrow key is pressed
     key = pygame.key.get_pressed()
     if key[pygame.K_LEFT]:
-        player.move(-16, 0)
+        player.move(-2, 0)
     if key[pygame.K_RIGHT]:
-        player.move(16, 0)
+        player.move(2, 0)
     if key[pygame.K_UP]:
-        player.move(0, -16)
+        player.move(0, -2)
     if key[pygame.K_DOWN]:
-        player.move(0, 16)
+        player.move(0, 2)
 
     # Just added this to make it slightly fun ;)
     if player.rect.colliderect(end_rect):
