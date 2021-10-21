@@ -4,8 +4,6 @@ import random
 import pygame
 from Image import *
 
-agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(3, 'B'))
-
 
 class Player(object):
 
@@ -84,16 +82,16 @@ while running:
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
             running = False
 
-    # Move the player if an arrow key is pressed
-    if e.type == pygame.KEYDOWN:
-        if e.key == pygame.K_LEFT:
-            player.move(-50, 0)
-        if e.key == pygame.K_RIGHT:
-            player.move(50, 0)
-        if e.key == pygame.K_UP:
-            player.move(0, -50)
-        if e.key == pygame.K_DOWN:
-            player.move(0, 50)
+        # Move the player if an arrow key is pressed
+        if e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_LEFT:
+                player.move(-50, 0)
+            if e.key == pygame.K_RIGHT:
+                player.move(50, 0)
+            if e.key == pygame.K_UP:
+                player.move(0, -50)
+            if e.key == pygame.K_DOWN:
+                player.move(0, 50)
 
     # Just added this to make it slightly fun ;)
 
@@ -104,9 +102,9 @@ while running:
     # Draw the scene
     screen.blit(back, (0, 0))
     # for wall in walls:
-    #     pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
+    # pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
     pygame.draw.rect(screen, (255, 0, 0), end_rect)
-    pygame.draw.rect(screen, (255, 200, 0), player.rect)
+    pygame.draw.rect(screen, (6, 128, 218), player.rect)
     # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
     pygame.display.flip()
     #clock.tick(120)
