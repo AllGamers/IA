@@ -89,12 +89,20 @@ while running:
         # Move the player if an arrow key is pressed
         if e.type == pygame.KEYDOWN:
             if e.key == pygame.K_LEFT:
+                agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
+                back = pygame.image.load(agent1.Name + ".png")
                 player.move(-50, 0)
             if e.key == pygame.K_RIGHT:
+                agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
+                back = pygame.image.load(agent1.Name + ".png")
                 player.move(50, 0)
             if e.key == pygame.K_UP:
+                agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
+                back = pygame.image.load(agent1.Name + ".png")
                 player.move(0, -50)
             if e.key == pygame.K_DOWN:
+                agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
+                back = pygame.image.load(agent1.Name + ".png")
                 player.move(0, 50)
 
     # Just added this to make it slightly fun ;)
