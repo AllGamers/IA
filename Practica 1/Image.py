@@ -152,7 +152,7 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
         self.AgentSensor = AgentSensor
         self.AgentMovs = AgentMovs
         self.numMovs = 0
-        self.Stage = Stage(stageText, InitalCords, FinalCords)
+        self.Stage = Stage(stageText)
         if not self.isValidPosition(giveCords(InitalCords)):
             print(f"Error con Cordenadas iniciales")
             exit()
