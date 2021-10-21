@@ -17,10 +17,12 @@ class Player(object):
             self.move_single_axis(0, dy)
 
     def move_single_axis(self, dx, dy):
-        if (self.rect.x + dx) > 0 or (self.rect.x + dx) < (width - 50):
+        print(width," , ",height)
+        if 0 <= (self.rect.x + dx) <= (width - 50):
             self.rect.x += dx
-        if (self.rect.y + dy) > 0 or (self.rect.y + dy) < (height - 50):
+        if 0 <= (self.rect.y + dy) <= (height - 50):
             self.rect.y += dy
+        print(self.rect.x, ",", self.rect.y)
         self.collision(dx, dy)
 
     def collision(self, dx, dy):
@@ -45,7 +47,7 @@ class Wall(object):
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
-agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(3, 'B'))
+agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(3, 'B'))
 pygame.display.set_caption("Get to the red square!")
 width = len(agent1.Stage.stage) * 50
 height = len(agent1.Stage.stage) * 50
@@ -104,9 +106,9 @@ while running:
     # for wall in walls:
     # pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
     pygame.draw.rect(screen, (255, 0, 0), end_rect)
-    pygame.draw.rect(screen, (6, 128, 218), player.rect)
+    pygame.draw.rect(screen, (70, 0, 130), player.rect)
     # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
     pygame.display.flip()
-    #clock.tick(120)
+    # clock.tick(120)
 
 pygame.quit()
