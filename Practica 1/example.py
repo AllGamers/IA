@@ -4,23 +4,25 @@ import random
 import pygame
 from Image import *
 
-agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"),FinalCords=(3, 'B'))
+
 class Player(object):
- 
+
     def __init__(self):
-        self.rect = pygame.Rect(agent1.InitialCords[0]*50, agent1.InitialCords[1]*50, 50, 50)
- 
+        self.rect = pygame.Rect(50, 50, 50, 50)
+
     def move(self, dx, dy):
         if dx != 0:
             self.move_single_axis(dx, 0)
         if dy != 0:
             self.move_single_axis(0, dy)
- 
+
     def move_single_axis(self, dx, dy):
-        self.rect.x += dx
-        self.rect.y += dy
+        if (self.rect.x + dx) > 0 or (self.rect.x + dx) < (width - 50):
+            self.rect.x += dx
+        if (self.rect.y + dy) > 0 or (self.rect.y + dy) < (height - 50):
+            self.rect.y += dy
         self.collision(dx, dy)
- 
+
     def collision(self, dx, dy):
         for wall in walls:
             if self.rect.colliderect(wall.rect):
@@ -43,11 +45,12 @@ class Wall(object):
  
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
- 
- 
+agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(3, 'B'))
 pygame.display.set_caption("Get to the red square!")
-screen = pygame.display.set_mode((750, 750))
- 
+width = len(agent1.Stage.stage) * 50
+height = len(agent1.Stage.stage) * 50
+screen = pygame.display.set_mode((width, height))
+
 clock = pygame.time.Clock()
 walls = []
 player = Player()
@@ -55,8 +58,9 @@ player = Player()
 # Holds the level layout in a list of strings.
 
 level = agent1.Stage.stage
+#print (level)
 # Parse the level string above. W = wall, E = exit
-
+#print (agent1.FinalCords)
 final = agent1.FinalCords
 x = y = 0
 for crow, row in enumerate(level):
@@ -64,7 +68,7 @@ for crow, row in enumerate(level):
         if col == 0:
             Wall((x, y))
         elif crow == final[0] and ccol == final[1]:
-            end_rect = pygame.Rect(crow*50, ccol*50, 50, 50)
+            end_rect = pygame.Rect(x * 50, y * 50, 50, 50)
         x += 50
     y += 50
     x = 0
@@ -101,10 +105,10 @@ while running:
     screen.blit(back, (0, 0))
     # for wall in walls:
     #     pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
-    pygame.draw.rect(screen, (255, 255, 0), end_rect)
-    pygame.draw.rect(screen, (255, 80, 0), player.rect)
+    pygame.draw.rect(screen, (255, 0, 0), end_rect)
+    pygame.draw.rect(screen, (255, 200, 0), player.rect)
     # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
     pygame.display.flip()
     clock.tick(120)
- 
+
 pygame.quit()
