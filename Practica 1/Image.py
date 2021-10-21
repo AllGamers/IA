@@ -174,7 +174,10 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
         return self.memoryCells.__contains__(coords)
 
     def isValidPosition(self, Coords):
-        return self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value] != 0
+        return self.giveCost(Coords) != 0
+
+    def giveCost(self, Coords):
+        return self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value]
 
     def returnCost(self, typeTerrain):
         return self.movsCosts.movsCost[typeTerrain.value]
