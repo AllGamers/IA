@@ -59,6 +59,7 @@ class TypeAgent(enum.Enum):
     pulpo = 2
     sasquatch = 3
 
+
 class Stage:
     # memory of cells (Tree)
     memory = None
@@ -83,6 +84,9 @@ class Stage:
 
     def setValuesStageActual(self, pointActual):
         self.pointActual = pointActual
+
+    def isValid(self,Coords):
+        return True
 
     def printStage(self):
         for x in self.stage:
@@ -140,18 +144,22 @@ class Stage:
         img.show()
 
 
-
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
-    def __init__(self, Name, TypeAgent, InitalCords, stage, FinalCords, AgentSensor=None, AgentMovs=None):
+    def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None):
         self.Name = Name
         self.TypeAgent = TypeAgent
         self.movsCosts = MovsTerrainCosts(TypeAgent)
         self.AgentSensor = AgentSensor
         self.AgentMovs = AgentMovs
         self.numMovs = 0
-        self.InitialCords = InitalCords
-        self.ActualCords = InitalCords
-        self.Stage = Stage(stage, InitalCords, FinalCords)
+        self.Stage = Stage(stageText, InitalCords, FinalCords)
+        if self.Stage.isValid(InitalCords):
+            self.InitialCords = InitalCords
+            self.ActualCords = InitalCords
+            self.Stage.stageToImage([
+                [128, 128, 128],
+                [255, 255, 255]
+            ], 'lab1')
 
     def returnCost(self, typeTerrain):
         return self.movsCosts.movsCost[typeTerrain.value]
@@ -216,44 +224,8 @@ def tipoagente(self, personaje):
 
 
 def giveCords(tuplaNumLetter):
-    return tuplaNumLetter[0]-1,(ord(tuplaNumLetter[1])-65)
+    return tuplaNumLetter[0] - 1, (ord(tuplaNumLetter[1]) - 65)
 
 
 
-stage1 = Stage(readFile("lab1.txt"))
-stage1.setValuesStage(initPoint=(7, 'B'), finalPoint=(2, 'B'))
-stage1.printStage()
-print(stage1.cellInfo(1, 'A'))
-stage1.printStage()
-print(stage1.cellInfo(2, 'B'))
-stage1.stageToImage([
-    [128, 128, 128],
-    [255, 255, 255]
-], 'lab1')
 
-stage2 = Stage(readFile("lab2.txt"))
-stage2.stageToImage([
-    [128, 128, 128],
-    [250, 191, 143],
-    [0, 175, 255],
-    [255, 192, 0],
-    [150, 210, 80]
-], 'lab2')
-
-stage2.addCellsHide(1, 'A')
-print(stage2.cellsHide)
-stage2.addCellsHide(1, 'A')
-print(stage2.cellsHide)
-stage2.addCellsHide(1, 'B')
-print(stage2.cellsHide)
-# stage2.textToImage(0,0,"a","lab1.png")
-# stage2.textToImage(0,1,"b","lab1.png")
-stage2.textToImage(0, 2, "c", "lab2.png")
-stage2.textToImage(0, 2, "b", "lab2.png")
-stage2.textToImage(0, 2, "a", "lab2.png")
-stage2.textToImage(0, 2, "d", "lab2.png")
-
-agent1 = Agent("A2", TypeAgent.humano, InitalCords=giveCords((2, 'A')), stage=stage1, FinalCords=giveCords((2, 'A')))
-
-agent1.printAgent()
-print(f"Costo snow {agent1.returnCost(typeTerrain=Terrain.Snow)}")
