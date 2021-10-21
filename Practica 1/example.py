@@ -1,6 +1,5 @@
 import os
 import sys
-import random
 import pygame
 from Image import *
 
@@ -73,38 +72,31 @@ running = True
 back = pygame.image.load(agent1.Name+".png")
 while running:
     
-    
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             running = False
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
             running = False
- 
-    # Move the player if an arrow key is pressed
-    key = pygame.key.get_pressed()
-    if key[pygame.K_LEFT]:
-        player.move(-2, 0)
-    if key[pygame.K_RIGHT]:
-        player.move(2, 0)
-    if key[pygame.K_UP]:
-        player.move(0, -2)
-    if key[pygame.K_DOWN]:
-        player.move(0, 2)
- 
-    # Just added this to make it slightly fun ;)
-    
+        # Move the player if an arrow key is pressed
+        if e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_LEFT:
+                player.move(-50, 0)
+            if e.key == pygame.K_RIGHT:
+                player.move(50, 0)
+            if e.key == pygame.K_UP:
+                player.move(0, -50)
+            if e.key == pygame.K_DOWN:
+                player.move(0, 50)
+
     if player.rect.colliderect(end_rect):
         pygame.quit()
-        sys.exit()
+        sys.exit() 
     
     # Draw the scene
     screen.blit(back, (0, 0))
-    # for wall in walls:
-    #     pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
     pygame.draw.rect(screen, (255, 255, 0), end_rect)
     pygame.draw.rect(screen, (255, 80, 0), player.rect)
-    # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
     pygame.display.flip()
-    clock.tick(120)
- 
+    #clock.tick(120)
+    
 pygame.quit()
