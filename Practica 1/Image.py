@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import enum
 import array as arr
+import pygame
 
 
 class MovsTerrainCosts:
@@ -85,17 +86,18 @@ class Stage:
     def setValuesStageActual(self, pointActual):
         self.pointActual = pointActual
 
-    def isValid(self,Coords):
-        return True
-
     def printStage(self):
         for x in self.stage:
             for y in x:
                 print(y, end=" ")
             print()
 
-    def cellInfo(self, num, letter):
-        return num, letter, Terrain(self.stage[num - 1][ord(letter) - 65])
+    def cellInfo(self, Coords=None, num=None, letter=None):
+        if Coords != None:
+            return Terrain(self.stage[Coords[0]][Coords[1]])
+        else:
+            Coords = giveCords((num, letter))
+            return Terrain(self.stage[Coords[0]][Coords[1]])
 
     def changeTerrain(self, num, letter, terrain):
         self.stage[num - 1][ord(letter) - 65] = terrain.value
@@ -124,7 +126,16 @@ class Stage:
                                             font=title_font)
         my_image.save(path)
 
-    def stageToImage(self, colors, path):
+    def stageToImage(self, path):
+        colors = [
+            [128, 128, 128],
+            [250, 191, 143],
+            [0, 175, 255],
+            [255, 192, 0],
+            [150, 210, 80],
+            [178, 162, 198],
+            [242, 242, 242],
+        ]
         w, h = 750, 750
         wf, hf = w / len(self.stage), h / len(self.stage)
         data = np.zeros((h, w, 3), dtype=np.uint8)
@@ -153,13 +164,16 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
         self.AgentMovs = AgentMovs
         self.numMovs = 0
         self.Stage = Stage(stageText, InitalCords, FinalCords)
-        if self.Stage.isValid(InitalCords):
+        if self.isValidPosition(InitalCords):
             self.InitialCords = InitalCords
             self.ActualCords = InitalCords
-            self.Stage.stageToImage([
-                [128, 128, 128],
-                [255, 255, 255]
-            ], 'lab1')
+            self.Stage.stageToImage('lab1')
+        else:
+            print(f"Error con Cordenadas ")
+            exit()
+
+    def isValidPosition(self, Coords):
+        return self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value] != 0
 
     def returnCost(self, typeTerrain):
         return self.movsCosts.movsCost[typeTerrain.value]
@@ -225,7 +239,3 @@ def tipoagente(self, personaje):
 
 def giveCords(tuplaNumLetter):
     return tuplaNumLetter[0] - 1, (ord(tuplaNumLetter[1]) - 65)
-
-
-
-
