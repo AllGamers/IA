@@ -190,6 +190,17 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             print("- {}: {}".format(Terrain(num).name, x))
         print("~~~~~~~~~~~~")
 
+    def LeftCord(self):
+        return (self.ActualCords[0]-1,self.ActualCords[1])
+    def RifhtCord(self):
+        return (self.ActualCords[0]+1,self.ActualCords[1])
+
+    def validCaminos(self):
+        arrayValid = [ ]
+        if isValidPosition(self.LeftCord)
+            arrayValid.append()
+
+
     def movimientoizquierda(self):
         print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
         self.pos_ini = self.pos_new
