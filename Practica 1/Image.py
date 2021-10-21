@@ -62,29 +62,15 @@ class TypeAgent(enum.Enum):
 
 
 class Stage:
-    # memory of cells (Tree)
-    memory = None
-    # pont final
-    pointFinal = None
-    # ActualPoint
-    pointActual = None
     # cells hide
     cellsHide = []
-    # options
-    optionsStage = [[]]
 
-    def __init__(self, textPlain, initPoint, finalPoint):
-        self.init = initPoint
-        self.pointActual = initPoint
-        self.pointFinal = finalPoint
+    def __init__(self, textPlain):
         self.stage = [[int(x) for x in word.split(",")] for word in textPlain]
 
     def addCellsHide(self, number, letter):
         if not self.cellsHide.__contains__((number, letter)):
             self.cellsHide.append((number, letter))
-
-    def setValuesStageActual(self, pointActual):
-        self.pointActual = pointActual
 
     def printStage(self):
         for x in self.stage:
@@ -156,6 +142,9 @@ class Stage:
 
 
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
+    # Memory
+    memoryCells = []
+
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None):
         self.Name = Name
         self.TypeAgent = TypeAgent
@@ -177,6 +166,12 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             self.Stage.stageToImage(self.Name)
             self.Stage.textToImage(self.InitialCords[0], self.InitialCords[1], " I", self.Name + ".png")
             self.Stage.textToImage(self.FinalCords[0], self.FinalCords[1], " F", self.Name + ".png")
+
+    def addToMemory(self, coords):
+        self.memoryCells.append(coords)
+
+    def existsInMemory(self, coords):
+        return self.memoryCells.__contains__(coords)
 
     def isValidPosition(self, Coords):
         return self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value] != 0
