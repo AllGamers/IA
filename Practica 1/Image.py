@@ -6,7 +6,7 @@ import enum
 import array as arr
 
 
-class movsTerrain:
+class MovsTerrainCosts:
     def __init__(self, agent):
         self.movsCost = arr.array('i', 7 * [0])
         if agent == TypeAgent.humano:
@@ -41,65 +41,6 @@ class movsTerrain:
             self.movsCost[int(Terrain.Forest.value)] = 4
             self.movsCost[int(Terrain.Swamp.value)] = 5
             self.movsCost[int(Terrain.Snow.value)] = 3
-
-
-class Agent(movsTerrain):  # Creamos la clase Agente
-    def __init__(self, Name, TypeAgent):
-        self.Name = Name
-        self.TypeAgent = TypeAgent
-        self.movs = movsTerrain(TypeAgent)
-
-    def returnCost(self, typeTerrain):
-        return self.movs.movsCost[typeTerrain.value]
-
-    def printAgent(self):
-        print(f"~~~~~~~~~~~~\nNombre:{self.Name} \nTipo:{self.TypeAgent.name} \nMovs")
-        for num, x in enumerate(self.movs.movsCost):
-            print("- {}: {}".format(Terrain(num).name, x))
-        print("~~~~~~~~~~~~")
-
-
-class posicion():
-    def __init__(self, pos_ini):
-        self.pos_ini = pos_ini
-
-    def posicionini(self):
-        pos_ini = input("cual es la posicion inicial")
-        print(f"La posicion inicial es, {pos_ini}.")
-
-
-class movimiento:
-    def __init__(self, pos_new, num_mov):
-        self.pos_new = pos_new
-        self.num_mov = num_mov
-
-    def movimientoizquierda(self):
-        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
-        self.pos_ini = self.pos_new
-        print("Su movimiento es a la izquierda.")
-        print(f"Su nueva posicion es:, {self.pos_new}.")
-        self.num_mov += 1
-
-    def movimientoderecha(self):
-        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
-        self.pos_ini = self.pos_new
-        print("Su movimiento es a la derecha.")
-        print(f"Su nueva posicion es:, {self.pos_new}.")
-        self.num_mov += 1
-
-    def movimientoarriba(self):
-        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
-        self.pos_ini = self.pos_new
-        print("Su movimiento es a la arriba.")
-        print(f"Su nueva posicion es:, {self.pos_new}.")
-        self.num_mov += 1
-
-    def movimientoabajo(self):
-        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
-        self.pos_ini = self.pos_new
-        print("Su movimiento es a la abajo.")
-        print(f"Su nueva posicion es:, {self.pos_new}.")
-        self.num_mov += 1
 
 
 class Terrain(enum.Enum):
@@ -199,6 +140,55 @@ class Stage:
         img = Image.fromarray(data, 'RGB')
         img.save(path + '.png')
         img.show()
+
+
+class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
+    def __init__(self, Name, TypeAgent, InitalCords ,AgentSensor=None, AgentMovs=None):
+        self.Name = Name
+        self.TypeAgent = TypeAgent
+        self.movsCosts = MovsTerrainCosts(TypeAgent)
+        self.AgentSensor = AgentSensor
+        self.AgentMovs = AgentMovs
+        self.numMovs = 0
+        self.InitialCords =  InitalCords
+        self.ActualCords =InitalCords
+
+    def returnCost(self, typeTerrain):
+        return self.movsCosts.movsCost[typeTerrain.value]
+
+    def printAgent(self):
+        print(f"~~~~~~~~~~~~\nNombre:{self.Name} \nTipo:{self.TypeAgent.name} \nMovs")
+        for num, x in enumerate(self.movsCosts.movsCost):
+            print("- {}: {}".format(Terrain(num).name, x))
+        print("~~~~~~~~~~~~")
+
+    def movimientoizquierda(self):
+        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
+        self.pos_ini = self.pos_new
+        print("Su movimiento es a la izquierda.")
+        print(f"Su nueva posicion es:, {self.pos_new}.")
+        self.num_mov += 1
+
+    def movimientoderecha(self):
+        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
+        self.pos_ini = self.pos_new
+        print("Su movimiento es a la derecha.")
+        print(f"Su nueva posicion es:, {self.pos_new}.")
+        self.num_mov += 1
+
+    def movimientoarriba(self):
+        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
+        self.pos_ini = self.pos_new
+        print("Su movimiento es a la arriba.")
+        print(f"Su nueva posicion es:, {self.pos_new}.")
+        self.num_mov += 1
+
+    def movimientoabajo(self):
+        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
+        self.pos_ini = self.pos_new
+        print("Su movimiento es a la abajo.")
+        print(f"Su nueva posicion es:, {self.pos_new}.")
+        self.num_mov += 1
 
 
 def readFile(fileName):
