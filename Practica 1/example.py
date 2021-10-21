@@ -8,7 +8,8 @@ agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile(
 class Player(object):
  
     def __init__(self):
-        self.rect = pygame.Rect(50, 50, 50, 50)
+        begin = agent1.InitialCords
+        self.rect = pygame.Rect(begin[0]*50, begin[1]*50, 50, 50)
  
     def move(self, dx, dy):
         if dx != 0:
@@ -55,9 +56,8 @@ player = Player()
 # Holds the level layout in a list of strings.
 
 level = agent1.Stage.stage
-#print (level)
 # Parse the level string above. W = wall, E = exit
-#print (agent1.FinalCords)
+
 final = agent1.FinalCords
 x = y = 0
 for crow, row in enumerate(level):
@@ -65,7 +65,7 @@ for crow, row in enumerate(level):
         if col == 0:
             Wall((x, y))
         elif crow == final[0] and ccol == final[1]:
-            end_rect = pygame.Rect(x*50, y*50, 50, 50)
+            end_rect = pygame.Rect(crow*50, ccol*50, 50, 50)
         x += 50
     y += 50
     x = 0
@@ -102,8 +102,8 @@ while running:
     screen.blit(back, (0, 0))
     # for wall in walls:
     #     pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
-    pygame.draw.rect(screen, (255, 0, 0), end_rect)
-    pygame.draw.rect(screen, (255, 200, 0), player.rect)
+    pygame.draw.rect(screen, (255, 255, 0), end_rect)
+    pygame.draw.rect(screen, (255, 80, 0), player.rect)
     # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
     pygame.display.flip()
     clock.tick(120)
