@@ -86,6 +86,7 @@ while running:
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
             running = False
 
+        # Here Selector IA OR HUMAN
         # Move the player if an arrow key is pressed
         if e.type == pygame.KEYDOWN:
             if e.key == pygame.K_LEFT:
