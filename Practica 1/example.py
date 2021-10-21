@@ -17,7 +17,7 @@ class Player(object):
             self.move_single_axis(0, dy)
 
     def move_single_axis(self, dx, dy):
-        print(width," , ",height)
+        print(width, " , ", height)
         if 0 <= (self.rect.x + dx) <= (width - 50):
             self.rect.x += dx
         if 0 <= (self.rect.y + dy) <= (height - 50):
@@ -47,7 +47,7 @@ class Wall(object):
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
-agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(3, 'B'))
+agent1 = Agent("A2", TypeAgent.pulpo, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(3, 'B'))
 pygame.display.set_caption("Get to the red square!")
 width = len(agent1.Stage.stage) * 50
 height = len(agent1.Stage.stage) * 50
@@ -58,21 +58,17 @@ walls = []
 player = Player()
 
 # Holds the level layout in a list of strings.
-
 level = agent1.Stage.stage
-# Parse the level string above. W = wall, E = exit
 
+# Parse the level string above. W = wall, E = exit
 final = agent1.FinalCords
 x = y = 0
-for crow, row in enumerate(level):
-    for ccol, col in enumerate(row):
-        if col == 0:
-            Wall((x, y))
+for crow, row in enumerate(level):  # x
+    for ccol, col in enumerate(row):  # y
+        if agent1.isValidPosition((ccol, crow)) == 0:
+            Wall((crow * 50, ccol * 50))
         elif crow == final[0] and ccol == final[1]:
-            end_rect = pygame.Rect(x * 50, y * 50, 50, 50)
-        x += 50
-    y += 50
-    x = 0
+            end_rect = pygame.Rect(crow * 50, ccol * 50, 50, 50)
 
 running = True
 back = pygame.image.load(agent1.Name + ".png")

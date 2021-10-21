@@ -84,8 +84,12 @@ class Stage:
             print()
 
     def cellInfo(self, Coords=None, num=None, letter=None):
+        print(Coords)
         if Coords != None:
-            return Terrain(self.stage[Coords[0]][Coords[1]])
+            print(self.stage[Coords[0]][Coords[1]])
+            x = Terrain(self.stage[Coords[0]][Coords[1]])
+            print(x)
+            return x
         else:
             Coords = giveCords((num, letter))
             return Terrain(self.stage[Coords[0]][Coords[1]])
@@ -148,7 +152,7 @@ class Stage:
         self.optionsStage = self.stage
         img = Image.fromarray(data, 'RGB')
         img.save(path + '.png')
-        img.show()
+        #img.show()
 
 
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
@@ -176,8 +180,8 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             self.ActualCords = giveCords(InitalCords)
             self.FinalCords = giveCords(FinalCords)
             self.Stage.stageToImage(self.Name)
-            self.Stage.textToImage(self.InitialCords[0], self.InitialCords[1], " I", self.Name + ".png")
-            self.Stage.textToImage(self.FinalCords[0], self.FinalCords[1], " F", self.Name + ".png")
+            #self.Stage.textToImage(self.InitialCords[0], self.InitialCords[1], " I", self.Name + ".png")
+            #self.Stage.textToImage(self.FinalCords[0], self.FinalCords[1], " F", self.Name + ".png")
 
     def addToMemory(self, coords):
         self.memoryCells.append(coords)
@@ -189,7 +193,9 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
         return self.giveCost(Coords) != 0
 
     def giveCost(self, Coords):
-        return self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value]
+        xd = self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value]
+        print(xd)
+        return xd
 
     def returnCost(self, typeTerrain):
         return self.movsCosts.movsCost[typeTerrain.value]
