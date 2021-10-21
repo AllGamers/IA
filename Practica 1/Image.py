@@ -200,16 +200,30 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             print("- {}: {}".format(Terrain(num).name, x))
         print("~~~~~~~~~~~~")
 
-    """def LeftCord(self):
+    def leftCord(self):
         return (self.ActualCords[0] - 1, self.ActualCords[1])
 
-    def RifhtCord(self):
+    def rightCord(self):
         return (self.ActualCords[0] + 1, self.ActualCords[1])
+    
+    def upCord(self):
+        return (self.ActualCords[0], self.ActualCords[1] + 1)
 
-    def validCaminos(self):
+    def downCord(self):
+        return (self.ActualCords[0], self.ActualCords[1] - 1)
+
+    def validRoads(self):
+        #Funcion que verifica los caminos posibles sin haber pasado
         arrayValid = []
-        if isValidPosition(self.LeftCord)
-            arrayValid.append()"""
+        if self.isValidPosition(self.leftCord()) and  not self.existsInMemory(self.leftCord()):
+            arrayValid.append(self.leftCord())
+        if self.isValidPosition(self.rightCord()) and not self.existsInMemory(self.rightCord()):
+            arrayValid.append(self.rightCord())
+        if self.isValidPosition(self.upCord()) and not self.existsInMemory(self.upCord()):
+            arrayValid.append(self.upCord())
+        if self.isValidPosition(self.downCord()) and not self.existsInMemory(self.downCord()):
+            arrayValid.append(self.downCord())
+        return arrayValid
 
     def movimientoizquierda(self):
         print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
