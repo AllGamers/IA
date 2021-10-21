@@ -8,8 +8,7 @@ agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile(
 class Player(object):
  
     def __init__(self):
-        begin = agent1.InitialCords
-        self.rect = pygame.Rect(begin[0]*50, begin[1]*50, 50, 50)
+        self.rect = pygame.Rect(agent1.InitialCords[0]*50, agent1.InitialCords[1]*50, 50, 50)
  
     def move(self, dx, dy):
         if dx != 0:
