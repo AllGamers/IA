@@ -65,7 +65,7 @@ player = Player()
 
 # Holds the level layout in a list of strings.
 level = agent1.Stage.stage
-
+print(agent1.Stage.stage)
 # Parse the level string above. W = wall, E = exit
 final = agent1.FinalCords
 x = y = 0
@@ -89,21 +89,30 @@ while running:
         # Move the player if an arrow key is pressed
         if e.type == pygame.KEYDOWN:
             if e.key == pygame.K_LEFT:
-                agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
-                back = pygame.image.load(agent1.Name + ".png")
-                player.move(-50, 0)
+                #valid out of bounds
+                validOOB = agent1.leftCord() 
+                if validOOB[0] != -1 and validOOB[1] != -1 and agent1.isValidPosition(agent1.leftCord()): 
+                    agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
+                    back = pygame.image.load(agent1.Name + ".png")
+                    player.move(-50, 0)
             if e.key == pygame.K_RIGHT:
-                agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
-                back = pygame.image.load(agent1.Name + ".png")
-                player.move(50, 0)
+                validOOB = agent1.rightCord() 
+                if validOOB[0] < len(agent1.Stage.stage) and validOOB[1] < len(agent1.Stage.stage) and agent1.isValidPosition(agent1.rightCord()):
+                    agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
+                    back = pygame.image.load(agent1.Name + ".png")
+                    player.move(50, 0)
             if e.key == pygame.K_UP:
-                agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
-                back = pygame.image.load(agent1.Name + ".png")
-                player.move(0, -50)
+                validOOB = agent1.upCord() 
+                if validOOB[0] != -1 and validOOB[1] != -1 and agent1.isValidPosition(agent1.upCord()):
+                    agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
+                    back = pygame.image.load(agent1.Name + ".png")
+                    player.move(0, -50)
             if e.key == pygame.K_DOWN:
-                agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
-                back = pygame.image.load(agent1.Name + ".png")
-                player.move(0, 50)
+                validOOB = agent1.downCord() 
+                if validOOB[0] < len(agent1.Stage.stage) and validOOB[1] < len(agent1.Stage.stage) and agent1.isValidPosition(agent1.downCord()):
+                    agent1.Stage.textToImage(agent1.ActualCords[1],agent1.ActualCords[0],"V",agent1.Name+".png")
+                    back = pygame.image.load(agent1.Name + ".png")
+                    player.move(0, 50)
 
     # Just added this to make it slightly fun ;)
 
