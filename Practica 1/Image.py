@@ -66,6 +66,7 @@ class Stage:
 
     def __init__(self, textPlain):
         self.stage = [[int(x) for x in word.split(",")] for word in textPlain]
+        self.stageLetras = [[int(x) for x in word.split(",")] for word in textPlain]
         self.cellsHide = []
 
     def addCellsHide(self, number, letter):
@@ -84,12 +85,8 @@ class Stage:
             print()
 
     def cellInfo(self, Coords=None, num=None, letter=None):
-        print(Coords)
         if Coords != None:
-            print(self.stage[Coords[0]][Coords[1]])
-            x = Terrain(self.stage[Coords[0]][Coords[1]])
-            print(x)
-            return x
+            return Terrain(self.stage[Coords[0]][Coords[1]])
         else:
             Coords = giveCords((num, letter))
             return Terrain(self.stage[Coords[0]][Coords[1]])
@@ -99,11 +96,11 @@ class Stage:
 
     def textToImage(self, x, y, text, path):
         w, h = 750, 750
-        wf, hf = w / len(self.stage), h / len(self.stage)
+        wf, hf = w / len(self.stageLetras), h / len(self.stageLetras)
         my_image = Image.open(path)
         image_editable = ImageDraw.Draw(my_image)
         title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 25)
-        for countx, frameX in enumerate(self.stage):
+        for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
                 if x == countx and y == county:
                     if len(str(self.optionsStage[countx][county])) == 1:
@@ -149,10 +146,10 @@ class Stage:
                             data[countx * int(wf):(countx + 1) * int(wf), county * int(hf)] = [0, 0, 0]  # izquierda
                             data[countx * int(wf), county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]  # abajo
                         break
-        self.optionsStage = self.stage
+        self.optionsStage = self.stageLetras
         img = Image.fromarray(data, 'RGB')
         img.save(path + '.png')
-        #img.show()
+        # img.show()
 
 
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
@@ -180,8 +177,8 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             self.ActualCords = giveCords(InitalCords)
             self.FinalCords = giveCords(FinalCords)
             self.Stage.stageToImage(self.Name)
-            #self.Stage.textToImage(self.InitialCords[0], self.InitialCords[1], " I", self.Name + ".png")
-            #self.Stage.textToImage(self.FinalCords[0], self.FinalCords[1], " F", self.Name + ".png")
+            self.Stage.textToImage(self.InitialCords[0], self.InitialCords[1], " I", self.Name + ".png")
+            self.Stage.textToImage(self.FinalCords[0], self.FinalCords[1], " F", self.Name + ".png")
 
     def addToMemory(self, coords):
         self.memoryCells.append(coords)
@@ -193,9 +190,7 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
         return self.giveCost(Coords) != 0
 
     def giveCost(self, Coords):
-        xd = self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value]
-        print(xd)
-        return xd
+        return self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value]
 
     def returnCost(self, typeTerrain):
         return self.movsCosts.movsCost[typeTerrain.value]
@@ -206,22 +201,22 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             print("- {}: {}".format(Terrain(num).name, x))
         print("~~~~~~~~~~~~")
 
-    def leftCord(self):
-        return (self.ActualCords[0] - 1, self.ActualCords[1])
-
-    def rightCord(self):
-        return (self.ActualCords[0] + 1, self.ActualCords[1])
-    
     def upCord(self):
-        return (self.ActualCords[0], self.ActualCords[1] + 1)
+        return self.ActualCords[0] - 1, self.ActualCords[1]
 
     def downCord(self):
-        return (self.ActualCords[0], self.ActualCords[1] - 1)
+        return self.ActualCords[0] + 1, self.ActualCords[1]
+
+    def leftCord(self):
+        return self.ActualCords[0], self.ActualCords[1] - 1
+
+    def rightCord(self):
+        return self.ActualCords[0], self.ActualCords[1] + 1
 
     def validRoads(self):
-        #Funcion que verifica los caminos posibles sin haber pasado
+        # Funcion que verifica los caminos posibles sin haber pasado
         arrayValid = []
-        if self.isValidPosition(self.leftCord()) and  not self.existsInMemory(self.leftCord()):
+        if self.isValidPosition(self.leftCord()) and not self.existsInMemory(self.leftCord()):
             arrayValid.append(self.leftCord())
         if self.isValidPosition(self.rightCord()) and not self.existsInMemory(self.rightCord()):
             arrayValid.append(self.rightCord())
@@ -231,33 +226,33 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             arrayValid.append(self.downCord())
         return arrayValid
 
-    def movimientoizquierda(self):
-        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
-        self.pos_ini = self.pos_new
-        print("Su movimiento es a la izquierda.")
-        print(f"Su nueva posicion es:, {self.pos_new}.")
-        self.num_mov += 1
+    def movLeft(self):
+        if self.isValidPosition(self.leftCord()):
+            self.ActualCords = self.leftCord()
+            self.memoryCells.append(giveNumLetter(self.ActualCords))
+            print(f"{self.ActualCords}.")
+            self.numMovs += 1
 
-    def movimientoderecha(self):
-        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
-        self.pos_ini = self.pos_new
-        print("Su movimiento es a la derecha.")
-        print(f"Su nueva posicion es:, {self.pos_new}.")
-        self.num_mov += 1
+    def movRight(self):
+        if self.isValidPosition(self.rightCord()):
+            self.ActualCords = self.rightCord()
+            self.memoryCells.append(giveNumLetter(self.ActualCords))
+            print(f"{self.ActualCords}.")
+            self.numMovs += 1
 
-    def movimientoarriba(self):
-        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
-        self.pos_ini = self.pos_new
-        print("Su movimiento es a la arriba.")
-        print(f"Su nueva posicion es:, {self.pos_new}.")
-        self.num_mov += 1
+    def movUp(self):
+        if self.isValidPosition(self.upCord()):
+            self.ActualCords = self.upCord()
+            self.memoryCells.append(giveNumLetter(self.ActualCords))
+            print(f"{self.ActualCords}.")
+            self.numMovs += 1
 
-    def movimientoabajo(self):
-        print(f"Usted de encuentra en la posicion:, {self.pos_ini}.")
-        self.pos_ini = self.pos_new
-        print("Su movimiento es a la abajo.")
-        print(f"Su nueva posicion es:, {self.pos_new}.")
-        self.num_mov += 1
+    def movDown(self):
+        if self.isValidPosition(self.downCord()):
+            self.ActualCords = self.downCord()
+            self.memoryCells.append(giveNumLetter(self.ActualCords))
+            print(f"{self.ActualCords}.")
+            self.numMovs += 1
 
 
 def readFile(fileName):

@@ -17,12 +17,18 @@ class Player(object):
             self.move_single_axis(0, dy)
 
     def move_single_axis(self, dx, dy):
-        print(width, " , ", height)
         if 0 <= (self.rect.x + dx) <= (width - 50):
+            if dx > 0:
+                agent1.movRight()
+            elif dx < 0:
+                agent1.movLeft()
             self.rect.x += dx
         if 0 <= (self.rect.y + dy) <= (height - 50):
+            if dy > 0:
+                agent1.movDown()
+            elif dy < 0:
+                agent1.movUp()
             self.rect.y += dy
-        print(self.rect.x, ",", self.rect.y)
         self.collision(dx, dy)
 
     def collision(self, dx, dy):
@@ -105,6 +111,5 @@ while running:
     pygame.draw.rect(screen, (70, 0, 130), player.rect)
     # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
     pygame.display.flip()
-    # clock.tick(120)
 
 pygame.quit()
