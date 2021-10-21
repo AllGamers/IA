@@ -164,13 +164,19 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
         self.AgentMovs = AgentMovs
         self.numMovs = 0
         self.Stage = Stage(stageText, InitalCords, FinalCords)
-        if self.isValidPosition(InitalCords):
-            self.InitialCords = InitalCords
-            self.ActualCords = InitalCords
-            self.Stage.stageToImage('lab1')
-        else:
-            print(f"Error con Cordenadas ")
+        if not self.isValidPosition(giveCords(InitalCords)):
+            print(f"Error con Cordenadas iniciales")
             exit()
+        elif not self.isValidPosition(giveCords(FinalCords)):
+            print(f"Error con Cordenadas finales")
+            exit()
+        else:
+            self.InitialCords = giveCords(InitalCords)
+            self.ActualCords = giveCords(InitalCords)
+            self.FinalCords = giveCords(FinalCords)
+            self.Stage.stageToImage(self.Name)
+            self.Stage.textToImage(self.InitialCords[0], self.InitialCords[1], " I", self.Name + ".png")
+            self.Stage.textToImage(self.FinalCords[0], self.FinalCords[1], " F", self.Name + ".png")
 
     def isValidPosition(self, Coords):
         return self.movsCosts.movsCost[self.Stage.cellInfo(Coords=Coords).value] != 0
@@ -238,4 +244,4 @@ def tipoagente(self, personaje):
 
 
 def giveCords(tuplaNumLetter):
-    return tuplaNumLetter[0] - 1, (ord(tuplaNumLetter[1]) - 65)
+    return (tuplaNumLetter[0] - 1), (ord(tuplaNumLetter[1]) - 65)

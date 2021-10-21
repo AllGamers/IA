@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # stage1.textToImage(0, 2, "c", "lab2.png")
     # stage1.textToImage(0, 2, "b", "lab2.png")
 
-    agent1 = Agent("A2", TypeAgent.humano, InitalCords=giveCords((1, 'B')), stageText=readFile("lab1.txt"),
-                   FinalCords=giveCords((2, 'A')))
+    agent1 = Agent("A2", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"),
+                   FinalCords=(2, 'B'))
     agent1.printAgent()
     print(f"Costo snow {agent1.returnCost(typeTerrain=Terrain.Snow)}")
