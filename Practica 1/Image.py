@@ -59,32 +59,30 @@ class TypeAgent(enum.Enum):
     pulpo = 2
     sasquatch = 3
 
-
 class Stage:
     # memory of cells (Tree)
     memory = None
-    # point Initial
-    init = None
-    # point
-    pointActual = None
     # pont final
     pointFinal = None
+    # ActualPoint
+    pointActual = None
     # cells hide
     cellsHide = []
     # options
     optionsStage = [[]]
 
-    def __init__(self, textPlain):
+    def __init__(self, textPlain, initPoint, finalPoint):
+        self.init = initPoint
+        self.pointActual = initPoint
+        self.pointFinal = finalPoint
         self.stage = [[int(x) for x in word.split(",")] for word in textPlain]
 
     def addCellsHide(self, number, letter):
         if not self.cellsHide.__contains__((number, letter)):
             self.cellsHide.append((number, letter))
 
-    def setValuesStage(self, initPoint, finalPoint):
-        self.init = initPoint
-        self.pointActual = initPoint
-        self.pointFinal = finalPoint
+    def setValuesStageActual(self, pointActual):
+        self.pointActual = pointActual
 
     def printStage(self):
         for x in self.stage:
@@ -142,16 +140,18 @@ class Stage:
         img.show()
 
 
+
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
-    def __init__(self, Name, TypeAgent, InitalCords ,AgentSensor=None, AgentMovs=None):
+    def __init__(self, Name, TypeAgent, InitalCords, stage, FinalCords, AgentSensor=None, AgentMovs=None):
         self.Name = Name
         self.TypeAgent = TypeAgent
         self.movsCosts = MovsTerrainCosts(TypeAgent)
         self.AgentSensor = AgentSensor
         self.AgentMovs = AgentMovs
         self.numMovs = 0
-        self.InitialCords =  InitalCords
-        self.ActualCords =InitalCords
+        self.InitialCords = InitalCords
+        self.ActualCords = InitalCords
+        self.Stage = Stage(stage, InitalCords, FinalCords)
 
     def returnCost(self, typeTerrain):
         return self.movsCosts.movsCost[typeTerrain.value]
@@ -215,6 +215,11 @@ def tipoagente(self, personaje):
         self.tipo_agente = "sasquatch"
 
 
+def giveCords(tuplaNumLetter):
+    return tuplaNumLetter[0]-1,(ord(tuplaNumLetter[1])-65)
+
+
+
 stage1 = Stage(readFile("lab1.txt"))
 stage1.setValuesStage(initPoint=(7, 'B'), finalPoint=(2, 'B'))
 stage1.printStage()
@@ -248,6 +253,7 @@ stage2.textToImage(0, 2, "b", "lab2.png")
 stage2.textToImage(0, 2, "a", "lab2.png")
 stage2.textToImage(0, 2, "d", "lab2.png")
 
-agent1 = Agent("A1", TypeAgent.humano)
+agent1 = Agent("A2", TypeAgent.humano, InitalCords=giveCords((2, 'A')), stage=stage1, FinalCords=giveCords((2, 'A')))
+
 agent1.printAgent()
 print(f"Costo snow {agent1.returnCost(typeTerrain=Terrain.Snow)}")
