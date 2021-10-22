@@ -155,7 +155,7 @@ class Stage:
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
 
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None):
-            # Memory
+        # Memory
         self.memoryCells = []
         # Memory Decisions
         self.memoryCellsDecisions = []
@@ -177,9 +177,11 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             self.InitialCords = giveCords(InitalCords)
             self.ActualCords = giveCords(InitalCords)
             self.FinalCords = giveCords(FinalCords)
+            print(self.FinalCords)
+            print(self.InitialCords)
             self.Stage.stageToImage(self.Name)
-            self.Stage.textToImage(self.InitialCords[0], self.InitialCords[1], " I", self.Name + ".png")
-            self.Stage.textToImage(self.FinalCords[0], self.FinalCords[1], " F", self.Name + ".png")
+            self.Stage.textToImage(self.InitialCords[1], self.InitialCords[0], " I", self.Name + ".png")
+            self.Stage.textToImage(self.FinalCords[1], self.FinalCords[0], " F", self.Name + ".png")
 
     def addToMemory(self, coords):
         if not self.existsInMemory(coords):

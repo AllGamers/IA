@@ -8,7 +8,7 @@ from MazeAgent import *
 class Player(object):
 
     def __init__(self):
-        self.rect = pygame.Rect(agent1.InitialCords[0] * 50, agent1.InitialCords[1] * 50, 50, 50)
+        self.rect = pygame.Rect(agent1.InitialCords[1] * 50, agent1.InitialCords[0] * 50, 50, 50)
 
     def move(self, dx, dy):
         if dx != 0:
@@ -53,7 +53,7 @@ class Wall(object):
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
-agent1 = Agent("A2", TypeAgent.sasquatch, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
+agent1 = Agent("A2", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 pygame.display.set_caption("Get to the red square!")
 width = len(agent1.Stage.stage) * 50
 height = len(agent1.Stage.stage) * 50
@@ -74,7 +74,7 @@ for crow, row in enumerate(level):  # x
         if agent1.isValidPosition((ccol, crow)) == 0:
             Wall((crow * 50, ccol * 50))
         elif crow == final[0] and ccol == final[1]:
-            end_rect = pygame.Rect(crow * 50, ccol * 50, 50, 50)
+            end_rect = pygame.Rect(ccol * 50, crow * 50, 50, 50)
 
 running = True
 back = pygame.image.load(agent1.Name + ".png")
