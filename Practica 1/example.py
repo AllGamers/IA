@@ -53,7 +53,13 @@ class Wall(object):
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
-agent1 = Agent("A2", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
+
+# agent1 = Agent("Human", TypeAgent.humano, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
+# agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
+# agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
+# agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
+
+
 pygame.display.set_caption("Get to the red square!")
 width = len(agent1.Stage.stage) * 50
 height = len(agent1.Stage.stage) * 50
@@ -62,7 +68,7 @@ screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 walls = []
 player = Player()
-#A B C D E F G H I J K L M N O
+# A B C D E F G H I J K L M N O
 # Holds the level layout in a list of strings.
 level = agent1.Stage.stage
 print(agent1.Stage.stage)
