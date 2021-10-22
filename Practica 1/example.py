@@ -54,11 +54,19 @@ class Wall(object):
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
-agent1 = Agent("Human", TypeAgent.humano, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
+agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'))
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 
+if agent1.TypeAgent == TypeAgent.pulpo:
+    colorrgb = (70, 0, 130)
+if agent1.TypeAgent == TypeAgent.humano:
+    colorrgb = (193, 178, 36)
+if agent1.TypeAgent == TypeAgent.mono:
+    colorrgb = (122, 88, 13)
+if agent1.TypeAgent == TypeAgent.sasquatch:
+    colorrgb = (3, 184, 159)
 
 pygame.display.set_caption("Get to the red square!")
 width = len(agent1.Stage.stage) * 50
@@ -68,10 +76,8 @@ screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 walls = []
 player = Player()
-# A B C D E F G H I J K L M N O
 # Holds the level layout in a list of strings.
 level = agent1.Stage.stage
-print(agent1.Stage.stage)
 # Parse the level string above. W = wall, E = exit
 final = agent1.FinalCords
 x = y = 0
@@ -79,7 +85,7 @@ for crow, row in enumerate(level):  # x
     for ccol, col in enumerate(row):  # y
         if agent1.isValidPosition((ccol, crow)) == 0:
             Wall((crow * 50, ccol * 50))
-        elif crow == final[0] and ccol == final[1]:
+        if crow == final[0] and ccol == final[1]:
             end_rect = pygame.Rect(ccol * 50, crow * 50, 50, 50)
 
 running = True
@@ -138,7 +144,7 @@ while running:
     # for wall in walls:
     # pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
     pygame.draw.rect(screen, (255, 0, 0), end_rect)
-    pygame.draw.rect(screen, (70, 0, 130), player.rect)
+    pygame.draw.rect(screen, colorrgb, player.rect)
     # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
     pygame.display.flip()
 
