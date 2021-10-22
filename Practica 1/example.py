@@ -2,7 +2,7 @@ import os
 import sys
 import random
 import pygame
-from Image import *
+from MazeAgent import *
 
 
 class Player(object):
@@ -53,7 +53,7 @@ class Wall(object):
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
-agent1 = Agent("A2", TypeAgent.pulpo, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(3, 'B'))
+agent1 = Agent("A2", TypeAgent.sasquatch, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 pygame.display.set_caption("Get to the red square!")
 width = len(agent1.Stage.stage) * 50
 height = len(agent1.Stage.stage) * 50
@@ -62,7 +62,7 @@ screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 walls = []
 player = Player()
-
+#A B C D E F G H I J K L M N O
 # Holds the level layout in a list of strings.
 level = agent1.Stage.stage
 print(agent1.Stage.stage)

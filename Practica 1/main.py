@@ -1,4 +1,4 @@
-from Image import *
+from MazeAgent import *
 
 if __name__ == "__main__":
     stage2 = Stage(textPlain=readFile("lab1.txt"))
