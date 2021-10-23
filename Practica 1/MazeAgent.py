@@ -1,10 +1,13 @@
-import string
+__author__ = "David Lopez Hernandez"
+__author__ = "Uriel Onofre Resendiz"
+__author__ = "Alejandro Escamilla Sánchez"
+__name__ = "Practica de laboratorio 1"
+__asginatura__ = "Inteligencia Artificial"
 
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import enum
 import array as arr
-import pygame
 
 
 class MovsTerrainCosts:
@@ -311,3 +314,13 @@ def giveCords(tuplaNumLetter):
 
 def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
+
+
+"""
+.------..------..------.
+|D.--. ||A.--. ||U.--. |
+| :/\: || (\/) || (\/) |
+| (__) || :\/: || :\/: |
+| '--'D|| '--'A|| '--'U|
+`------'`------'`------'
+"""

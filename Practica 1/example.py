@@ -1,6 +1,11 @@
+__author__ = "David Lopez Hernandez"
+__author__ = "Uriel Onofre Resendiz"
+__author__ = "Alejandro Escamilla Sánchez"
+__name__ = "Practica de laboratorio 1"
+__asginatura__ = "Inteligencia Artificial"
+
 import os
 import sys
-import random
 import pygame
 from MazeAgent import *
 
