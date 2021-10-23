@@ -113,6 +113,7 @@ class Stage:
         my_image = Image.open(path)
         image_editable = ImageDraw.Draw(my_image)
         title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 25)
+        print(self.stageLetras)
         for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
                 if x == countx and y == county:
