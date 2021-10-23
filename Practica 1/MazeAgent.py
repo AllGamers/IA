@@ -78,6 +78,19 @@ class Stage:
             return True
         return False
 
+    def hideAllStage(self):
+        for x, xcontain in enumerate(self.stage):
+            for y, ycontain in enumerate(xcontain):
+                self.addCellsHide(giveNumLetter((x, y))[0], giveNumLetter((x, y))[1])
+
+    def unHide(self, Coords=None, num=None, letter=None):  # remove de cellsHide
+        if Coords == None:
+            if self.existsInCellsHide(giveCords(num, letter)):
+                self.cellsHide.remove((num, letter))
+        else:
+            if self.existsInCellsHide(Coords):
+                self.cellsHide.remove(giveNumLetter(Coords))
+
     def printStage(self):
         for x in self.stage:
             for y in x:
@@ -154,7 +167,8 @@ class Stage:
 
 class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
 
-    def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None):
+    def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None,
+                 Hide=False):
         # Memory
         self.memoryCells = []
         # Memory Decisions
@@ -166,6 +180,7 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
         self.AgentMovs = AgentMovs
         self.numMovs = 0
         self.Stage = Stage(stageText)
+        self.Hide = Hide
         if not self.isValidPosition(giveCords(InitalCords)):
             print(f"Error con Cordenadas iniciales")
             exit()
@@ -179,9 +194,19 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             self.FinalCords = giveCords(FinalCords)
             print(self.FinalCords)
             print(self.InitialCords)
+            if self.Hide:
+                self.Stage.hideAllStage()
+                self.unHideActualPosition()
             self.Stage.stageToImage(self.Name)
             self.Stage.textToImage(self.InitialCords[1], self.InitialCords[0], " I", self.Name + ".png")
             self.Stage.textToImage(self.FinalCords[1], self.FinalCords[0], " F", self.Name + ".png")
+
+    def unHideActualPosition(self):
+        self.Stage.unHide(self.ActualCords)
+        self.Stage.unHide(self.upCord())
+        self.Stage.unHide(self.downCord())
+        self.Stage.unHide(self.leftCord())
+        self.Stage.unHide(self.rightCord())
 
     def addToMemory(self, coords):
         if not self.existsInMemory(coords):
@@ -205,6 +230,7 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             print("- {}: {}".format(Terrain(num).name, x))
         print("~~~~~~~~~~~~")
 
+    # se podria seprar y heredar esto
     def upCord(self):
         return self.ActualCords[0] - 1, self.ActualCords[1]
 
@@ -230,33 +256,29 @@ class Agent(MovsTerrainCosts, Stage):  # Create the class Agent
             arrayValid.append(self.downCord())
         return arrayValid
 
-    def movLeft(self):
-        if self.isValidPosition(self.leftCord()):
-            self.ActualCords = self.leftCord()
+    def mov(self, destiny):
+        if self.isValidPosition(destiny):
+            self.ActualCords = destiny
+            self.unHideActualPosition()
+            self.updateStage()
             self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
             self.numMovs += 1
+
+    def movLeft(self):
+        self.mov(self.leftCord())
 
     def movRight(self):
-        if self.isValidPosition(self.rightCord()):
-            self.ActualCords = self.rightCord()
-            self.addToMemory(self.ActualCords)
-            print(f"{self.ActualCords}.")
-            self.numMovs += 1
+        self.mov(self.rightCord())
 
     def movUp(self):
-        if self.isValidPosition(self.upCord()):
-            self.ActualCords = self.upCord()
-            self.addToMemory(self.ActualCords)
-            print(f"{self.ActualCords}.")
-            self.numMovs += 1
+        self.mov(self.upCord())
 
     def movDown(self):
-        if self.isValidPosition(self.downCord()):
-            self.ActualCords = self.downCord()
-            self.addToMemory(self.ActualCords)
-            print(f"{self.ActualCords}.")
-            self.numMovs += 1
+        self.mov(self.downCord())
+
+    def updateStage(self):
+        self.Stage.stageToImage(self.Name)
 
 
 def readFile(fileName):

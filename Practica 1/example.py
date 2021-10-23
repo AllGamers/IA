@@ -54,10 +54,12 @@ class Wall(object):
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
-agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'))
+agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
+               Hide=True)
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
+
 
 if agent1.TypeAgent == TypeAgent.pulpo:
     colorrgb = (70, 0, 130)
@@ -107,31 +109,31 @@ while running:
                 if validOOB[0] != -1 and validOOB[1] != -1 and agent1.isValidPosition(validOOB):
                     if not agent1.existsInMemory(validOOB):
                         agent1.Stage.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                        back = pygame.image.load(agent1.Name + ".png")
                     player.move(-50, 0)
+                    back = pygame.image.load(agent1.Name + ".png")
             if e.key == pygame.K_RIGHT:
                 validOOB = agent1.rightCord()
                 if validOOB[0] < len(agent1.Stage.stage) and validOOB[1] < len(
                         agent1.Stage.stage) and agent1.isValidPosition(agent1.rightCord()):
                     if not agent1.existsInMemory(validOOB):
                         agent1.Stage.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                        back = pygame.image.load(agent1.Name + ".png")
                     player.move(50, 0)
+                    back = pygame.image.load(agent1.Name + ".png")
             if e.key == pygame.K_UP:
                 validOOB = agent1.upCord()
                 if validOOB[0] != -1 and validOOB[1] != -1 and agent1.isValidPosition(agent1.upCord()):
                     if not agent1.existsInMemory(validOOB):
                         agent1.Stage.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                        back = pygame.image.load(agent1.Name + ".png")
                     player.move(0, -50)
+                    back = pygame.image.load(agent1.Name + ".png")
             if e.key == pygame.K_DOWN:
                 validOOB = agent1.downCord()
                 if validOOB[0] < len(agent1.Stage.stage) and validOOB[1] < len(
                         agent1.Stage.stage) and agent1.isValidPosition(agent1.downCord()):
                     if not agent1.existsInMemory(validOOB):
                         agent1.Stage.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                        back = pygame.image.load(agent1.Name + ".png")
                     player.move(0, 50)
+                    back = pygame.image.load(agent1.Name + ".png")
 
     # Just added this to make it slightly fun ;)
 
