@@ -214,6 +214,7 @@ class Movement:
 
     def mov(self, destiny):
         if self.isValidPosition(destiny):
+            self.textToImage(destiny[1], destiny[0], "V", self.Name + ".png")
             self.ActualCords = destiny
             self.unHideActualPosition()
             self.updateStage()
