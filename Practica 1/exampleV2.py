@@ -12,9 +12,9 @@ class Player(object):
 
     def move(self, dx, dy):
         if dx != 0:
-            self.move_single_axis(dx, 0)
+            return self.move_single_axis(dx, 0)
         if dy != 0:
-            self.move_single_axis(0, dy)
+            return self.move_single_axis(0, dy)
 
     def move_single_axis(self, dx, dy):
         if 0 <= (self.rect.x + dx) <= (width - 50):
@@ -30,6 +30,7 @@ class Player(object):
                 agent1.movUp()
             self.rect.y += dy
         self.collision(dx, dy)
+        return pygame.image.load(agent1.Name + ".png")
 
     def collision(self, dx, dy):
         for wall in walls:
@@ -98,35 +99,13 @@ while running:
         if e.type == pygame.KEYDOWN:
             if e.key == pygame.K_LEFT:
                 # valid out of bounds
-                validOOB = agent1.leftCord()
-                if validOOB[0] != -1 and validOOB[1] != -1 and agent1.isValidPosition(validOOB):
-                    if not agent1.existsInMemory(validOOB):
-                        agent1.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                    player.move(-50, 0)
-                    back = pygame.image.load(agent1.Name + ".png")
+                back = player.move(-50, 0)
             if e.key == pygame.K_RIGHT:
-                validOOB = agent1.rightCord()
-                if validOOB[0] < len(agent1.stage) and validOOB[1] < len(
-                        agent1.stage) and agent1.isValidPosition(agent1.rightCord()):
-                    if not agent1.existsInMemory(validOOB):
-                        agent1.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                    player.move(50, 0)
-                    back = pygame.image.load(agent1.Name + ".png")
+                back = player.move(50, 0)
             if e.key == pygame.K_UP:
-                validOOB = agent1.upCord()
-                if validOOB[0] != -1 and validOOB[1] != -1 and agent1.isValidPosition(agent1.upCord()):
-                    if not agent1.existsInMemory(validOOB):
-                        agent1.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                    player.move(0, -50)
-                    back = pygame.image.load(agent1.Name + ".png")
+                back = player.move(0, -50)
             if e.key == pygame.K_DOWN:
-                validOOB = agent1.downCord()
-                if validOOB[0] < len(agent1.stage) and validOOB[1] < len(
-                        agent1.stage) and agent1.isValidPosition(agent1.downCord()):
-                    if not agent1.existsInMemory(validOOB):
-                        agent1.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                    player.move(0, 50)
-                    back = pygame.image.load(agent1.Name + ".png")
+                back = player.move(0, 50)
 
     # Just added this to make it slightly fun ;)
 
