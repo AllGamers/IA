@@ -1,8 +1,6 @@
 import os
 import sys
-import random
-import pygame
-from MazeAgentV2 import *
+from LibsGameV2.MazeAgentV2 import *
 
 
 class Player(object):

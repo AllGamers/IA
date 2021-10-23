@@ -7,7 +7,7 @@ __asginatura__ = "Inteligencia Artificial"
 import os
 import sys
 import pygame
-from MazeAgent import *
+from LibsGame.MazeAgent import *
 
 
 class Player(object):
@@ -59,8 +59,8 @@ class Wall(object):
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
-agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
-               Hide=True)
+agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(2, 'E'),
+               Hide=False)
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
@@ -156,8 +156,6 @@ while running:
     pygame.display.flip()
 
 pygame.quit()
-
-
 
 """
 .------..------..------.
