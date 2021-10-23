@@ -55,14 +55,12 @@ os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
 agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
-               Hide=False)
+               Hide=True)
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 
 colorrgb = agent1.GiveColor()
-
-
 
 pygame.display.set_caption("Get to the red square!")
 width = len(agent1.stage) * 50
@@ -77,6 +75,7 @@ level = agent1.stage
 # Parse the level string above. W = wall, E = exit
 final = agent1.FinalCords
 x = y = 0
+# Initialize
 for crow, row in enumerate(level):  # x
     for ccol, col in enumerate(row):  # y
         if agent1.isValidPosition((ccol, crow)) == 0:
