@@ -61,7 +61,7 @@ agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFi
 
 colorrgb = agent1.GiveColor()
 
-pygame.display.set_caption("Get to the red square!")
+pygame.display.set_caption("Laberinto - David Lopez Hernandez, Alejandro Escamilla Sanchez, Uriel Onofre Resendiz")
 width = len(agent1.stage) * 50
 height = len(agent1.stage[0]) * 50
 screen = pygame.display.set_mode((width, height))

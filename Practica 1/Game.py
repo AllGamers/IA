@@ -75,7 +75,7 @@ if agent1.TypeAgent == TypeAgent.mono:
 if agent1.TypeAgent == TypeAgent.sasquatch:
     colorrgb = (3, 184, 159)
 
-pygame.display.set_caption("Get to the red square!")
+pygame.display.set_caption("Laberinto - David Lopez Hernandez, Alejandro Escamilla Sanchez, Uriel Onofre Resendiz")
 width = len(agent1.Stage.stage) * 50
 height = len(agent1.Stage.stage) * 50
 screen = pygame.display.set_mode((width, height))
