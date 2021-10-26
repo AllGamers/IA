@@ -130,8 +130,7 @@ class Stage:
                         image_editable.text((int(wf) * x, int(hf) * y + hf / 2), text, (0, 0, 0), font=title_font)
                     elif len(str(self.optionsStage[countx][county])) == 7:
                         self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
-                        image_editable.text((int(wf) * x + wf / 2, int(hf) * y + hf / 2), text, (0, 0, 0),
-                                            font=title_font)
+                        image_editable.text((int(wf) * x + wf / 2, int(hf) * y + hf / 2), text, (0, 0, 0),font=title_font)
         my_image.save(path)
 
     def stageToImage(self, path):

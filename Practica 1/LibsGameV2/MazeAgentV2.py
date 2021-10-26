@@ -157,14 +157,14 @@ class Stage:
                             county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]
                         else:
                             data[countx * int(wf):(countx + 1) * int(wf),
-                            county * int(hf):(county + 1) * int(hf)] = color
-
+                            county * int(hf):(county + 1) * int(hf)] = color                        
+                        
                         # cuadrado
                         if countx > 0 or countx < 750 and county > 0 or county < 750:
                             data[countx * int(wf):(countx + 1) * int(wf), county * int(hf)] = [0, 0, 0]  # izquierda
                             data[countx * int(wf), county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]  # abajo
                         break
-
+        
         img = Image.fromarray(data, 'RGB')
         img.save(path + '.png')
 
@@ -190,17 +190,17 @@ class Stage:
                             county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]
                         else:
                             data[countx * int(wf):(countx + 1) * int(wf),
-                            county * int(hf):(county + 1) * int(hf)] = color
-
+                            county * int(hf):(county + 1) * int(hf)] = color                        
+                        
                         # cuadrado
                         if countx > 0 or countx < 750 and county > 0 or county < 750:
                             data[countx * int(wf):(countx + 1) * int(wf), county * int(hf)] = [0, 0, 0]  # izquierda
                             data[countx * int(wf), county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]  # abajo
                         break
-
+        
         img = Image.fromarray(data, 'RGB')
         img.save(path + '.png')
-
+        
         # img.show()
 
 
@@ -225,7 +225,7 @@ class Movement:
         self.textToImage(self.InitialCords[1], self.InitialCords[0], " I", self.Name)
         self.textToImage(self.FinalCords[1], self.FinalCords[0], " F", self.Name)
 
-
+    
 
     # se podria seprar y heredar esto
     def upCord(self, coords=None):
@@ -271,6 +271,8 @@ class Movement:
             self.unHideActualPosition()
             self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
+            self.updateStage()
+            self.textToImage(destiny[1], destiny[0], "V", self.Name)
             self.numMovs += 1
 
     def movLeft(self):
@@ -323,7 +325,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             if self.isValidPosition(self.rightCord(source)) and self.rightCord(source) not in path and self.rightCord(source)[1]!=14:
                 self.movRight()
                 path = self.depthFirstSearch(self.rightCord(source),path)
-
+            
         return path
 
     def unHideActualPosition(self):
@@ -401,7 +403,8 @@ def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
 
 agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
-               Hide=False)
+               Hide=True)
 path = []
 path = agent1.depthFirstSearch(agent1.InitialCords,path)
 print(path)
+print(agent1.stageLetras)
