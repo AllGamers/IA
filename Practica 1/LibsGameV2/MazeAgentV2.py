@@ -271,7 +271,7 @@ class Movement:
             self.unHideActualPosition()
             self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
-            #self.updateStage()
+            self.updateStage()
             self.textToImage(destiny[1], destiny[0], "V", self.Name)
             self.numMovs += 1
 
@@ -403,7 +403,8 @@ def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
 
 agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
-               Hide=False)
+               Hide=True)
 path = []
 path = agent1.depthFirstSearch(agent1.InitialCords,path)
 print(path)
+print(agent1.stageLetras)
