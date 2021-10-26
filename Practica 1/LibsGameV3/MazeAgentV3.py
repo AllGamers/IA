@@ -116,7 +116,6 @@ class Stage:
         my_image = Image.open(path)
         image_editable = ImageDraw.Draw(my_image)
         title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 25)
-        print(self.stageLetras)
         for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
                 if x == countx and y == county:
@@ -170,7 +169,8 @@ class Stage:
 
 
 class Movement:
-    def __init__(self, InitalCords, FinalCords, Hide):
+    def __init__(self, InitalCords, FinalCords, Hide, DiagonalMovs=False):
+        self.DiagonalMovs = DiagonalMovs
         self.Hide = Hide
         self.numMovs = 0
         # Memory
@@ -181,8 +181,6 @@ class Movement:
         self.InitialCords = giveCords(InitalCords)
         self.ActualCords = giveCords(InitalCords)
         self.FinalCords = giveCords(FinalCords)
-        print(self.FinalCords)
-        print(self.InitialCords)
         if self.Hide:
             self.hideAllStage()
             self.unHideActualPosition()
@@ -190,7 +188,22 @@ class Movement:
         self.textToImage(self.InitialCords[1], self.InitialCords[0], " I", self.Name + ".png")
         self.textToImage(self.FinalCords[1], self.FinalCords[0], " F", self.Name + ".png")
 
-    # se podria seprar y heredar esto
+    def upLeftCord(self):
+        if self.DiagonalMovs:
+            return self.ActualCords[0] - 1, self.ActualCords[1] - 1
+
+    def downLeftCord(self):
+        if self.DiagonalMovs:
+            return self.ActualCords[0] + 1, self.ActualCords[1] - 1
+
+    def upRightCord(self):
+        if self.DiagonalMovs:
+            return self.ActualCords[0] - 1, self.ActualCords[1] + 1
+
+    def downRightCord(self):
+        if self.DiagonalMovs:
+            return self.ActualCords[0] + 1, self.ActualCords[1] + 1
+
     def upCord(self):
         return self.ActualCords[0] - 1, self.ActualCords[1]
 
@@ -214,17 +227,16 @@ class Movement:
             arrayValid.append(self.upCord())
         if self.isValidPosition(self.downCord()) and not self.existsInMemory(self.downCord()):
             arrayValid.append(self.downCord())
+        if self.DiagonalMovs:
+            if self.isValidPosition(self.upRightCord()) and not self.existsInMemory(self.upRightCord()):
+                arrayValid.append(self.upRightCord())
+            if self.isValidPosition(self.upLeftCord()) and not self.existsInMemory(self.upLeftCord()):
+                arrayValid.append(self.upLeftCord())
+            if self.isValidPosition(self.downRightCord()) and not self.existsInMemory(self.downRightCord()):
+                arrayValid.append(self.downRightCord())
+            if self.isValidPosition(self.downLeftCord()) and not self.existsInMemory(self.downLeftCord()):
+                arrayValid.append(self.downLeftCord())
         return arrayValid
-
-    def mov(self, destiny):
-        if self.isValidPosition(destiny):
-            self.textToImage(destiny[1], destiny[0], "V", self.Name + ".png")
-            self.ActualCords = destiny
-            self.unHideActualPosition()
-            self.updateStage()
-            self.addToMemory(self.ActualCords)
-            print(f"{self.ActualCords}.")
-            self.numMovs += 1
 
     def movLeft(self):
         self.mov(self.leftCord())
@@ -238,11 +250,27 @@ class Movement:
     def movDown(self):
         self.mov(self.downCord())
 
+    def movUpRight(self):
+        if self.DiagonalMovs:
+            self.mov(self.upRightCord())
+
+    def movUpLeft(self):
+        if self.DiagonalMovs:
+            self.mov(self.upLeftCord())
+
+    def movDownRight(self):
+        if self.DiagonalMovs:
+            self.mov(self.downRightCord())
+
+    def movDownLeft(self):
+        if self.DiagonalMovs:
+            self.mov(self.downLeftCord())
+
 
 class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None,
-                 Hide=False):
+                 Hide=False, DiagonalMovs=False):
         self.Name = Name
         self.TypeAgent = TypeAgent
         MovsTerrainCosts.__init__(self, agent=TypeAgent)
@@ -256,7 +284,8 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             print(f"Error con Cordenadas finales")
             exit()
         else:
-            Movement.__init__(self, InitalCords=InitalCords, FinalCords=FinalCords, Hide=Hide)
+            Movement.__init__(self, InitalCords=InitalCords, FinalCords=FinalCords, Hide=Hide,
+                              DiagonalMovs=DiagonalMovs)
 
     def unHideActualPosition(self):
         self.unHide(self.ActualCords)
@@ -264,6 +293,11 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         self.unHide(self.downCord())
         self.unHide(self.leftCord())
         self.unHide(self.rightCord())
+        if self.DiagonalMovs:
+            self.unHide(self.upRightCord())
+            self.unHide(self.upLeftCord())
+            self.unHide(self.downLeftCord())
+            self.unHide(self.downRightCord())
 
     def addToMemory(self, coords):
         if not self.existsInMemory(coords):
@@ -300,29 +334,23 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
     def updateStage(self):
         self.stageToImage(self.Name)
 
+    def mov(self, destiny):
+        if self.isValidPosition(destiny):
+            self.textToImage(destiny[1], destiny[0], "V", self.Name + ".png")
+            self.ActualCords = destiny
+            self.unHideActualPosition()
+            self.updateStage()
+            self.addToMemory(self.ActualCords)
+            print(f"{self.ActualCords}.")
+            self.numMovs += 1
+            print(self.memoryCells)
+
 
 def readFile(fileName):
     fileObj = open(fileName, "r")  # opens the file in read mode
     words = fileObj.read().splitlines()  # puts the file into an array
     fileObj.close()
     return words
-
-
-def tipoagente(self, personaje):
-    self.personaje = personaje
-    personaje = input("Que personaje desea seleccionar: h. Humano m. Mono p. Pulpo s. Sasquatch")
-    if personaje == "h":
-        print("Ha seleccionado el agente Humano.")
-        self.tipo_agente = "humano"
-    elif personaje == "m":
-        print("Ha seleccionado el agente Mono.")
-        self.tipo_agente = "mono"
-    elif personaje == "p":
-        print("Ha seleccionado el agente Pulpo.")
-        self.tipo_agente = "pulpo"
-    elif personaje == "s":
-        print("Ha seleccionado el agente Sasquatch.")
-        self.tipo_agente = "sasquatch"
 
 
 def giveCords(tuplaNumLetter):

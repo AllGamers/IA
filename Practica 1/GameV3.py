@@ -5,7 +5,7 @@ __name__ = "Practica de laboratorio 1"
 __asginatura__ = "Inteligencia Artificial"
 
 import os, sys, pygame
-from LibsGameV2.MazeAgentV2 import *
+from LibsGameV3.MazeAgentV3 import *
 
 
 class Player(object):
@@ -14,10 +14,11 @@ class Player(object):
         self.rect = pygame.Rect(agent1.InitialCords[1] * 50, agent1.InitialCords[0] * 50, 50, 50)
 
     def move(self, dx, dy):
-        if dx != 0:
+        if dx != 0 and dy == 0:
             return self.move_single_axis(dx, 0)
-        if dy != 0:
+        if dy != 0 and dx == 0:
             return self.move_single_axis(0, dy)
+        return self.move_diagonal_axis(dx, dy)
 
     def move_single_axis(self, dx, dy):
         if 0 <= (self.rect.x + dx) <= (width - 50):
@@ -31,6 +32,21 @@ class Player(object):
                 agent1.movDown()
             elif dy < 0:
                 agent1.movUp()
+            self.rect.y += dy
+        self.collision(dx, dy)
+        return pygame.image.load(agent1.Name + ".png")
+
+    def move_diagonal_axis(self, dx, dy):
+        if 0 <= (self.rect.x + dx) <= (width - 50) and 0 <= (self.rect.y + dy) <= (height - 50):
+            if dx > 0 and dy > 0:
+                agent1.movDownRight()
+            elif 0 > dx and dy < 0:
+                agent1.movUpLeft()
+            elif dx > 0 > dy:
+                agent1.movUpRight()
+            elif dx < 0 < dy:
+                agent1.movDownLeft()
+            self.rect.x += dx
             self.rect.y += dy
         self.collision(dx, dy)
         return pygame.image.load(agent1.Name + ".png")
@@ -59,7 +75,7 @@ os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
 agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
-               Hide=True)
+               Hide=True, DiagonalMovs=False)
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
@@ -100,15 +116,24 @@ while running:
         # Here Selector IA OR HUMAN
         # Move the player if an arrow key is pressed
         if e.type == pygame.KEYDOWN:
-            if e.key == pygame.K_LEFT:
-                # valid out of bounds
+            # valid out of bounds
+            if e.key == pygame.K_KP4:
                 back = player.move(-50, 0)
-            if e.key == pygame.K_RIGHT:
+            if e.key == pygame.K_KP6:
                 back = player.move(50, 0)
-            if e.key == pygame.K_UP:
-                back = player.move(0, -50)
-            if e.key == pygame.K_DOWN:
+            if e.key == pygame.K_KP2:
                 back = player.move(0, 50)
+            if e.key == pygame.K_KP8:
+                back = player.move(0, -50)
+            if agent1.DiagonalMovs:
+                if e.key == pygame.K_KP7:  # UPRIGHT
+                    back = player.move(-50, -50)
+                if e.key == pygame.K_KP9:
+                    back = player.move(50, -50)
+                if e.key == pygame.K_KP3:
+                    back = player.move(50, 50)
+                if e.key == pygame.K_KP1:
+                    back = player.move(-50, 50)
 
     # Just added this to make it slightly fun ;)
 
