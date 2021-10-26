@@ -80,8 +80,12 @@ class Stage:
 
     def __init__(self, textPlain):
         self.stage = [[int(x) for x in word.split(",")] for word in textPlain]
-        self.stageLetras = [[int(x) for x in word.split(",")] for word in textPlain]
+        self.stageLetras = [["" for x in word.split(",")] for word in textPlain]
         self.cellsHide = []
+
+    def addStageLetras(self, x, y, text):
+        if not self.stageLetras[x][y].__contains__(text):
+            self.stageLetras[x][y] += str(text + ",")
 
     def addCellsHide(self, number, letter):
         if not self.cellsHide.__contains__((number, letter)):
@@ -111,6 +115,13 @@ class Stage:
                 print(y, end=" ")
             print()
 
+    def printStageLetter(self):
+        print("Stage")
+        for x in self.stageLetras:
+            for y in x:
+                print(f"[{y:<8}]", end=' ')
+            print()
+
     def cellInfo(self, Coords=None, num=None, letter=None):
         if Coords != None:
             return Terrain(self.stage[Coords[0]][Coords[1]])
@@ -120,30 +131,6 @@ class Stage:
 
     def changeTerrain(self, num, letter, terrain):
         self.stage[num - 1][ord(letter) - 65] = terrain.value
-
-    def textToImage(self, x, y, text, path):
-        w, h = 750, 750
-        wf, hf = w / len(self.stageLetras), h / len(self.stageLetras)
-        my_image = Image.open(path)
-        image_editable = ImageDraw.Draw(my_image)
-        title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 25)
-        for countx, frameX in enumerate(self.stageLetras):
-            for county, frameY in enumerate(frameX):
-                if x == countx and y == county:
-                    if len(str(self.optionsStage[countx][county])) == 1:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
-                        image_editable.text((int(wf) * x, int(hf) * y), text, (0, 0, 0), font=title_font)
-                    elif len(str(self.optionsStage[countx][county])) == 3:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
-                        image_editable.text((int(wf) * x + wf / 2, int(hf) * y), text, (0, 0, 0), font=title_font)
-                    elif len(str(self.optionsStage[countx][county])) == 5:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
-                        image_editable.text((int(wf) * x, int(hf) * y + hf / 2), text, (0, 0, 0), font=title_font)
-                    elif len(str(self.optionsStage[countx][county])) == 7:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
-                        image_editable.text((int(wf) * x + wf / 2, int(hf) * y + hf / 2), text, (0, 0, 0),
-                                            font=title_font)
-        my_image.save(path)
 
     def stageToImage(self, path):
         colors = [
@@ -176,6 +163,17 @@ class Stage:
         self.optionsStage = self.stageLetras
         img = Image.fromarray(data, 'RGB')
         img.save(path + '.png')
+        # Reopen
+        my_image = Image.open(path + '.png')
+        image_editable = ImageDraw.Draw(my_image)
+        title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 25)
+        for countx, frameX in enumerate(self.stageLetras):
+            for county, frameY in enumerate(frameX):
+                if len(frameY) > 0:
+                    image_editable.text((county * wf, int(hf) * countx),
+                                        self.stageLetras[countx][county], (0, 0, 0),
+                                        font=title_font)
+        my_image.save(path + ".png")
         # img.show()
 
 
@@ -184,20 +182,14 @@ class Movement:
         self.DiagonalMovs = DiagonalMovs
         self.Hide = Hide
         self.numMovs = 0
-        # Memory
-        self.memoryCells = []
-        # Memory Decisions
-        self.memoryCellsDecisions = []
-        self.addToMemory(giveCords(InitalCords))
         self.InitialCords = giveCords(InitalCords)
         self.ActualCords = giveCords(InitalCords)
         self.FinalCords = giveCords(FinalCords)
+
         if self.Hide:
             self.hideAllStage()
             self.unHideActualPosition()
         self.stageToImage(self.Name)
-        self.textToImage(self.InitialCords[1], self.InitialCords[0], " I", self.Name + ".png")
-        self.textToImage(self.FinalCords[1], self.FinalCords[0], " F", self.Name + ".png")
 
     def upLeftCord(self):
         if self.DiagonalMovs:
@@ -227,26 +219,28 @@ class Movement:
     def rightCord(self):
         return self.ActualCords[0], self.ActualCords[1] + 1
 
-    def validRoads(self):
+    def validRoads2(self):
         # Funcion que verifica los caminos posibles sin haber pasado
         arrayValid = []
         if self.isValidPosition(self.leftCord()) and not self.existsInMemory(self.leftCord()):
-            arrayValid.append(self.leftCord())
+            arrayValid.append(Mov.Left)
         if self.isValidPosition(self.rightCord()) and not self.existsInMemory(self.rightCord()):
-            arrayValid.append(self.rightCord())
+            arrayValid.append(Mov.Right)
         if self.isValidPosition(self.upCord()) and not self.existsInMemory(self.upCord()):
-            arrayValid.append(self.upCord())
+            arrayValid.append(Mov.Up)
         if self.isValidPosition(self.downCord()) and not self.existsInMemory(self.downCord()):
-            arrayValid.append(self.downCord())
+            arrayValid.append(Mov.Down)
         if self.DiagonalMovs:
             if self.isValidPosition(self.upRightCord()) and not self.existsInMemory(self.upRightCord()):
-                arrayValid.append(self.upRightCord())
+                arrayValid.append(Mov.UpRight)
             if self.isValidPosition(self.upLeftCord()) and not self.existsInMemory(self.upLeftCord()):
-                arrayValid.append(self.upLeftCord())
+                arrayValid.append(Mov.UpLeft)
             if self.isValidPosition(self.downRightCord()) and not self.existsInMemory(self.downRightCord()):
-                arrayValid.append(self.downRightCord())
+                arrayValid.append(Mov.DownRight)
             if self.isValidPosition(self.downLeftCord()) and not self.existsInMemory(self.downLeftCord()):
-                arrayValid.append(self.downLeftCord())
+                arrayValid.append(Mov.DownLeft)
+        if (len(arrayValid) > 1):
+            self.addToMemoryDecisions(self.ActualCords)
         return arrayValid
 
     def movLeft(self):
@@ -281,13 +275,19 @@ class Movement:
 class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None,
-                 Hide=False, DiagonalMovs=False):
+                 Hide=False, DiagonalMovs=False, PriorMovements=[Mov.Left, Mov.Right, Mov.Up, Mov.Down]):
         self.Name = Name
         self.TypeAgent = TypeAgent
+        self.PriorMovements = PriorMovements
+        # Memory
+        self.memoryCells = []
+        # Memory Decisions
+        self.memoryCellsDecisions = []
+        # Optimal Camino
+        self.optimalCamino = []
         MovsTerrainCosts.__init__(self, agent=TypeAgent)
         Stage.__init__(self, textPlain=stageText)
-        self.AgentSensor = AgentSensor
-        self.AgentMovs = AgentMovs
+        self.MemoryDecision = []
         if not self.isValidPosition(giveCords(InitalCords)):
             print(f"Error con Cordenadas iniciales")
             exit()
@@ -297,9 +297,52 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         else:
             Movement.__init__(self, InitalCords=InitalCords, FinalCords=FinalCords, Hide=Hide,
                               DiagonalMovs=DiagonalMovs)
+            self.addToMemory(giveCords(InitalCords))
+            if len(self.validRoads2()) > 1:
+                self.addToMemoryDecisions(self.ActualCords)
+            self.addStageLetras(self.InitialCords[0], self.InitialCords[1], "I")
+            self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
 
-    def depthFirst(self):
-        print("Deep")
+    def depthFirstSearch(self):
+        if self.ActualCords == self.FinalCords:
+            self.Optimal(self.ActualCords)
+            print("Maze solved!")
+            print(self.optimalCamino)
+            return
+        else:
+            for j, Prior1 in enumerate(self.PriorMovements):
+                find = False
+                arrayValidRows = self.validRoads2()
+                print("ValidRoads", arrayValidRows)
+                if len(arrayValidRows) == 0:
+                    # return to the last cell decision
+                    LastCellDecision = self.memoryCellsDecisions.pop()
+                    self.optimalCamino = self.Optimal(LastCellDecision)
+                    self.ActualCords = LastCellDecision
+                for i, validRoad in enumerate(arrayValidRows):
+                    if Prior1 == validRoad:
+                        find = True
+                        arrayValidRows.pop()
+                        print(i, validRoad)
+                        if Mov.Right == validRoad:
+                            self.movRight()
+                        elif Mov.Left == validRoad:
+                            self.movLeft()
+                        elif Mov.Up == validRoad:
+                            self.movUp()
+                        elif Mov.Down == validRoad:
+                            self.movDown()
+                        self.depthFirstSearch()
+                        break
+                if find:
+                    break
+
+    def Optimal(self, coord):
+        print("optimal")
+        index = self.memoryCells.index(coord)
+        l1 = list(self.memoryCells[:index + 1])
+        print(l1)
+        return l1
 
     def unHideActualPosition(self):
         self.unHide(self.ActualCords)
@@ -320,8 +363,16 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
     def existsInMemory(self, coords):
         return self.memoryCells.__contains__(coords)
 
+    def addToMemoryDecisions(self, coords):
+        if not self.existsInMemoryDecisions(coords):
+            self.addStageLetras(self.ActualCords[0], self.ActualCords[1], "D")
+            self.memoryCellsDecisions.append(coords)
+
+    def existsInMemoryDecisions(self, coords):
+        return self.memoryCellsDecisions.__contains__(coords)
+
     def isValidPosition(self, Coords):
-        return self.giveCost(Coords) != 0
+        return len(self.stageLetras) > Coords[0] and len(self.stageLetras[0]) > Coords[1] and self.giveCost(Coords) != 0
 
     def giveCost(self, Coords):
         return self.movsCost[self.cellInfo(Coords=Coords).value]
@@ -350,8 +401,8 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
     def mov(self, destiny):
         if self.isValidPosition(destiny):
-            self.textToImage(destiny[1], destiny[0], "V", self.Name + ".png")
             self.ActualCords = destiny
+            self.addStageLetras(self.ActualCords[0], self.ActualCords[1], "C")
             self.unHideActualPosition()
             self.updateStage()
             self.addToMemory(self.ActualCords)
