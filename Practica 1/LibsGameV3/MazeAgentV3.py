@@ -424,9 +424,3 @@ def giveCords(tuplaNumLetter):
 def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
 
-
-agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("../lab1.txt"),
-               FinalCords=(2, 'E'),
-               Hide=True, PriorMovements=[Mov.Up, Mov.Down, Mov.Left, Mov.Right])
-
-agent1.depthFirstSearch()

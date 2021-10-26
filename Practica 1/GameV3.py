@@ -81,9 +81,11 @@ class Wall(object):
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
-agent1 = Agent("Human", TypeAgent.humano, InitalCords=(10, 'A'), stageText=readFile("lab3P2.txt"),
-               FinalCords=(2, 'O'),
+
+agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"),
+               FinalCords=(2, 'E'),
                Hide=True, PriorMovements=[Mov.Up, Mov.Down, Mov.Left, Mov.Right])
+
 
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
