@@ -287,7 +287,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         self.optimalCamino = []
         MovsTerrainCosts.__init__(self, agent=TypeAgent)
         Stage.__init__(self, textPlain=stageText)
-        self.MemoryDecision = []
         if not self.isValidPosition(giveCords(InitalCords)):
             print(f"Error con Cordenadas iniciales")
             exit()
@@ -305,25 +304,22 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
     def depthFirstSearch(self):
         if self.ActualCords == self.FinalCords:
-            self.Optimal(self.ActualCords)
             print("Maze solved!")
-            print(self.optimalCamino)
+            self.Optimal()
             return
         else:
             for j, Prior1 in enumerate(self.PriorMovements):
                 find = False
                 arrayValidRows = self.validRoads2()
-                print("ValidRoads", arrayValidRows)
                 if len(arrayValidRows) == 0:
                     # return to the last cell decision
                     LastCellDecision = self.memoryCellsDecisions.pop()
-                    self.optimalCamino = self.Optimal(LastCellDecision)
+                    self.memoryCells.append(LastCellDecision)
                     self.ActualCords = LastCellDecision
                 for i, validRoad in enumerate(arrayValidRows):
                     if Prior1 == validRoad:
                         find = True
                         arrayValidRows.pop()
-                        print(i, validRoad)
                         if Mov.Right == validRoad:
                             self.movRight()
                         elif Mov.Left == validRoad:
@@ -337,12 +333,16 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 if find:
                     break
 
-    def Optimal(self, coord):
-        print("optimal")
-        index = self.memoryCells.index(coord)
-        l1 = list(self.memoryCells[:index + 1])
-        print(l1)
-        return l1
+    def Optimal(self):
+        print("Optimal")
+        self.optimalCamino = self.memoryCells[::]
+        for i, x in enumerate(self.optimalCamino):
+            for j in range(i + 1, len(self.optimalCamino) - 1):
+                if self.optimalCamino[i] == self.optimalCamino[j]:
+                    for x in range(i, j):
+                        self.optimalCamino.pop(i)
+                    break
+        print(self.optimalCamino)
 
     def unHideActualPosition(self):
         self.unHide(self.ActualCords)
@@ -408,7 +408,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
             self.numMovs += 1
-            print(self.memoryCells)
 
 
 def readFile(fileName):
@@ -424,3 +423,10 @@ def giveCords(tuplaNumLetter):
 
 def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
+
+
+agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("../lab1.txt"),
+               FinalCords=(2, 'E'),
+               Hide=True, PriorMovements=[Mov.Up, Mov.Down, Mov.Left, Mov.Right])
+
+agent1.depthFirstSearch()
