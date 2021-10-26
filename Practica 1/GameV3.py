@@ -5,6 +5,7 @@ __name__ = "Practica de laboratorio 1"
 __asginatura__ = "Inteligencia Artificial"
 
 import os, sys, pygame
+import threading
 import time
 
 from LibsGameV3.MazeAgentV3 import *
@@ -81,18 +82,17 @@ class Wall(object):
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
-
 agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"),
                FinalCords=(2, 'E'),
                Hide=True, PriorMovements=[Mov.Up, Mov.Down, Mov.Left, Mov.Right])
-
 
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 
-agent1.depthFirstSearch()
 IA = True
+if IA:
+    agent1.depthFirstSearch()
 
 colorrgb = agent1.GiveColor()
 
@@ -121,22 +121,25 @@ for crow, row in enumerate(level):  # x
 running = True
 back = pygame.image.load(agent1.Name + ".png")
 
+
+def IAControl(x):
+    player.setPosition(50 * x[1], 50 * x[0])
+    time.sleep(500)
+
+
 # Here Selector IA OR HUMAN
 if IA:
     for i, x in enumerate(agent1.memoryCells):
-        clock.tick(27)
+        clock.tick(1)
         print(x)
         player.setPosition(50 * x[1], 50 * x[0])
-
         # Draw the scene
         screen.blit(back, (0, 0))
         # for wall in walls:
         pygame.draw.rect(screen, (255, 0, 0), end_rect)
         pygame.draw.rect(screen, colorrgb, player.rect)
-
         pygame.display.flip()
         pygame.display.update()
-        pygame.time.wait(500)
 else:
     while running:
 
