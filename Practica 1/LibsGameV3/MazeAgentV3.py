@@ -281,8 +281,7 @@ class Movement:
 class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None,
-                 Hide=False, DiagonalMovs=False, PriorQue=[Mov.Left, Mov.Right]):
-        self.PriorQue = PriorQue
+                 Hide=False, DiagonalMovs=False):
         self.Name = Name
         self.TypeAgent = TypeAgent
         MovsTerrainCosts.__init__(self, agent=TypeAgent)

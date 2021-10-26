@@ -113,27 +113,60 @@ class Stage:
     def textToImage(self, x, y, text, path):
         w, h = 750, 750
         wf, hf = w / len(self.stageLetras), h / len(self.stageLetras)
-        my_image = Image.open(path)
+        my_image = Image.open(path+'.png')
         image_editable = ImageDraw.Draw(my_image)
         title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 25)
-        print(self.stageLetras)
+        #print(self.stageLetras)
         for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
                 if x == countx and y == county:
-                    if len(str(self.optionsStage[countx][county])) == 1:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
+                    if len(str(self.stageLetras[countx][county])) == 1 and text not in str(self.stageLetras[countx][county]):
+                        self.stageLetras[countx][county] = str(self.stageLetras[countx][county]) + "," + text
                         image_editable.text((int(wf) * x, int(hf) * y), text, (0, 0, 0), font=title_font)
-                    elif len(str(self.optionsStage[countx][county])) == 3:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
+                    elif len(str(self.stageLetras[countx][county])) == 3 and text not in str(self.stageLetras[countx][county]):
+                        self.stageLetras[countx][county] = str(self.stageLetras[countx][county]) + "," + text
                         image_editable.text((int(wf) * x + wf / 2, int(hf) * y), text, (0, 0, 0), font=title_font)
-                    elif len(str(self.optionsStage[countx][county])) == 5:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
+                    elif len(str(self.stageLetras[countx][county])) == 5 and text not in str(self.stageLetras[countx][county]):
+                        self.stageLetras[countx][county] = str(self.stageLetras[countx][county]) + "," + text
                         image_editable.text((int(wf) * x, int(hf) * y + hf / 2), text, (0, 0, 0), font=title_font)
-                    elif len(str(self.optionsStage[countx][county])) == 7:
-                        self.optionsStage[countx][county] = str(self.optionsStage[countx][county]) + "," + text
-                        image_editable.text((int(wf) * x + wf / 2, int(hf) * y + hf / 2), text, (0, 0, 0),
-                                            font=title_font)
-        my_image.save(path)
+                    elif len(str(self.stageLetras[countx][county])) == 7 and text not in str(self.stageLetras[countx][county]):
+                        self.stageLetras[countx][county] = str(self.stageLetras[countx][county]) + "," + text
+                        image_editable.text((int(wf) * x + wf / 2, int(hf) * y + hf / 2), text, (0, 0, 0), font=title_font)
+        my_image.save(path+'.png')
+
+    def updateStageImage(self, path):
+        img = Image.open(path+".png")
+        colors = [
+            [128, 128, 128],
+            [250, 191, 143],
+            [0, 175, 255],
+            [255, 192, 0],
+            [150, 210, 80],
+            [178, 162, 198],
+            [242, 242, 242],
+        ]
+        w, h = 750, 750
+        wf, hf = w / len(self.stage), h / len(self.stage)
+        data = np.zeros((h, w, 3), dtype=np.uint8)
+        for countx, frameX in enumerate(self.stage):
+            for county, frameY in enumerate(frameX):
+                for countc, color in enumerate(colors):
+                    if int(frameY) == countc:
+                        if self.existsInCellsHide((countx, county)):
+                            data[countx * int(wf):(countx + 1) * int(wf),
+                            county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]
+                        else:
+                            data[countx * int(wf):(countx + 1) * int(wf),
+                            county * int(hf):(county + 1) * int(hf)] = color
+
+                        # cuadrado
+                        if countx > 0 or countx < 750 and county > 0 or county < 750:
+                            data[countx * int(wf):(countx + 1) * int(wf), county * int(hf)] = [0, 0, 0]  # izquierda
+                            data[countx * int(wf), county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]  # abajo
+                        break
+
+        img = Image.fromarray(data, 'RGB')
+        img.save(path + '.png')
 
     def stageToImage(self, path):
         colors = [
@@ -158,14 +191,16 @@ class Stage:
                         else:
                             data[countx * int(wf):(countx + 1) * int(wf),
                             county * int(hf):(county + 1) * int(hf)] = color
+
                         # cuadrado
                         if countx > 0 or countx < 750 and county > 0 or county < 750:
                             data[countx * int(wf):(countx + 1) * int(wf), county * int(hf)] = [0, 0, 0]  # izquierda
                             data[countx * int(wf), county * int(hf):(county + 1) * int(hf)] = [0, 0, 0]  # abajo
                         break
-        self.optionsStage = self.stageLetras
+
         img = Image.fromarray(data, 'RGB')
         img.save(path + '.png')
+
         # img.show()
 
 
@@ -187,21 +222,35 @@ class Movement:
             self.hideAllStage()
             self.unHideActualPosition()
         self.stageToImage(self.Name)
-        self.textToImage(self.InitialCords[1], self.InitialCords[0], " I", self.Name + ".png")
-        self.textToImage(self.FinalCords[1], self.FinalCords[0], " F", self.Name + ".png")
+        self.textToImage(self.InitialCords[1], self.InitialCords[0], " I", self.Name)
+        self.textToImage(self.FinalCords[1], self.FinalCords[0], " F", self.Name)
+
+
 
     # se podria seprar y heredar esto
-    def upCord(self):
-        return self.ActualCords[0] - 1, self.ActualCords[1]
+    def upCord(self, coords=None):
+        if coords==None:
+            return self.ActualCords[0] - 1, self.ActualCords[1]
+        else:
+            return coords[0] - 1, coords[1]
 
-    def downCord(self):
-        return self.ActualCords[0] + 1, self.ActualCords[1]
+    def downCord(self, coords=None):
+        if coords==None:
+            return self.ActualCords[0] + 1, self.ActualCords[1]
+        else:
+            return coords[0] + 1, coords[1]
 
-    def leftCord(self):
-        return self.ActualCords[0], self.ActualCords[1] - 1
+    def leftCord(self, coords=None):
+        if coords==None:
+            return self.ActualCords[0], self.ActualCords[1] - 1
+        else:
+            return coords[0], coords[1] - 1
 
-    def rightCord(self):
-        return self.ActualCords[0], self.ActualCords[1] + 1
+    def rightCord(self, coords=None):
+        if coords==None:
+            return self.ActualCords[0], self.ActualCords[1] + 1
+        else:
+            return coords[0], coords[1] + 1
 
     def validRoads(self):
         # Funcion que verifica los caminos posibles sin haber pasado
@@ -218,10 +267,8 @@ class Movement:
 
     def mov(self, destiny):
         if self.isValidPosition(destiny):
-            self.textToImage(destiny[1], destiny[0], "V", self.Name + ".png")
             self.ActualCords = destiny
             self.unHideActualPosition()
-            self.updateStage()
             self.addToMemory(self.ActualCords)
             print(f"{self.ActualCords}.")
             self.numMovs += 1
@@ -257,6 +304,27 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             exit()
         else:
             Movement.__init__(self, InitalCords=InitalCords, FinalCords=FinalCords, Hide=Hide)
+
+    #DepthFirstSearch
+    def depthFirstSearch(self, source, path):
+        if source == self.FinalCords:
+            return path
+        if source not in path:
+            path.append(source)
+            if self.isValidPosition(self.downCord(source)) and self.downCord(source) not in path and self.downCord(source)[0]!=14:
+                self.movDown()
+                path = self.depthFirstSearch(self.downCord(source),path)
+            if self.isValidPosition(self.leftCord(source)) and self.leftCord(source) not in path and self.leftCord(source)[1]!=-1:
+                self.movLeft()
+                path = self.depthFirstSearch(self.leftCord(source),path)
+            if self.isValidPosition(self.upCord(source)) and self.upCord(source) not in path and self.upCord(source)[0]!=-1:
+                self.movUp()
+                path = self.depthFirstSearch(self.upCord(source),path)
+            if self.isValidPosition(self.rightCord(source)) and self.rightCord(source) not in path and self.rightCord(source)[1]!=14:
+                self.movRight()
+                path = self.depthFirstSearch(self.rightCord(source),path)
+
+        return path
 
     def unHideActualPosition(self):
         self.unHide(self.ActualCords)
@@ -331,3 +399,9 @@ def giveCords(tuplaNumLetter):
 
 def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
+
+agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
+               Hide=False)
+path = []
+path = agent1.depthFirstSearch(agent1.InitialCords,path)
+print(path)
