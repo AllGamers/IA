@@ -5,7 +5,7 @@ __name__ = "Practica de laboratorio 1"
 __asginatura__ = "Inteligencia Artificial"
 
 import os, sys, pygame
-from LibsGame.MazeAgent import *
+from LibsGameV3.MazeAgentV3 import *
 
 
 class Player(object):
@@ -14,10 +14,11 @@ class Player(object):
         self.rect = pygame.Rect(agent1.InitialCords[1] * 50, agent1.InitialCords[0] * 50, 50, 50)
 
     def move(self, dx, dy):
-        if dx != 0:
-            self.move_single_axis(dx, 0)
-        if dy != 0:
-            self.move_single_axis(0, dy)
+        if dx != 0 and dy == 0:
+            return self.move_single_axis(dx, 0)
+        if dy != 0 and dx == 0:
+            return self.move_single_axis(0, dy)
+        return self.move_diagonal_axis(dx, dy)
 
     def move_single_axis(self, dx, dy):
         if 0 <= (self.rect.x + dx) <= (width - 50):
@@ -33,6 +34,22 @@ class Player(object):
                 agent1.movUp()
             self.rect.y += dy
         self.collision(dx, dy)
+        return pygame.image.load(agent1.Name + ".png")
+
+    def move_diagonal_axis(self, dx, dy):
+        if 0 <= (self.rect.x + dx) <= (width - 50) and 0 <= (self.rect.y + dy) <= (height - 50):
+            if dx > 0 and dy > 0:
+                agent1.movDownRight()
+            elif 0 > dx and dy < 0:
+                agent1.movUpLeft()
+            elif dx > 0 > dy:
+                agent1.movUpRight()
+            elif dx < 0 < dy:
+                agent1.movDownLeft()
+            self.rect.x += dx
+            self.rect.y += dy
+        self.collision(dx, dy)
+        return pygame.image.load(agent1.Name + ".png")
 
     def collision(self, dx, dy):
         for wall in walls:
@@ -57,35 +74,28 @@ class Wall(object):
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
-agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab2.txt"), FinalCords=(2, 'E'),
-               Hide=False)
+agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
+               Hide=True, DiagonalMovs=False)
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 
-
-if agent1.TypeAgent == TypeAgent.pulpo:
-    colorrgb = (70, 0, 130)
-if agent1.TypeAgent == TypeAgent.humano:
-    colorrgb = (193, 178, 36)
-if agent1.TypeAgent == TypeAgent.mono:
-    colorrgb = (122, 88, 13)
-if agent1.TypeAgent == TypeAgent.sasquatch:
-    colorrgb = (3, 184, 159)
+colorrgb = agent1.GiveColor()
 
 pygame.display.set_caption("Laberinto - David Lopez Hernandez, Alejandro Escamilla Sanchez, Uriel Onofre Resendiz")
-width = len(agent1.Stage.stage) * 50
-height = len(agent1.Stage.stage) * 50
+width = len(agent1.stage) * 50
+height = len(agent1.stage[0]) * 50
 screen = pygame.display.set_mode((width, height))
 
 clock = pygame.time.Clock()
 walls = []
 player = Player()
 # Holds the level layout in a list of strings.
-level = agent1.Stage.stage
+level = agent1.stage
 # Parse the level string above. W = wall, E = exit
 final = agent1.FinalCords
 x = y = 0
+# Initialize
 for crow, row in enumerate(level):  # x
     for ccol, col in enumerate(row):  # y
         if agent1.isValidPosition((ccol, crow)) == 0:
@@ -106,37 +116,24 @@ while running:
         # Here Selector IA OR HUMAN
         # Move the player if an arrow key is pressed
         if e.type == pygame.KEYDOWN:
-            if e.key == pygame.K_LEFT:
-                # valid out of bounds
-                validOOB = agent1.leftCord()
-                if validOOB[0] != -1 and validOOB[1] != -1 and agent1.isValidPosition(validOOB):
-                    if not agent1.existsInMemory(validOOB):
-                        agent1.Stage.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                    player.move(-50, 0)
-                    back = pygame.image.load(agent1.Name + ".png")
-            if e.key == pygame.K_RIGHT:
-                validOOB = agent1.rightCord()
-                if validOOB[0] < len(agent1.Stage.stage) and validOOB[1] < len(
-                        agent1.Stage.stage) and agent1.isValidPosition(agent1.rightCord()):
-                    if not agent1.existsInMemory(validOOB):
-                        agent1.Stage.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                    player.move(50, 0)
-                    back = pygame.image.load(agent1.Name + ".png")
-            if e.key == pygame.K_UP:
-                validOOB = agent1.upCord()
-                if validOOB[0] != -1 and validOOB[1] != -1 and agent1.isValidPosition(agent1.upCord()):
-                    if not agent1.existsInMemory(validOOB):
-                        agent1.Stage.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                    player.move(0, -50)
-                    back = pygame.image.load(agent1.Name + ".png")
-            if e.key == pygame.K_DOWN:
-                validOOB = agent1.downCord()
-                if validOOB[0] < len(agent1.Stage.stage) and validOOB[1] < len(
-                        agent1.Stage.stage) and agent1.isValidPosition(agent1.downCord()):
-                    if not agent1.existsInMemory(validOOB):
-                        agent1.Stage.textToImage(validOOB[1], validOOB[0], "V", agent1.Name + ".png")
-                    player.move(0, 50)
-                    back = pygame.image.load(agent1.Name + ".png")
+            # valid out of bounds
+            if e.key == pygame.K_KP4:
+                back = player.move(-50, 0)
+            if e.key == pygame.K_KP6:
+                back = player.move(50, 0)
+            if e.key == pygame.K_KP2:
+                back = player.move(0, 50)
+            if e.key == pygame.K_KP8:
+                back = player.move(0, -50)
+            if agent1.DiagonalMovs:
+                if e.key == pygame.K_KP7:  # UPRIGHT
+                    back = player.move(-50, -50)
+                if e.key == pygame.K_KP9:
+                    back = player.move(50, -50)
+                if e.key == pygame.K_KP3:
+                    back = player.move(50, 50)
+                if e.key == pygame.K_KP1:
+                    back = player.move(-50, 50)
 
     # Just added this to make it slightly fun ;)
 
@@ -154,12 +151,3 @@ while running:
     pygame.display.flip()
 
 pygame.quit()
-
-"""
-.------..------..------.
-|D.--. ||A.--. ||U.--. |
-| :/\: || (\/) || (\/) |
-| (__) || :\/: || :\/: |
-| '--'D|| '--'A|| '--'U|
-`------'`------'`------'
-"""

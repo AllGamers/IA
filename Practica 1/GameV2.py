@@ -1,5 +1,5 @@
-import os
-import sys
+
+import os, sys, pygame
 from LibsGameV2.MazeAgentV2 import *
 
 
