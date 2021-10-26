@@ -405,6 +405,5 @@ def giveNumLetter(Coords):
 agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
                Hide=False)
 path = []
-path,pathF = agent1.depthFirstSearch(agent1.InitialCords,path)
+path = agent1.depthFirstSearch(agent1.InitialCords,path)
 print(path)
-print(pathF)
