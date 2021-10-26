@@ -56,6 +56,7 @@ class Terrain(enum.Enum):
     Swamp = 5  # 178,162,198
     Snow = 6  # 242,242,242
 
+
 class Mov(enum.Enum):
     Left = 0
     Right = 1
@@ -65,6 +66,7 @@ class Mov(enum.Enum):
     UpRight = 5
     DownLeft = 6
     DownRight = 7
+
 
 class TypeAgent(enum.Enum):
     humano = 0
@@ -278,9 +280,9 @@ class Movement:
 
 class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
-    def __init__(self, Name, TypeAgent, PriorQue=[Mov.Left,Mov.Right], InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None,
-                 Hide=False, DiagonalMovs=False):
-        self.PriorQue=PriorQue
+    def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None,
+                 Hide=False, DiagonalMovs=False, PriorQue=[Mov.Left, Mov.Right]):
+        self.PriorQue = PriorQue
         self.Name = Name
         self.TypeAgent = TypeAgent
         MovsTerrainCosts.__init__(self, agent=TypeAgent)
@@ -298,6 +300,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                               DiagonalMovs=DiagonalMovs)
 
     def depthFirst(self):
+        print("Deep")
 
     def unHideActualPosition(self):
         self.unHide(self.ActualCords)
