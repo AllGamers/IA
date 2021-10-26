@@ -75,7 +75,7 @@ os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
 agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"), FinalCords=(2, 'E'),
-               Hide=True, DiagonalMovs=False)
+               Hide=True, DiagonalMovs=True)
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
@@ -98,7 +98,7 @@ x = y = 0
 # Initialize
 for crow, row in enumerate(level):  # x
     for ccol, col in enumerate(row):  # y
-        if agent1.isValidPosition((ccol, crow)) == 0:
+        if not agent1.isValidPosition((ccol, crow)):
             Wall((crow * 50, ccol * 50))
         if crow == final[0] and ccol == final[1]:
             end_rect = pygame.Rect(ccol * 50, crow * 50, 50, 50)
@@ -114,7 +114,7 @@ while running:
             running = False
 
         # Here Selector IA OR HUMAN
-        # Move the player if an arrow key is pressed
+        # Move the player if an KEYPAD key is pressed
         if e.type == pygame.KEYDOWN:
             # valid out of bounds
             if e.key == pygame.K_KP4:
@@ -126,7 +126,7 @@ while running:
             if e.key == pygame.K_KP8:
                 back = player.move(0, -50)
             if agent1.DiagonalMovs:
-                if e.key == pygame.K_KP7:  # UPRIGHT
+                if e.key == pygame.K_KP7:
                     back = player.move(-50, -50)
                 if e.key == pygame.K_KP9:
                     back = player.move(50, -50)
