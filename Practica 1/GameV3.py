@@ -128,6 +128,8 @@ def IAControl(x):
 
 
 # Here Selector IA OR HUMAN
+# Memoria del agente
+# Camino Optimo en base a la memoria
 if IA:
     for i, x in enumerate(agent1.memoryCells):
         clock.tick(1)

@@ -319,7 +319,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 for i, validRoad in enumerate(arrayValidRows):
                     if Prior1 == validRoad:
                         find = True
-                        arrayValidRows.pop()
                         if Mov.Right == validRoad:
                             self.movRight()
                         elif Mov.Left == validRoad:
