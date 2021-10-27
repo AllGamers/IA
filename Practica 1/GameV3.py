@@ -82,15 +82,15 @@ class Wall(object):
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 
-agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFile("lab1.txt"),
-               FinalCords=(2, 'E'),
+agent1 = Agent("Human", TypeAgent.humano, InitalCords=(10, 'A'), stageText=readFile("lab1.txt"),
+               FinalCords=(2, 'O'),
                Hide=True, PriorMovements=[Mov.Up, Mov.Down, Mov.Left, Mov.Right])
 
 # agent1 = Agent("pulpo", TypeAgent.pulpo, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 
-IA = True
+IA = False
 if IA:
     agent1.depthFirstSearch()
 
@@ -132,7 +132,7 @@ def IAControl(x):
 # Camino Optimo en base a la memoria
 if IA:
     for i, x in enumerate(agent1.memoryCells):
-        clock.tick(1)
+        clock.tick(3)
         print(x)
         player.setPosition(50 * x[1], 50 * x[0])
         # Draw the scene
