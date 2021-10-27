@@ -92,7 +92,8 @@ agent1 = Agent("Human", TypeAgent.humano, InitalCords=(2, 'B'), stageText=readFi
 
 IA = True
 if IA:
-    agent1.depthFirstSearch()
+    #agent1.depthFirstSearch()
+    agent1.breadthFirstSearch()
 
 colorrgb = agent1.GiveColor()
 

@@ -302,6 +302,39 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             self.addStageLetras(self.InitialCords[0], self.InitialCords[1], "I")
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
 
+    def breadthFirstSearch(self):
+        if self.ActualCords == self.FinalCords:
+            print("Maze solved!")
+            self.Optimal()
+            return
+        else:
+            for j, Prior1 in enumerate(self.PriorMovements):
+                find = False
+                arrayValidRows = self.validRoads2()
+                if len(arrayValidRows) == 0:
+                    # return to the last cell decision
+                    LastCellDecision = self.memoryCellsDecisions.pop()
+                    self.memoryCells.append(LastCellDecision)
+                    self.ActualCords = LastCellDecision
+                for i, validRoad in enumerate(arrayValidRows):
+                    if Prior1 == validRoad:
+                        find = True
+                        arrayValidRows.pop()
+                        if Mov.Right == validRoad:
+                            self.movRight()
+                        elif Mov.Left == validRoad:
+                            self.movLeft()
+                        elif Mov.Up == validRoad:
+                            self.movUp()
+                        elif Mov.Down == validRoad:
+                            self.movDown()
+            
+                
+                if find:
+                    self.breadthFirstSearch()
+                    break
+                        
+
     def depthFirstSearch(self):
         if self.ActualCords == self.FinalCords:
             print("Maze solved!")
