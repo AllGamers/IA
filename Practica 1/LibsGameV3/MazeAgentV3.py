@@ -302,6 +302,17 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             self.addStageLetras(self.InitialCords[0], self.InitialCords[1], "I")
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
 
+    def breadthFirstSearch(self):
+        memoryRoads = []
+        while(True):
+            if len(memoryRoads) > 0:
+                arrayValidPositionTmp = []
+                originalPosition = self.ActualCords
+                for x in memoryRoads:
+                    self.ActualCords = x
+                    arrayValidPositionTmp.append()
+            
+                    
     def depthFirstSearch(self):
         if self.ActualCords == self.FinalCords:
             print("Maze solved!")
@@ -319,6 +330,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 for i, validRoad in enumerate(arrayValidRows):
                     if Prior1 == validRoad:
                         find = True
+                        #arrayValidRows.pop()
                         if Mov.Right == validRoad:
                             self.movRight()
                         elif Mov.Left == validRoad:
