@@ -331,6 +331,93 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                         break
                 if find:
                     break
+"""
+DEF
+    MEMORIA DE CAMINOS = []
+    WHILE(TRUE):
+        IF LOGITUD(MEMORIA DE CAMINOS) > 0:
+            arrayValidPositionTmp = []
+            PosicionOriginal= self .PositionActual
+            //PROCESO DE CAMINOS
+            for x in memoriadecaminos :
+                self.PositionActual = x
+                arrayValidRows=VALIDROWS()
+                IF(len arrayvalidrows != 0)
+                    //BORRAR EL CAMINO
+                    arrayCaminosANDValidPositionCaminos.append((X,arrayValidRows))
+                    #[[POSICION1,[R,U]],[POSICION1[L,R]]]
+            memoriadecaminos.delete
+            self .PositionActual = PosicionOriginal
+            //VER SI LOS CAMINOS TIENEN MAS CAMINOS
+            FOR POSITION in arrayCaminosANDValidPositionCaminos
+                    VALIDROWS=POSITION[1]:
+                    IF validRoads == 1:
+                        mequedeSinCaminos==Falso
+                        while(POSITION[1]==1){
+                            //recorrer hasta que no sea 1
+                            if Mov.Right == validRoad:
+                                position[0] = downCord(position[0])
+                                addMemory
+                            elif Mov.Left == validRoad:
+                                position[0] = movDown(position[0])
+                            elif Mov.Up == validRoad:
+                                position[0] = movDown(position[0])
+                            elif Mov.Down == validRoad:
+                                position[0] = movDown(position[0])
+                            POSITION[1]= VALIDROADS(POSITION0)
+                            if POSITION[1] len == 0
+                                mequedesincaminos=True
+                                break
+                            //guardas en memoria la cordenada
+                        }
+                    IF mequedesincaminos:
+                        break
+                    ELSE:
+                        FOR PRIOR
+                            FOR VALIDROWS                
+                                IF PRIOR == VALIDROD:
+                                    if Mov.Right == validRoad:
+                                        MEMORIA DE CAMINOS . APPPEND(SELF.RIGHTCORD)
+                                    elif Mov.Left == validRoad:
+                                        MEMORIA DE CAMINOS . APPPEND(SELF.RIGHTCORD)
+                                    elif Mov.Up == validRoad:
+                                        MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
+                                    elif Mov.Down == validRoad:
+                                        MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
+                                
+        ELIF MEMORIA DE CAMINOS ==0   
+            VALIDROWS()
+        //proceso primera scan
+        IF VALIDROWS == 1:
+            if Mov.Right == validRoad:
+                self.mov
+            elif Mov.Left == validRoad:
+                self.mov
+            elif Mov.Up == validRoad:
+                self.mov
+            elif Mov.Down == validRoad:
+                self.mov
+        ELIF VALIDROWS == 0:
+            RETURN "NO ALCANZABLE"
+        ELSE:
+            FOR PRIOR
+                FOR VALIDROWS
+                    IF PRIOR == VALIDROD:
+                        if Mov.Right == validRoad:
+                            MEMORIA DE CAMINOS . APPPEND(SELF.RIGHTCORD)
+                            addMemory
+                        elif Mov.Left == validRoad:
+                            MEMORIA DE CAMINOS . APPPEND(SELF.RIGHTCORD)
+                            addMemory
+                        elif Mov.Up == validRoad:
+                            MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
+                            addMemory
+                        elif Mov.Down == validRoad:
+                            MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
+                            addMemory
+                    MEMORIA.
+
+"""
 
     def Optimal(self):
         print("Optimal")
