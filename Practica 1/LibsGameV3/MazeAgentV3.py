@@ -331,8 +331,8 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                         break
                 if find:
                     break
-"""
-DEF
+    """
+    DEF
     MEMORIA DE CAMINOS = []
     WHILE(TRUE):
         IF LOGITUD(MEMORIA DE CAMINOS) > 0:
@@ -416,7 +416,7 @@ DEF
                             MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
                             addMemory
                     MEMORIA.
-"""
+    """
 
     def Optimal(self):
         print("Optimal")
