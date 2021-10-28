@@ -90,7 +90,7 @@ agent1 = Agent("Human", TypeAgent.humano, InitalCords=(10, 'A'), stageText=readF
 # agent1 = Agent("mono", TypeAgent.mono, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 # agent1 = Agent("sasquatch", TypeAgent.sasquatch, InitalCords=(1, 'B'), stageText=readFile("lab2.txt"), FinalCords=(15, 'A'))
 
-IA = False
+IA = True
 if IA:
     #agent1.depthFirstSearch()
     agent1.breadthFirstSearch()
@@ -133,7 +133,7 @@ def IAControl(x):
 # Camino Optimo en base a la memoria
 if IA:
     for i, x in enumerate(agent1.memoryCells):
-        clock.tick(3)
+        clock.tick(.5)
         print(x)
         player.setPosition(50 * x[1], 50 * x[0])
         # Draw the scene
