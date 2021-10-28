@@ -416,7 +416,6 @@ DEF
                             MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
                             addMemory
                     MEMORIA.
-
 """
 
     def Optimal(self):
