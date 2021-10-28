@@ -303,17 +303,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
 
     def breadthFirstSearch(self):
-        memoryRoads = []
-        while(True):
-            if len(memoryRoads) > 0:
-                arrayValidPositionTmp = []
-                originalPosition = self.ActualCords
-                for x in memoryRoads:
-                    self.ActualCords = x
-                    arrayValidPositionTmp.append()
-            
-                    
-    def depthFirstSearch(self):
         if self.ActualCords == self.FinalCords:
             print("Maze solved!")
             self.Optimal()
@@ -330,7 +319,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 for i, validRoad in enumerate(arrayValidRows):
                     if Prior1 == validRoad:
                         find = True
-                        #arrayValidRows.pop()
+                        arrayValidRows.pop()
                         if Mov.Right == validRoad:
                             self.movRight()
                         elif Mov.Left == validRoad:
@@ -339,9 +328,10 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                             self.movUp()
                         elif Mov.Down == validRoad:
                             self.movDown()
-                        self.depthFirstSearch()
-                        break
+
+
                 if find:
+                    self.breadthFirstSearch()
                     break
     """
     DEF
@@ -429,6 +419,37 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                             addMemory
                     MEMORIA.
     """
+
+
+    def depthFirstSearch(self):
+        if self.ActualCords == self.FinalCords:
+            print("Maze solved!")
+            self.Optimal()
+            return
+        else:
+            for j, Prior1 in enumerate(self.PriorMovements):
+                find = False
+                arrayValidRows = self.validRoads2()
+                if len(arrayValidRows) == 0:
+                    # return to the last cell decision
+                    LastCellDecision = self.memoryCellsDecisions.pop()
+                    self.memoryCells.append(LastCellDecision)
+                    self.ActualCords = LastCellDecision
+                for i, validRoad in enumerate(arrayValidRows):
+                    if Prior1 == validRoad:
+                        find = True
+                        if Mov.Right == validRoad:
+                            self.movRight()
+                        elif Mov.Left == validRoad:
+                            self.movLeft()
+                        elif Mov.Up == validRoad:
+                            self.movUp()
+                        elif Mov.Down == validRoad:
+                            self.movDown()
+                        self.depthFirstSearch()
+                        break
+                if find:
+                    break
 
     def Optimal(self):
         print("Optimal")
