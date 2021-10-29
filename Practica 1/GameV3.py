@@ -245,28 +245,28 @@ def setMode(value: Tuple, enabled: bool) -> None:
 
 agent1 = None  # DEFAULT
 IA = True  # DEFAULT
-Name = "Name"
+Name = "Name"  # DEFAULT
 TypeAgent = TypeAgent.humano  # DEFAULT
-stageText = readFile("lab1.txt")
+stageText = readFile("lab1.txt")  # DEFAULT
 InitialCoord = (10, 'A')
 FinalCords = (2, 'O')
 PriorMovements = [Mov.Up, Mov.Down, Mov.Left, Mov.Right]
-Hide = True
-Algorithm = "BreadthFirstSearch"
-NodeByNode = True
+Hide = True  # DEFAULT
+Algorithm = "BreadthFirstSearch"  # DEFAULT
+NodeByNode = True  # DEFAULT
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 surface = pygame.display.set_mode((1200, 700))
 menu = pygame_menu.Menu('Welcome', 1200, 700, theme=pygame_menu.themes.THEME_DARK)
-menu.add.text_input('Agent Name :', default='xxx')
+menu.add.text_input('Agent Name :', default='Name')
 menu.add.selector('AgentType', [('humano', 0), ('mono', 1), ('pulpo', 2), ('sasquatch', 3)],
                   onchange=setAgent)  #########
 menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons)  #########
 menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)], onchange=setAlgorithm)
 menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)], onchange=setMode)  #########
 menu.add.selector('Hide :', [('True', True), ('False', False)], onchange=setHide)  #########
-menu.add.text_input('File:', default='xxx')
+menu.add.text_input('File:', default='lab1.txt')
 menu.add.text_input('InitialCoords:', default='xxx')
 menu.add.text_input('FinalCoords:', default='xxx')
 menu.add.text_input('Prior:', default='xxx')
