@@ -338,7 +338,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             self.addStageLetras(self.InitialCords[0], self.InitialCords[1], "I")
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
 
-    def breadthFirstSearch(self):
+    def breadthFirstSearch(self, NodeByNode=False):
         start = self.ActualCords
         frontier = [start]
         explored = [start]
@@ -397,6 +397,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         """
 
     auxiliarMemory = []
+
     def depthFirstSearch(self, NodeByNode=False):
         if self.ActualCords == self.FinalCords:
             if NodeByNode:
