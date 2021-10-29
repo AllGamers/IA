@@ -6,7 +6,10 @@ __asginatura__ = "Inteligencia Artificial"
 
 import os, pygame, pygame_menu
 from typing import Tuple
-from tkinter.filedialog import askopenfilename
+
+import tkinter as tk
+from tkinter import filedialog
+
 from LibsGameV3.MazeAgentV3 import *
 
 
@@ -201,16 +204,6 @@ def disableButtons(value: Tuple, enabled: bool) -> None:
         priorEntry.hide()
 
 
-def setHide(value: Tuple, enabled: bool) -> None:
-    global Hide
-    assert isinstance(value, tuple)
-    if enabled:
-        Hide = True
-    else:
-        Hide = False
-    print(Hide)
-
-
 def setAlgorithm(value: Tuple, enabled: bool) -> None:
     global Algorithm
     assert isinstance(value, tuple)
@@ -219,24 +212,6 @@ def setAlgorithm(value: Tuple, enabled: bool) -> None:
     else:
         Hide = False
     print(Hide)
-
-
-def setMode(value: Tuple, enabled: bool) -> None:
-    global NodeByNode
-    assert isinstance(value, tuple)
-    if enabled:
-        NodeByNode = True
-    else:
-        NodeByNode = False
-    print(Hide)
-
-
-def MyTextValue(name):
-    # on input change your value is returned here
-    print('Player name is', name)
-    if len(name) > 1:
-        print(name[-1])
-    return
 
 
 def CastToCoordsInital(coords):
@@ -259,20 +234,26 @@ def CastToCoordsFinal(coords):
 
 # file explorer window
 def browseFiles():
-    filename = askopenfilename(initialdir="",
+    root = tk.Tk()
+    filename = filedialog.askopenfilename(initialdir="",
                                           title="Select a File",
                                           filetypes=[('Text', '*.txt')])
+    labelFile = menu.get_widget('labelFile')
+    labelFile.set_title(filename)
+    root.destroy()
 
 
 def start_the_game():
     userAgentName = agentNameInput.get_value()
-    print(userAgentName)
     agentType = agentTypeInput.get_value()[0][1]
-    print(agentType)
     iaValue = IAInput.get_value()[0][1]
-    print(iaValue)
-    iaValue = hideInput.get_value()[0][1]
-    print(iaValue)
+    hideValue = hideInput.get_value()[0][1]
+    stageText = readFile(labelFile.get_title())
+    InitialCoord = (int(InitialCoordInput.get_value().split(",")[0]),InitialCoordInput.get_value().split(",")[1])
+    FinalCords = (int(FinalCordsInput.get_value().split(",")[0]),FinalCordsInput.get_value().split(",")[1])
+    PriorMovements
+    Algorithm = AlogorithmInput.get_value()[0][0]
+    NodeByNode = nodeOrStepInput.get_value()[0][1]
     if len(userAgentName) > 10:
         agentNameInput.set_background_color((255, 0, 0))
         Error.set_title("Error: Longitud AgentName")
@@ -298,44 +279,44 @@ NodeByNode = True  # DEFAULT
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
-surface = pygame.display.set_mode((1200, 700))
+surface = pygame.display.set_mode((1200, 900))
 
 menu = pygame_menu.Menu('Welcome',
-                        1200, 700,
+                        1200, 900,
                         theme=pygame_menu.themes.THEME_DARK)
 
 # COMPONENTES #
 ############################################### GENERAL ##############################################
-agentNameInput = menu.add.text_input('Agent Name :', default=Name, onchange=MyTextValue)
+agentNameInput = menu.add.text_input('Agent Name :', default="Name")
+menu.add.vertical_margin(margin=20)
 agentTypeInput = menu.add.selector('AgentType',
                                    [('humano', TypeAgent.humano),
                                     ('mono', TypeAgent.mono),
                                     ('pulpo', TypeAgent.pulpo),
                                     ('sasquatch', TypeAgent.sasquatch)])  #########
+menu.add.vertical_margin(margin=20)
 IAInput = menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons)  #########
-hideInput = menu.add.selector('Hide :', [('True', True), ('False', False)], onchange=setHide)  #########
+menu.add.vertical_margin(margin=20)
+hideInput = menu.add.selector('Hide :', [('True', True), ('False', False)])  #########
+menu.add.vertical_margin(margin=20)
 fileInput = menu.add.button('File', action=browseFiles)
-labelFile = menu.add.label("Lab1.txt")
+fileInput.set_background_color((255, 53, 25))
+labelFile = menu.add.label("Lab1.txt", label_id="labelFile")
+menu.add.vertical_margin(margin=20)
 InitialCoordInput = menu.add.text_input('InitialCoords:', default='10,A', onchange=CastToCoordsInital)
 FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O', onchange=CastToCoordsFinal)
+menu.add.vertical_margin(margin=20)
 ############################################### IA ##############################################
 AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
                                     onchange=setAlgorithm, selector_id="idAlgorithm")
 nodeOrStepInput = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
-                                    onchange=setMode, selector_id="idMode")  #########
+                                    selector_id="idMode")  #########
 PriorInput = menu.add.text_input('Prior:', default='xxx', textinput_id="idPrior")
 ############################################### IA ##############################################
 Error = menu.add.label('Error', font_color=(255, 0, 0))
 Error.hide()
+menu.add.vertical_margin(margin=20)
 menu.add.button('Play', start_the_game)
 menu.add.button('Quit', pygame_menu.events.EXIT)
 
 menu.mainloop(surface, disable_loop=False, clear_surface=True)
-
-"""
-events = pygame.event.get()
-# menu.render()
-menu.update(events)
-menu.draw(surface)
-
-pygame.display.update()"""
