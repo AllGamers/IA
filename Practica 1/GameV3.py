@@ -205,12 +205,21 @@ def setAgent(value, NumValue):
 
 def disableButtons(value: Tuple, enabled: bool) -> None:
     global IA
+    selectorAlgorithm = menu.get_widget('idAlgorithm')
+    selectorMode = menu.get_widget('idMode')
+    priorEntry = menu.get_widget('idPrior')
     assert isinstance(value, tuple)
     if enabled:
         IA = True
+        selectorAlgorithm.show()
+        selectorMode.show()
+        priorEntry.show()
     else:
         IA = False
-    print(IA)
+        selectorAlgorithm.hide()
+        selectorMode.hide()
+        priorEntry.hide()
+
 
 
 def setHide(value: Tuple, enabled: bool) -> None:
@@ -243,6 +252,43 @@ def setMode(value: Tuple, enabled: bool) -> None:
     print(Hide)
 
 
+def MyTextValue(name):
+    # on input change your value is returned here
+    print('Player name is', name)
+    if len(name) > 1:
+        print(name[-1])
+    return
+
+
+def CastToCoordsInital(coords):
+    # on input change your value is returned here
+    print('Coords:', coords)
+    Number = coords.split(",")[0]
+    Letra = coords.split(",")[1]
+    print(f"({Number},{Letra})")
+    return
+
+
+def CastToCoordsFinal(coords):
+    # on input change your value is returned here
+    print('Coords:', coords)
+    Number = coords.split(",")[0]
+    Letra = coords.split(",")[1]
+    print(f"({Number},{Letra})")
+    return Number, Letra
+
+
+def start_the_game():
+    user_agent = agent_name.get_value()
+    if len(user_agent) > 10:
+        agent_name.set_background_color((255, 0, 0))
+        Error.set_title("Error: Longitud AgentName")
+        Error.show()
+
+    # rest of the game code
+
+
+########### DEFAULT ######################
 agent1 = None  # DEFAULT
 IA = True  # DEFAULT
 Name = "Name"  # DEFAULT
@@ -254,23 +300,47 @@ PriorMovements = [Mov.Up, Mov.Down, Mov.Left, Mov.Right]
 Hide = True  # DEFAULT
 Algorithm = "BreadthFirstSearch"  # DEFAULT
 NodeByNode = True  # DEFAULT
+########### DEFAULT ######################
+
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
 surface = pygame.display.set_mode((1200, 700))
-menu = pygame_menu.Menu('Welcome', 1200, 700, theme=pygame_menu.themes.THEME_DARK)
-menu.add.text_input('Agent Name :', default='Name')
-menu.add.selector('AgentType', [('humano', 0), ('mono', 1), ('pulpo', 2), ('sasquatch', 3)],
-                  onchange=setAgent)  #########
-menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons)  #########
-menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)], onchange=setAlgorithm)
-menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)], onchange=setMode)  #########
-menu.add.selector('Hide :', [('True', True), ('False', False)], onchange=setHide)  #########
-menu.add.text_input('File:', default='lab1.txt')
-menu.add.text_input('InitialCoords:', default='xxx')
-menu.add.text_input('FinalCoords:', default='xxx')
-menu.add.text_input('Prior:', default='xxx')
 
-menu.add.button('Play', initGame)
+menu = pygame_menu.Menu('Welcome',
+                        1200, 700,
+                        theme=pygame_menu.themes.THEME_DARK)
+
+# COMPONENTES #
+############################################### GENERAL ##############################################
+agent_name = menu.add.text_input('Agent Name :', default='Name', onchange=MyTextValue)
+AgentType = menu.add.selector('AgentType', [('humano', 0), ('mono', 1), ('pulpo', 2), ('sasquatch', 3)],
+                              onchange=setAgent)  #########
+IA = menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons)  #########
+menu.full_reset()
+hide = menu.add.selector('Hide :', [('True', True), ('False', False)], onchange=setHide)  #########
+file = menu.add.text_input('File:', default='lab1.txt')
+InitialCoord = menu.add.text_input('InitialCoords:', default='10,A', onchange=CastToCoordsInital)
+FinalCords = menu.add.text_input('FinalCoords:', default='2,O', onchange=CastToCoordsFinal)
+############################################### IA ##############################################
+Alogorithm = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
+                               onchange=setAlgorithm, selector_id="idAlgorithm")
+print(Alogorithm.get_id())
+nodeOrStep = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
+                               onchange=setMode, selector_id="idMode")  #########
+Prior = menu.add.text_input('Prior:', default='xxx', textinput_id="idPrior")
+############################################### IA ##############################################
+Error = menu.add.label('Error', font_color=(255, 0, 0))
+Error.hide()
+menu.add.button('Play', start_the_game)
 menu.add.button('Quit', pygame_menu.events.EXIT)
-menu.mainloop(surface)
+
+menu.mainloop(surface, disable_loop=False, clear_surface=True)
+
+"""
+events = pygame.event.get()
+# menu.render()
+menu.update(events)
+menu.draw(surface)
+
+pygame.display.update()"""
