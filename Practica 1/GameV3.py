@@ -6,7 +6,7 @@ __asginatura__ = "Inteligencia Artificial"
 
 import os, pygame, pygame_menu
 from typing import Tuple
-
+from tkinter.filedialog import askopenfilename
 from LibsGameV3.MazeAgentV3 import *
 
 
@@ -257,6 +257,13 @@ def CastToCoordsFinal(coords):
     return Number, Letra
 
 
+# file explorer window
+def browseFiles():
+    filename = askopenfilename(initialdir="",
+                                          title="Select a File",
+                                          filetypes=[('Text', '*.txt')])
+
+
 def start_the_game():
     userAgentName = agentNameInput.get_value()
     print(userAgentName)
@@ -270,7 +277,6 @@ def start_the_game():
         agentNameInput.set_background_color((255, 0, 0))
         Error.set_title("Error: Longitud AgentName")
         Error.show()
-
 
     # initGame(Name=userAgentName, TypeAgent=agentType[1], stageText, InitialCoord, FinalCords, Hide, PriorMovements,
     #         Algorithm, NodeByNode):)
@@ -302,20 +308,21 @@ menu = pygame_menu.Menu('Welcome',
 ############################################### GENERAL ##############################################
 agentNameInput = menu.add.text_input('Agent Name :', default=Name, onchange=MyTextValue)
 agentTypeInput = menu.add.selector('AgentType',
-                              [('humano', TypeAgent.humano),
-                               ('mono', TypeAgent.mono),
-                               ('pulpo', TypeAgent.pulpo),
-                               ('sasquatch', TypeAgent.sasquatch)])  #########
+                                   [('humano', TypeAgent.humano),
+                                    ('mono', TypeAgent.mono),
+                                    ('pulpo', TypeAgent.pulpo),
+                                    ('sasquatch', TypeAgent.sasquatch)])  #########
 IAInput = menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons)  #########
 hideInput = menu.add.selector('Hide :', [('True', True), ('False', False)], onchange=setHide)  #########
-fileInput = menu.add.text_input('File:', default='lab1.txt')
+fileInput = menu.add.button('File', action=browseFiles)
+labelFile = menu.add.label("Lab1.txt")
 InitialCoordInput = menu.add.text_input('InitialCoords:', default='10,A', onchange=CastToCoordsInital)
 FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O', onchange=CastToCoordsFinal)
 ############################################### IA ##############################################
 AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
-                               onchange=setAlgorithm, selector_id="idAlgorithm")
+                                    onchange=setAlgorithm, selector_id="idAlgorithm")
 nodeOrStepInput = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
-                               onchange=setMode, selector_id="idMode")  #########
+                                    onchange=setMode, selector_id="idMode")  #########
 PriorInput = menu.add.text_input('Prior:', default='xxx', textinput_id="idPrior")
 ############################################### IA ##############################################
 Error = menu.add.label('Error', font_color=(255, 0, 0))
