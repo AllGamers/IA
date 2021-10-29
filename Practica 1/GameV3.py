@@ -4,19 +4,21 @@ __author__ = "Alejandro Escamilla Sánchez"
 __name__ = "Practica de laboratorio 1"
 __asginatura__ = "Inteligencia Artificial"
 
-import os, sys, pygame, pygame_menu
+import os, pygame, pygame_menu
 from typing import Tuple
 
 from LibsGameV3.MazeAgentV3 import *
 
-import LibsGameV3.MazeAgentV3 as MA
-
 
 class Player(object):
-    global agent1, width, height, walls
+    # global agent1, width, height, walls
 
-    def __init__(self):
-        self.rect = pygame.Rect(agent1.InitialCords[1] * 50, agent1.InitialCords[0] * 50, 50, 50)
+    def __init__(self, x, y, agent, width, height):
+        self.height = height
+        self.agent1 = agent1
+        self.width = width
+
+        self.rect = pygame.Rect(x * 50, y * 50, 50, 50)
 
     def move(self, dx, dy):
         if dx != 0 and dy == 0:
@@ -82,20 +84,9 @@ class Wall(object):
         self.rect = pygame.Rect(pos[0], pos[1], 50, 50)
 
 
-def initGame():
+def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMovements,
+             Algorithm, NodeByNode):
     os.environ["SDL_VIDEO_CENTERED"] = "1"
-    global agent1, colorrgb, width, height, walls
-    global IA
-    global Name
-    global TypeAgent
-    global stageText
-    global InitialCoord
-    global FinalCords
-    global Hide
-    global PriorMovements
-    global Algorithm
-    global NodeByNode
-
     agent1 = Agent(Name, TypeAgent, InitalCords=InitialCoord, stageText=stageText, FinalCords=FinalCords, Hide=Hide,
                    PriorMovements=PriorMovements)
 
@@ -114,7 +105,7 @@ def initGame():
 
     clock = pygame.time.Clock()
     walls = []
-    player = Player()
+    player = Player(x=InitialCoord[1], y=InitialCoord[0], agent1=agent1, width=width, height=height)
     # Holds the level layout in a list of strings.
     level = agent1.stage
     # Parse the level string above. W = wall, E = exit
@@ -195,31 +186,19 @@ def initGame():
         pygame.display.flip()
 
 
-def setAgent(value, NumValue):
-    global TypeAgent
-    assert isinstance(value, tuple)
-    TypeAgent = MA.TypeAgent(NumValue)
-    print(TypeAgent)
-    pass
-
-
 def disableButtons(value: Tuple, enabled: bool) -> None:
-    global IA
     selectorAlgorithm = menu.get_widget('idAlgorithm')
     selectorMode = menu.get_widget('idMode')
     priorEntry = menu.get_widget('idPrior')
     assert isinstance(value, tuple)
     if enabled:
-        IA = True
         selectorAlgorithm.show()
         selectorMode.show()
         priorEntry.show()
     else:
-        IA = False
         selectorAlgorithm.hide()
         selectorMode.hide()
         priorEntry.hide()
-
 
 
 def setHide(value: Tuple, enabled: bool) -> None:
@@ -279,12 +258,22 @@ def CastToCoordsFinal(coords):
 
 
 def start_the_game():
-    user_agent = agent_name.get_value()
-    if len(user_agent) > 10:
-        agent_name.set_background_color((255, 0, 0))
+    userAgentName = agentNameInput.get_value()
+    print(userAgentName)
+    agentType = agentTypeInput.get_value()[0][1]
+    print(agentType)
+    iaValue = IAInput.get_value()[0][1]
+    print(iaValue)
+    iaValue = hideInput.get_value()[0][1]
+    print(iaValue)
+    if len(userAgentName) > 10:
+        agentNameInput.set_background_color((255, 0, 0))
         Error.set_title("Error: Longitud AgentName")
         Error.show()
 
+
+    # initGame(Name=userAgentName, TypeAgent=agentType[1], stageText, InitialCoord, FinalCords, Hide, PriorMovements,
+    #         Algorithm, NodeByNode):)
     # rest of the game code
 
 
@@ -292,7 +281,6 @@ def start_the_game():
 agent1 = None  # DEFAULT
 IA = True  # DEFAULT
 Name = "Name"  # DEFAULT
-TypeAgent = TypeAgent.humano  # DEFAULT
 stageText = readFile("lab1.txt")  # DEFAULT
 InitialCoord = (10, 'A')
 FinalCords = (2, 'O')
@@ -301,7 +289,6 @@ Hide = True  # DEFAULT
 Algorithm = "BreadthFirstSearch"  # DEFAULT
 NodeByNode = True  # DEFAULT
 ########### DEFAULT ######################
-
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
@@ -313,22 +300,23 @@ menu = pygame_menu.Menu('Welcome',
 
 # COMPONENTES #
 ############################################### GENERAL ##############################################
-agent_name = menu.add.text_input('Agent Name :', default='Name', onchange=MyTextValue)
-AgentType = menu.add.selector('AgentType', [('humano', 0), ('mono', 1), ('pulpo', 2), ('sasquatch', 3)],
-                              onchange=setAgent)  #########
-IA = menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons)  #########
-menu.full_reset()
-hide = menu.add.selector('Hide :', [('True', True), ('False', False)], onchange=setHide)  #########
-file = menu.add.text_input('File:', default='lab1.txt')
-InitialCoord = menu.add.text_input('InitialCoords:', default='10,A', onchange=CastToCoordsInital)
-FinalCords = menu.add.text_input('FinalCoords:', default='2,O', onchange=CastToCoordsFinal)
+agentNameInput = menu.add.text_input('Agent Name :', default=Name, onchange=MyTextValue)
+agentTypeInput = menu.add.selector('AgentType',
+                              [('humano', TypeAgent.humano),
+                               ('mono', TypeAgent.mono),
+                               ('pulpo', TypeAgent.pulpo),
+                               ('sasquatch', TypeAgent.sasquatch)])  #########
+IAInput = menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons)  #########
+hideInput = menu.add.selector('Hide :', [('True', True), ('False', False)], onchange=setHide)  #########
+fileInput = menu.add.text_input('File:', default='lab1.txt')
+InitialCoordInput = menu.add.text_input('InitialCoords:', default='10,A', onchange=CastToCoordsInital)
+FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O', onchange=CastToCoordsFinal)
 ############################################### IA ##############################################
-Alogorithm = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
+AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
                                onchange=setAlgorithm, selector_id="idAlgorithm")
-print(Alogorithm.get_id())
-nodeOrStep = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
+nodeOrStepInput = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
                                onchange=setMode, selector_id="idMode")  #########
-Prior = menu.add.text_input('Prior:', default='xxx', textinput_id="idPrior")
+PriorInput = menu.add.text_input('Prior:', default='xxx', textinput_id="idPrior")
 ############################################### IA ##############################################
 Error = menu.add.label('Error', font_color=(255, 0, 0))
 Error.hide()
