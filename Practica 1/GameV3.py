@@ -193,15 +193,27 @@ def disableButtons(value: Tuple, enabled: bool) -> None:
     selectorAlgorithm = menu.get_widget('idAlgorithm')
     selectorMode = menu.get_widget('idMode')
     priorEntry = menu.get_widget('idPrior')
+    priorEntry1 = menu.get_widget('idPrior1')
+    priorEntry2 = menu.get_widget('idPrior2')
+    priorEntry3 = menu.get_widget('idPrior3')
+    priorEntry4 = menu.get_widget('idPrior4')
     assert isinstance(value, tuple)
     if enabled:
         selectorAlgorithm.show()
         selectorMode.show()
         priorEntry.show()
+        priorEntry1.show()
+        priorEntry2.show()
+        priorEntry3.show()
+        priorEntry4.show()
     else:
         selectorAlgorithm.hide()
         selectorMode.hide()
         priorEntry.hide()
+        priorEntry1.hide()
+        priorEntry2.hide()
+        priorEntry3.hide()
+        priorEntry4.hide()
 
 
 def setAlgorithm(value: Tuple, enabled: bool) -> None:
@@ -249,8 +261,8 @@ def start_the_game():
     iaValue = IAInput.get_value()[0][1]
     hideValue = hideInput.get_value()[0][1]
     stageText = readFile(labelFile.get_title())
-    InitialCoord = (int(InitialCoordInput.get_value().split(",")[0]),InitialCoordInput.get_value().split(",")[1])
-    FinalCords = (int(FinalCordsInput.get_value().split(",")[0]),FinalCordsInput.get_value().split(",")[1])
+    InitialCoord = (int(InitialCoordInput.get_value().split(",")[0]), InitialCoordInput.get_value().split(",")[1])
+    FinalCords = (int(FinalCordsInput.get_value().split(",")[0]), FinalCordsInput.get_value().split(",")[1])
     PriorMovements
     Algorithm = AlogorithmInput.get_value()[0][0]
     NodeByNode = nodeOrStepInput.get_value()[0][1]
@@ -311,7 +323,19 @@ AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), (
                                     onchange=setAlgorithm, selector_id="idAlgorithm")
 nodeOrStepInput = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
                                     selector_id="idMode")  #########
-PriorInput = menu.add.text_input('Prior:', default='xxx', textinput_id="idPrior")
+PriorInput = menu.add.label('Prior:', label_id="idPrior")
+priorInput1 = menu.add.selector('Prior 1',
+                                [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)],
+                                selector_id="idPrior1")
+priorInput2 = menu.add.selector('Prior 2',
+                                [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)],
+                                selector_id="idPrior2")
+priorInput3 = menu.add.selector('Prior 3',
+                                [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)],
+                                selector_id="idPrior3")
+priorInput4 = menu.add.selector('Prior 4',
+                                [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)],
+                                selector_id="idPrior4")
 ############################################### IA ##############################################
 Error = menu.add.label('Error', font_color=(255, 0, 0))
 Error.hide()
