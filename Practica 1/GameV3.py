@@ -10,6 +10,8 @@ from typing import Tuple
 import tkinter as tk
 from tkinter import filedialog
 
+from pygame_menu.widgets import Selector
+
 from LibsGameV3.MazeAgentV3 import *
 
 
@@ -18,7 +20,7 @@ class Player(object):
 
     def __init__(self, x, y, agent, width, height):
         self.height = height
-        self.agent1 = agent1
+        self.agent1 = agent
         self.width = width
 
         self.rect = pygame.Rect(x * 50, y * 50, 50, 50)
@@ -33,38 +35,38 @@ class Player(object):
     def setPosition(self, x, y):
         self.rect.x = x
         self.rect.y = y
-        pygame.image.load(agent1.Name + ".png")
+        pygame.image.load(self.agent1.Name + ".png")
 
     def move_single_axis(self, dx, dy):
-        if 0 <= (self.rect.x + dx) <= (width - 50):
+        if 0 <= (self.rect.x + dx) <= (self.width - 50):
             if dx > 0:
-                agent1.movRight()
+                self.agent1.movRight()
             elif dx < 0:
-                agent1.movLeft()
+                self.agent1.movLeft()
             self.rect.x += dx
-        if 0 <= (self.rect.y + dy) <= (height - 50):
+        if 0 <= (self.rect.y + dy) <= (self.height - 50):
             if dy > 0:
-                agent1.movDown()
+                self.agent1.movDown()
             elif dy < 0:
-                agent1.movUp()
+                self.agent1.movUp()
             self.rect.y += dy
         self.collision(dx, dy)
-        return pygame.image.load(agent1.Name + ".png")
+        return pygame.image.load(self.agent1.Name + ".png")
 
     def move_diagonal_axis(self, dx, dy):
-        if 0 <= (self.rect.x + dx) <= (width - 50) and 0 <= (self.rect.y + dy) <= (height - 50):
+        if 0 <= (self.rect.x + dx) <= (self.width - 50) and 0 <= (self.rect.y + dy) <= (self.height - 50):
             if dx > 0 and dy > 0:
-                agent1.movDownRight()
+                self.agent1.movDownRight()
             elif 0 > dx and dy < 0:
-                agent1.movUpLeft()
+                self.agent1.movUpLeft()
             elif dx > 0 > dy:
-                agent1.movUpRight()
+                self.agent1.movUpRight()
             elif dx < 0 < dy:
-                agent1.movDownLeft()
+                self.agent1.movDownLeft()
             self.rect.x += dx
             self.rect.y += dy
         self.collision(dx, dy)
-        return pygame.image.load(agent1.Name + ".png")
+        return pygame.image.load(self.agent1.Name + ".png")
 
     def collision(self, dx, dy):
         for wall in walls:
@@ -80,15 +82,16 @@ class Player(object):
 
 
 class Wall(object):
-    global walls
-
     def __init__(self, pos):
         walls.append(self)
         self.rect = pygame.Rect(pos[0], pos[1], 50, 50)
 
 
+walls = []
+
+
 def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMovements,
-             Algorithm, NodeByNode):
+             Algorithm, NodeByNode, IA):
     os.environ["SDL_VIDEO_CENTERED"] = "1"
     agent1 = Agent(Name, TypeAgent, InitalCords=InitialCoord, stageText=stageText, FinalCords=FinalCords, Hide=Hide,
                    PriorMovements=PriorMovements)
@@ -108,7 +111,7 @@ def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMo
 
     clock = pygame.time.Clock()
     walls = []
-    player = Player(x=InitialCoord[1], y=InitialCoord[0], agent1=agent1, width=width, height=height)
+    player = Player(x=agent1.InitialCords[1], y=agent1.InitialCords[0], agent=agent1, width=width, height=height)
     # Holds the level layout in a list of strings.
     level = agent1.stage
     # Parse the level string above. W = wall, E = exit
@@ -216,34 +219,6 @@ def disableButtons(value: Tuple, enabled: bool) -> None:
         priorEntry4.hide()
 
 
-def setAlgorithm(value: Tuple, enabled: bool) -> None:
-    global Algorithm
-    assert isinstance(value, tuple)
-    if enabled:
-        Hide = True
-    else:
-        Hide = False
-    print(Hide)
-
-
-def CastToCoordsInital(coords):
-    # on input change your value is returned here
-    print('Coords:', coords)
-    Number = coords.split(",")[0]
-    Letra = coords.split(",")[1]
-    print(f"({Number},{Letra})")
-    return
-
-
-def CastToCoordsFinal(coords):
-    # on input change your value is returned here
-    print('Coords:', coords)
-    Number = coords.split(",")[0]
-    Letra = coords.split(",")[1]
-    print(f"({Number},{Letra})")
-    return Number, Letra
-
-
 # file explorer window
 def browseFiles():
     root = tk.Tk()
@@ -263,31 +238,21 @@ def start_the_game():
     stageText = readFile(labelFile.get_title())
     InitialCoord = (int(InitialCoordInput.get_value().split(",")[0]), InitialCoordInput.get_value().split(",")[1])
     FinalCords = (int(FinalCordsInput.get_value().split(",")[0]), FinalCordsInput.get_value().split(",")[1])
-    PriorMovements
+    PriorMovements = [priorInput1.get_value()[0][1], priorInput2.get_value()[0][1], priorInput3.get_value()[0][1],
+                      priorInput4.get_value()[0][1]]
     Algorithm = AlogorithmInput.get_value()[0][0]
     NodeByNode = nodeOrStepInput.get_value()[0][1]
     if len(userAgentName) > 10:
         agentNameInput.set_background_color((255, 0, 0))
         Error.set_title("Error: Longitud AgentName")
         Error.show()
+    initGame(Name=userAgentName, TypeAgent=agentType, stageText=stageText, InitialCoord=InitialCoord,
+             FinalCords=FinalCords, Hide=hideValue, PriorMovements=PriorMovements,
+             Algorithm=Algorithm, NodeByNode=NodeByNode, IA=iaValue)
 
-    # initGame(Name=userAgentName, TypeAgent=agentType[1], stageText, InitialCoord, FinalCords, Hide, PriorMovements,
-    #         Algorithm, NodeByNode):)
-    # rest of the game code
 
+# rest of the game code
 
-########### DEFAULT ######################
-agent1 = None  # DEFAULT
-IA = True  # DEFAULT
-Name = "Name"  # DEFAULT
-stageText = readFile("lab1.txt")  # DEFAULT
-InitialCoord = (10, 'A')
-FinalCords = (2, 'O')
-PriorMovements = [Mov.Up, Mov.Down, Mov.Left, Mov.Right]
-Hide = True  # DEFAULT
-Algorithm = "BreadthFirstSearch"  # DEFAULT
-NodeByNode = True  # DEFAULT
-########### DEFAULT ######################
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
@@ -320,22 +285,15 @@ FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O', onchange=Ca
 menu.add.vertical_margin(margin=20)
 ############################################### IA ##############################################
 AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
-                                    onchange=setAlgorithm, selector_id="idAlgorithm")
+                                    selector_id="idAlgorithm")
 nodeOrStepInput = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
                                     selector_id="idMode")  #########
 PriorInput = menu.add.label('Prior:', label_id="idPrior")
-priorInput1 = menu.add.selector('Prior 1',
-                                [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)],
-                                selector_id="idPrior1")
-priorInput2 = menu.add.selector('Prior 2',
-                                [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)],
-                                selector_id="idPrior2")
-priorInput3 = menu.add.selector('Prior 3',
-                                [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)],
-                                selector_id="idPrior3")
-priorInput4 = menu.add.selector('Prior 4',
-                                [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)],
-                                selector_id="idPrior4")
+options = [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)]
+priorInput1 = menu.add.selector('Prior 1', options, selector_id="idPrior1", default=0)
+priorInput2 = menu.add.selector('Prior 2', options, selector_id="idPrior2", default=1)
+priorInput3 = menu.add.selector('Prior 3', options, selector_id="idPrior3", default=2)
+priorInput4 = menu.add.selector('Prior 4', options, selector_id="idPrior4", default=3)
 ############################################### IA ##############################################
 Error = menu.add.label('Error', font_color=(255, 0, 0))
 Error.hide()
