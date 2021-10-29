@@ -207,17 +207,29 @@ class Movement:
         if self.DiagonalMovs:
             return self.ActualCords[0] + 1, self.ActualCords[1] + 1
 
-    def upCord(self):
-        return self.ActualCords[0] - 1, self.ActualCords[1]
+    def upCord(self, coords=None):
+        if coords==None:
+            return self.ActualCords[0] - 1, self.ActualCords[1]
+        else:
+            return coords[0] - 1, coords[1]
 
-    def downCord(self):
-        return self.ActualCords[0] + 1, self.ActualCords[1]
+    def downCord(self, coords=None):
+        if coords==None:
+            return self.ActualCords[0] + 1, self.ActualCords[1]
+        else:
+            return coords[0] + 1, coords[1]
 
-    def leftCord(self):
-        return self.ActualCords[0], self.ActualCords[1] - 1
+    def leftCord(self, coords=None):
+        if coords==None:
+            return self.ActualCords[0], self.ActualCords[1] - 1
+        else:
+            return coords[0], coords[1] - 1
 
-    def rightCord(self):
-        return self.ActualCords[0], self.ActualCords[1] + 1
+    def rightCord(self, coords=None):
+        if coords==None:
+            return self.ActualCords[0], self.ActualCords[1] + 1
+        else:
+            return coords[0], coords[1] + 1
 
     def validRoads2(self):
         # Funcion que verifica los caminos posibles sin haber pasado
@@ -241,6 +253,30 @@ class Movement:
                 arrayValid.append(Mov.DownLeft)
         if (len(arrayValid) > 1):
             self.addToMemoryDecisions(self.ActualCords)
+        return arrayValid
+
+    def validRoads3(self,coord):
+        # Funcion que verifica los caminos posibles sin haber pasado
+        arrayValid = []
+        if self.isValidPosition(self.leftCord(coord)) and not self.existsInMemory(self.leftCord(coord)):
+            arrayValid.append(Mov.Left)
+        if self.isValidPosition(self.rightCord(coord)) and not self.existsInMemory(self.rightCord(coord)):
+            arrayValid.append(Mov.Right)
+        if self.isValidPosition(self.upCord(coord)) and not self.existsInMemory(self.upCord(coord)):
+            arrayValid.append(Mov.Up)
+        if self.isValidPosition(self.downCord(coord)) and not self.existsInMemory(self.downCord(coord)):
+            arrayValid.append(Mov.Down)
+        if self.DiagonalMovs:
+            if self.isValidPosition(self.upRightCord(coord)) and not self.existsInMemory(self.upRightCord(coord)):
+                arrayValid.append(Mov.UpRight)
+            if self.isValidPosition(self.upLeftCord(coord)) and not self.existsInMemory(self.upLeftCord(coord)):
+                arrayValid.append(Mov.UpLeft)
+            if self.isValidPosition(self.downRightCord(coord)) and not self.existsInMemory(self.downRightCord(coord)):
+                arrayValid.append(Mov.DownRight)
+            if self.isValidPosition(self.downLeftCord(coord)) and not self.existsInMemory(self.downLeftCord(coord)):
+                arrayValid.append(Mov.DownLeft)
+        """if (len(arrayValid) > 1):
+            self.addToMemoryDecisions(coord)"""
         return arrayValid
 
     def movLeft(self):
@@ -301,125 +337,64 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 self.addToMemoryDecisions(self.ActualCords)
             self.addStageLetras(self.InitialCords[0], self.InitialCords[1], "I")
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
-
+    
     def breadthFirstSearch(self):
-        if self.ActualCords == self.FinalCords:
-            print("Maze solved!")
-            self.Optimal()
-            return
-        else:
-            for j, Prior1 in enumerate(self.PriorMovements):
-                find = False
-                arrayValidRows = self.validRoads2()
-                if len(arrayValidRows) == 0:
-                    # return to the last cell decision
-                    LastCellDecision = self.memoryCellsDecisions.pop()
-                    self.memoryCells.append(LastCellDecision)
-                    self.ActualCords = LastCellDecision
-                for i, validRoad in enumerate(arrayValidRows):
+        start = self.ActualCords
+        frontier = [start]
+        explored = [start]
+        bfsPath = {}
+        primera = True
+        while len(frontier) > 0:
+            if self.ActualCords == self.FinalCords:
+                print("Maze solved!")
+                break
+            if primera:
+                lastCell = self.ActualCords
+                primera = False
+            currCell=frontier.pop(0)
+            arrayValidRows = self.validRoads3(currCell)
+            visit=0
+
+            for Prior1 in self.PriorMovements:
+                for validRoad in arrayValidRows:
                     if Prior1 == validRoad:
-                        find = True
-                        arrayValidRows.pop()
                         if Mov.Right == validRoad:
-                            self.movRight()
+                            visit+=1
+                            childCell=(self.rightCord(currCell))
+                            self.mov(childCell)
                         elif Mov.Left == validRoad:
-                            self.movLeft()
+                            visit+=1
+                            childCell=(self.leftCord(currCell))
+                            self.mov(childCell)
                         elif Mov.Up == validRoad:
-                            self.movUp()
+                            visit+=1
+                            childCell=(self.upCord(currCell))
+                            self.mov(childCell)
                         elif Mov.Down == validRoad:
-                            self.movDown()
-
-
-                if find:
-                    self.breadthFirstSearch()
-                    break
-    """
-    DEF
-    MEMORIA DE CAMINOS = []
-    WHILE(TRUE):
-        IF LOGITUD(MEMORIA DE CAMINOS) > 0:
-            arrayValidPositionTmp = []
-            PosicionOriginal= self .PositionActual
-            //PROCESO DE CAMINOS
-            for x in memoriadecaminos :
-                self.PositionActual = x
-                arrayValidRows=VALIDROWS()
-                IF(len arrayvalidrows != 0)
-                    //BORRAR EL CAMINO
-                    arrayCaminosANDValidPositionCaminos.append((X,arrayValidRows))
-                    #[[POSICION1,[R,U]],[POSICION1[L,R]]]
-            memoriadecaminos.delete
-            self .PositionActual = PosicionOriginal
-            //VER SI LOS CAMINOS TIENEN MAS CAMINOS
-            FOR POSITION in arrayCaminosANDValidPositionCaminos
-                    VALIDROWS=POSITION[1]:
-                    IF validRoads == 1:
-                        mequedeSinCaminos==Falso
-                        while(POSITION[1]==1){
-                            //recorrer hasta que no sea 1
-                            if Mov.Right == validRoad:
-                                position[0] = downCord(position[0])
-                                addMemory
-                            elif Mov.Left == validRoad:
-                                position[0] = movDown(position[0])
-                            elif Mov.Up == validRoad:
-                                position[0] = movDown(position[0])
-                            elif Mov.Down == validRoad:
-                                position[0] = movDown(position[0])
-                            POSITION[1]= VALIDROADS(POSITION0)
-                            if POSITION[1] len == 0
-                                mequedesincaminos=True
-                                break
-                            //guardas en memoria la cordenada
-                        }
-                    IF mequedesincaminos:
-                        break
-                    ELSE:
-                        FOR PRIOR
-                            FOR VALIDROWS                
-                                IF PRIOR == VALIDROD:
-                                    if Mov.Right == validRoad:
-                                        MEMORIA DE CAMINOS . APPPEND(SELF.RIGHTCORD)
-                                    elif Mov.Left == validRoad:
-                                        MEMORIA DE CAMINOS . APPPEND(SELF.RIGHTCORD)
-                                    elif Mov.Up == validRoad:
-                                        MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
-                                    elif Mov.Down == validRoad:
-                                        MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
-                                
-        ELIF MEMORIA DE CAMINOS ==0   
-            VALIDROWS()
-        //proceso primera scan
-        IF VALIDROWS == 1:
-            if Mov.Right == validRoad:
-                self.mov
-            elif Mov.Left == validRoad:
-                self.mov
-            elif Mov.Up == validRoad:
-                self.mov
-            elif Mov.Down == validRoad:
-                self.mov
-        ELIF VALIDROWS == 0:
-            RETURN "NO ALCANZABLE"
-        ELSE:
-            FOR PRIOR
-                FOR VALIDROWS
-                    IF PRIOR == VALIDROD:
-                        if Mov.Right == validRoad:
-                            MEMORIA DE CAMINOS . APPPEND(SELF.RIGHTCORD)
-                            addMemory
-                        elif Mov.Left == validRoad:
-                            MEMORIA DE CAMINOS . APPPEND(SELF.RIGHTCORD)
-                            addMemory
-                        elif Mov.Up == validRoad:
-                            MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
-                            addMemory
-                        elif Mov.Down == validRoad:
-                            MEMORIA DE MOVIMIENTO . APPPEND(SELF.RIGHTCORD)
-                            addMemory
-                    MEMORIA.
-    """
-
+                            visit+=1
+                            childCell=(self.downCord(currCell))
+                            self.mov(childCell)
+                        
+                        if childCell in explored:
+                            continue
+                        
+                        frontier.append(childCell)
+                        explored.append(childCell)
+                        bfsPath[childCell]=currCell
+            if visit > 1:
+                self.addToMemoryDecisions(lastCell)
+                lastCell=currCell
+        """
+        Aqui te arroja el path para el camino mas eficaz        
+        fwdPath = {}
+        cell = self.FinalCords
+        while cell != self.InitialCords:
+            fwdPath[bfsPath[cell]]=cell
+            cell=bfsPath[cell]
+        #for path in reversed(fwdPath):
+            #print(path)
+        print(self.stageLetras)
+        """
 
     def depthFirstSearch(self):
         if self.ActualCords == self.FinalCords:
@@ -483,7 +458,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
     def addToMemoryDecisions(self, coords):
         if not self.existsInMemoryDecisions(coords):
-            self.addStageLetras(self.ActualCords[0], self.ActualCords[1], "D")
+            self.addStageLetras(coords[0], coords[1], "D")
             self.memoryCellsDecisions.append(coords)
 
     def existsInMemoryDecisions(self, coords):

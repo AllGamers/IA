@@ -133,7 +133,7 @@ def IAControl(x):
 # Camino Optimo en base a la memoria
 if IA:
     for i, x in enumerate(agent1.memoryCells):
-        clock.tick(.5)
+        clock.tick(3)
         print(x)
         player.setPosition(50 * x[1], 50 * x[0])
         # Draw the scene
