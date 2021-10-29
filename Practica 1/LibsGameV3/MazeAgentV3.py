@@ -208,25 +208,25 @@ class Movement:
             return self.ActualCords[0] + 1, self.ActualCords[1] + 1
 
     def upCord(self, coords=None):
-        if coords==None:
+        if coords == None:
             return self.ActualCords[0] - 1, self.ActualCords[1]
         else:
             return coords[0] - 1, coords[1]
 
     def downCord(self, coords=None):
-        if coords==None:
+        if coords == None:
             return self.ActualCords[0] + 1, self.ActualCords[1]
         else:
             return coords[0] + 1, coords[1]
 
     def leftCord(self, coords=None):
-        if coords==None:
+        if coords == None:
             return self.ActualCords[0], self.ActualCords[1] - 1
         else:
             return coords[0], coords[1] - 1
 
     def rightCord(self, coords=None):
-        if coords==None:
+        if coords == None:
             return self.ActualCords[0], self.ActualCords[1] + 1
         else:
             return coords[0], coords[1] + 1
@@ -255,7 +255,7 @@ class Movement:
             self.addToMemoryDecisions(self.ActualCords)
         return arrayValid
 
-    def validRoads3(self,coord):
+    def validRoads3(self, coord):
         # Funcion que verifica los caminos posibles sin haber pasado
         arrayValid = []
         if self.isValidPosition(self.leftCord(coord)) and not self.existsInMemory(self.leftCord(coord)):
@@ -337,7 +337,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 self.addToMemoryDecisions(self.ActualCords)
             self.addStageLetras(self.InitialCords[0], self.InitialCords[1], "I")
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
-    
+
     def breadthFirstSearch(self):
         start = self.ActualCords
         frontier = [start]
@@ -351,39 +351,39 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             if primera:
                 lastCell = self.ActualCords
                 primera = False
-            currCell=frontier.pop(0)
+            currCell = frontier.pop(0)
             arrayValidRows = self.validRoads3(currCell)
-            visit=0
+            visit = 0
 
             for Prior1 in self.PriorMovements:
                 for validRoad in arrayValidRows:
                     if Prior1 == validRoad:
                         if Mov.Right == validRoad:
-                            visit+=1
-                            childCell=(self.rightCord(currCell))
+                            visit += 1
+                            childCell = (self.rightCord(currCell))
                             self.mov(childCell)
                         elif Mov.Left == validRoad:
-                            visit+=1
-                            childCell=(self.leftCord(currCell))
+                            visit += 1
+                            childCell = (self.leftCord(currCell))
                             self.mov(childCell)
                         elif Mov.Up == validRoad:
-                            visit+=1
-                            childCell=(self.upCord(currCell))
+                            visit += 1
+                            childCell = (self.upCord(currCell))
                             self.mov(childCell)
                         elif Mov.Down == validRoad:
-                            visit+=1
-                            childCell=(self.downCord(currCell))
+                            visit += 1
+                            childCell = (self.downCord(currCell))
                             self.mov(childCell)
-                        
+
                         if childCell in explored:
                             continue
-                        
+
                         frontier.append(childCell)
                         explored.append(childCell)
-                        bfsPath[childCell]=currCell
+                        bfsPath[childCell] = currCell
             if visit > 1:
                 self.addToMemoryDecisions(lastCell)
-                lastCell=currCell
+                lastCell = currCell
         """
         Aqui te arroja el path para el camino mas eficaz        
         fwdPath = {}
@@ -396,8 +396,12 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         print(self.stageLetras)
         """
 
-    def depthFirstSearch(self):
+    auxiliarMemory = []
+    def depthFirstSearch(self, NodeByNode=False):
         if self.ActualCords == self.FinalCords:
+            if NodeByNode:
+                self.auxiliarMemory.append(self.ActualCords)
+                self.memoryCells = self.auxiliarMemory
             print("Maze solved!")
             self.Optimal()
             return
@@ -405,7 +409,11 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             for j, Prior1 in enumerate(self.PriorMovements):
                 find = False
                 arrayValidRows = self.validRoads2()
+                if NodeByNode and len(arrayValidRows) > 1:
+                    self.auxiliarMemory.append(self.ActualCords)
                 if len(arrayValidRows) == 0:
+                    if NodeByNode:
+                        self.auxiliarMemory.append(self.ActualCords)
                     # return to the last cell decision
                     LastCellDecision = self.memoryCellsDecisions.pop()
                     self.memoryCells.append(LastCellDecision)
@@ -421,7 +429,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                             self.movUp()
                         elif Mov.Down == validRoad:
                             self.movDown()
-                        self.depthFirstSearch()
+                        self.depthFirstSearch(NodeByNode)
                         break
                 if find:
                     break
@@ -516,4 +524,3 @@ def giveCords(tuplaNumLetter):
 
 def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
-

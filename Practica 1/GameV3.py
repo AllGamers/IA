@@ -92,8 +92,9 @@ agent1 = Agent("Human", TypeAgent.humano, InitalCords=(10, 'A'), stageText=readF
 
 IA = True
 if IA:
-    #agent1.depthFirstSearch()
-    agent1.breadthFirstSearch()
+    agent1.depthFirstSearch(NodeByNode=True)
+    # agent1.depthFirstSearch()
+
 
 colorrgb = agent1.GiveColor()
 
@@ -122,29 +123,25 @@ for crow, row in enumerate(level):  # x
 running = True
 back = pygame.image.load(agent1.Name + ".png")
 
+while running:
 
-def IAControl(x):
-    player.setPosition(50 * x[1], 50 * x[0])
-    time.sleep(500)
-
-
-# Here Selector IA OR HUMAN
-# Memoria del agente
-# Camino Optimo en base a la memoria
-if IA:
-    for i, x in enumerate(agent1.memoryCells):
-        clock.tick(3)
-        print(x)
-        player.setPosition(50 * x[1], 50 * x[0])
-        # Draw the scene
-        screen.blit(back, (0, 0))
-        # for wall in walls:
-        pygame.draw.rect(screen, (255, 0, 0), end_rect)
-        pygame.draw.rect(screen, colorrgb, player.rect)
-        pygame.display.flip()
-        pygame.display.update()
-else:
-    while running:
+    # Here Selector IA OR HUMAN
+    # Memoria del agente
+    # Camino Optimo en base a la memoria
+    if IA:
+        for i, x in enumerate(agent1.memoryCells):
+            clock.tick(3)
+            print(x)
+            player.setPosition(50 * x[1], 50 * x[0])
+            # Draw the scene
+            screen.blit(back, (0, 0))
+            # for wall in walls:
+            # pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
+            pygame.draw.rect(screen, (255, 0, 0), end_rect)
+            pygame.draw.rect(screen, colorrgb, player.rect)
+            pygame.display.flip()
+            pygame.display.update()
+    else:
 
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
@@ -152,40 +149,40 @@ else:
             if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
                 running = False
 
-            # Move the player if an KEYPAD key is pressed
-            if e.type == pygame.KEYDOWN:
-                # valid out of bounds
-                if e.key == pygame.K_KP4:
-                    back = player.move(-50, 0)
-                if e.key == pygame.K_KP6:
-                    back = player.move(50, 0)
-                if e.key == pygame.K_KP2:
-                    back = player.move(0, 50)
-                if e.key == pygame.K_KP8:
-                    back = player.move(0, -50)
-                if agent1.DiagonalMovs:
-                    if e.key == pygame.K_KP7:
-                        back = player.move(-50, -50)
-                    if e.key == pygame.K_KP9:
-                        back = player.move(50, -50)
-                    if e.key == pygame.K_KP3:
-                        back = player.move(50, 50)
-                    if e.key == pygame.K_KP1:
-                        back = player.move(-50, 50)
+                # Move the player if an KEYPAD key is pressed
+                if e.type == pygame.KEYDOWN:
+                    # valid out of bounds
+                    if e.key == pygame.K_KP4:
+                        back = player.move(-50, 0)
+                    if e.key == pygame.K_KP6:
+                        back = player.move(50, 0)
+                    if e.key == pygame.K_KP2:
+                        back = player.move(0, 50)
+                    if e.key == pygame.K_KP8:
+                        back = player.move(0, -50)
+                    if agent1.DiagonalMovs:
+                        if e.key == pygame.K_KP7:
+                            back = player.move(-50, -50)
+                        if e.key == pygame.K_KP9:
+                            back = player.move(50, -50)
+                        if e.key == pygame.K_KP3:
+                            back = player.move(50, 50)
+                        if e.key == pygame.K_KP1:
+                            back = player.move(-50, 50)
 
-        # Just added this to make it slightly fun ;)
+    # Just added this to make it slightly fun ;)
 
-        if player.rect.colliderect(end_rect):
-            pygame.quit()
-            sys.exit()
+    if player.rect.colliderect(end_rect):
+        pygame.quit()
+        sys.exit()
 
-        # Draw the scene
-        screen.blit(back, (0, 0))
-        # for wall in walls:
-        # pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
-        pygame.draw.rect(screen, (255, 0, 0), end_rect)
-        pygame.draw.rect(screen, colorrgb, player.rect)
-        # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
-        pygame.display.flip()
+    # Draw the scene
+    screen.blit(back, (0, 0))
+    # for wall in walls:
+    # pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
+    pygame.draw.rect(screen, (255, 0, 0), end_rect)
+    pygame.draw.rect(screen, colorrgb, player.rect)
+    # gfxdraw.filled_circle(screen, 255, 200, 5, (0,128,128))
+    pygame.display.flip()
 
 pygame.quit()
