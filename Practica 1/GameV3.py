@@ -238,6 +238,7 @@ def start_the_game():
     FinalCords = (int(FinalCordsInput.get_value().split(",")[0]), FinalCordsInput.get_value().split(",")[1])
     PriorMovements = [priorInput1.get_value()[0][1], priorInput2.get_value()[0][1], priorInput3.get_value()[0][1],
                       priorInput4.get_value()[0][1]]
+
     Algorithm = AlogorithmInput.get_value()[0][0]
     NodeByNode = nodeOrStepInput.get_value()[0][1]
     if len(userAgentName) > 10:
