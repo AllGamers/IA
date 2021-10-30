@@ -129,32 +129,33 @@ def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMo
     running = True
     back = pygame.image.load(agent1.Name + ".png")
 
+    contador = 0
     while running:
-
         # Here Selector IA OR HUMAN
         # Memoria del agente
         # Camino Optimo en base a la memoria
-        if IA:
-            for i, x in enumerate(agent1.memoryCells):
-                clock.tick(3)
-                print(x)
-                player.setPosition(50 * x[1], 50 * x[0])
-                # Draw the scene
-                screen.blit(back, (0, 0))
-                # for wall in walls:
-                # pygame.draw.ellipse(screen, (255, 128, 64), wall.rect)
-                pygame.draw.rect(screen, (255, 0, 0), end_rect)
-                pygame.draw.rect(screen, colorrgb, player.rect)
-                pygame.display.flip()
-                pygame.display.update()
-        else:
+        for i, e in enumerate(pygame.event.get()):
+            if e.type == pygame.QUIT:
+                running = False
+                surface = pygame.display.set_mode((1500, 800))
+                menu = pygame_menu.Menu('Welcome',
+                                        1500, 800,
+                                        theme=pygame_menu.themes.THEME_DARK)
+                return
+            if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+                running = False
+                surface = pygame.display.set_mode((1500, 800))
 
-            for e in pygame.event.get():
-                if e.type == pygame.QUIT:
-                    running = False
-                if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
-                    running = False
-
+                menu = pygame_menu.Menu('Welcome',
+                                        1500, 800,
+                                        theme=pygame_menu.themes.THEME_DARK)
+                return
+            if IA:
+                if e.type == pygame.KEYDOWN:
+                    if e.key == pygame.K_SPACE:
+                        player.setPosition(50 * agent1.memoryCells[contador][1], 50 * agent1.memoryCells[contador][0])
+                        contador += 1
+            else:
                 # Move the player if an KEYPAD key is pressed
                 if e.type == pygame.KEYDOWN:
                     # valid out of bounds
@@ -175,9 +176,7 @@ def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMo
                             back = player.move(50, 50)
                         if e.key == pygame.K_KP1:
                             back = player.move(-50, 50)
-
         # Just added this to make it slightly fun ;)
-
         if player.rect.colliderect(end_rect):
             surface = pygame.display.set_mode((1500, 800))
 
@@ -267,13 +266,11 @@ menu = pygame_menu.Menu('Welcome',
 # COMPONENTES #
 ############################################### GENERAL ##############################################
 agentNameInput = menu.add.text_input('Agent Name :', default="Name", font_size=20)
-menu.add.vertical_margin(margin=20)
 agentTypeInput = menu.add.selector('AgentType',
                                    [('humano', TypeAgent.humano),
                                     ('mono', TypeAgent.mono),
                                     ('pulpo', TypeAgent.pulpo),
                                     ('sasquatch', TypeAgent.sasquatch)], font_size=20)  #########
-menu.add.vertical_margin(margin=20)
 IAInput = menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons, font_size=20)  #########
 menu.add.vertical_margin(margin=20)
 hideInput = menu.add.selector('Hide :', [('True', True), ('False', False)], font_size=20)  #########
