@@ -179,7 +179,11 @@ def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMo
         # Just added this to make it slightly fun ;)
 
         if player.rect.colliderect(end_rect):
-            screen = pygame.display.set_mode((1200, 700))
+            surface = pygame.display.set_mode((1500, 800))
+
+            menu = pygame_menu.Menu('Welcome',
+                                    1500, 800,
+                                    theme=pygame_menu.themes.THEME_DARK)
             return
 
         # Draw the scene
@@ -256,10 +260,10 @@ def start_the_game():
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
-surface = pygame.display.set_mode((1200, 900))
+surface = pygame.display.set_mode((1500, 800))
 
 menu = pygame_menu.Menu('Welcome',
-                        1200, 900,
+                        1500, 800,
                         theme=pygame_menu.themes.THEME_DARK)
 
 # COMPONENTES #
@@ -280,8 +284,8 @@ fileInput = menu.add.button('File', action=browseFiles)
 fileInput.set_background_color((255, 53, 25))
 labelFile = menu.add.label("Lab1.txt", label_id="labelFile")
 menu.add.vertical_margin(margin=20)
-InitialCoordInput = menu.add.text_input('InitialCoords:', default='10,A', onchange=CastToCoordsInital)
-FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O', onchange=CastToCoordsFinal)
+InitialCoordInput = menu.add.text_input('InitialCoords:', default='10,A')
+FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O')
 menu.add.vertical_margin(margin=20)
 ############################################### IA ##############################################
 AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
