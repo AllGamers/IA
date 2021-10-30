@@ -255,51 +255,49 @@ def start_the_game():
              Algorithm=Algorithm, NodeByNode=NodeByNode, IA=iaValue)
 
 
-# rest of the game code
-
-
+# GAME MENU
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
+pygame.display.set_caption("Laberinto - David Lopez Hernandez, Alejandro Escamilla Sanchez, Uriel Onofre Resendiz")
 surface = pygame.display.set_mode((1500, 800))
 
 menu = pygame_menu.Menu('Welcome',
                         1500, 800,
                         theme=pygame_menu.themes.THEME_DARK)
-
 # COMPONENTES #
 ############################################### GENERAL ##############################################
-agentNameInput = menu.add.text_input('Agent Name :', default="Name")
+agentNameInput = menu.add.text_input('Agent Name :', default="Name", font_size=20)
 menu.add.vertical_margin(margin=20)
 agentTypeInput = menu.add.selector('AgentType',
                                    [('humano', TypeAgent.humano),
                                     ('mono', TypeAgent.mono),
                                     ('pulpo', TypeAgent.pulpo),
-                                    ('sasquatch', TypeAgent.sasquatch)])  #########
+                                    ('sasquatch', TypeAgent.sasquatch)], font_size=20)  #########
 menu.add.vertical_margin(margin=20)
-IAInput = menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons)  #########
+IAInput = menu.add.selector('IA:', [('IA', True), ('HUMAN', False)], onchange=disableButtons, font_size=20)  #########
 menu.add.vertical_margin(margin=20)
-hideInput = menu.add.selector('Hide :', [('True', True), ('False', False)])  #########
+hideInput = menu.add.selector('Hide :', [('True', True), ('False', False)], font_size=20)  #########
 menu.add.vertical_margin(margin=20)
-fileInput = menu.add.button('File', action=browseFiles)
+fileInput = menu.add.button('File', action=browseFiles, font_size=20)
 fileInput.set_background_color((255, 53, 25))
-labelFile = menu.add.label("Lab1.txt", label_id="labelFile")
+labelFile = menu.add.label("Lab1.txt", label_id="labelFile", font_size=20)
 menu.add.vertical_margin(margin=20)
-InitialCoordInput = menu.add.text_input('InitialCoords:', default='10,A')
-FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O')
+InitialCoordInput = menu.add.text_input('InitialCoords:', default='10,A', font_size=20)
+FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O', font_size=20)
 menu.add.vertical_margin(margin=20)
 ############################################### IA ##############################################
 AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
-                                    selector_id="idAlgorithm")
+                                    selector_id="idAlgorithm", font_size=20)
 nodeOrStepInput = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
-                                    selector_id="idMode")  #########
-PriorInput = menu.add.label('Prior:', label_id="idPrior")
+                                    selector_id="idMode", font_size=20)  #########
+PriorInput = menu.add.label('Prior:', label_id="idPrior", font_size=20)
 options = [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)]
-priorInput1 = menu.add.selector('Prior 1', options, selector_id="idPrior1", default=0)
-priorInput2 = menu.add.selector('Prior 2', options, selector_id="idPrior2", default=1)
-priorInput3 = menu.add.selector('Prior 3', options, selector_id="idPrior3", default=2)
-priorInput4 = menu.add.selector('Prior 4', options, selector_id="idPrior4", default=3)
+priorInput1 = menu.add.selector('Prior 1', options, selector_id="idPrior1", default=0, font_size=18)
+priorInput2 = menu.add.selector('Prior 2', options, selector_id="idPrior2", default=1, font_size=18)
+priorInput3 = menu.add.selector('Prior 3', options, selector_id="idPrior3", default=2, font_size=18)
+priorInput4 = menu.add.selector('Prior 4', options, selector_id="idPrior4", default=3, font_size=18)
 ############################################### IA ##############################################
-Error = menu.add.label('Error', font_color=(255, 0, 0))
+Error = menu.add.label('Error', font_color=(255, 0, 0), font_size=20)
 Error.hide()
 menu.add.vertical_margin(margin=20)
 menu.add.button('Play', start_the_game)
