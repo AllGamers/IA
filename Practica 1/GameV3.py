@@ -4,14 +4,9 @@ __author__ = "Alejandro Escamilla Sánchez"
 __name__ = "Practica de laboratorio 1"
 __asginatura__ = "Inteligencia Artificial"
 
-import os, pygame, pygame_menu
+import os, pygame, pygame_menu, tkinter as tk
 from typing import Tuple
-
-import tkinter as tk
 from tkinter import filedialog
-
-from pygame_menu.widgets import Selector
-
 from LibsGameV3.MazeAgentV3 import *
 
 
