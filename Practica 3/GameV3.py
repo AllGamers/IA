@@ -100,6 +100,8 @@ def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMo
             agent1.depthFirstSearch(NodeByNode=NodeByNode)
         if Algorithm == "BreadthFirstSearch":
             agent1.breadthFirstSearch()
+        if Algorithm == "A*":
+            agent1.aEstrella()
 
     colorrgb = agent1.GiveColor()
 
@@ -140,7 +142,6 @@ def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMo
                 menu = pygame_menu.Menu('Welcome',
                                         1500, 800,
                                         theme=pygame_menu.themes.THEME_DARK)
-                return
             if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
                 running = False
                 surface = pygame.display.set_mode((1500, 800))
@@ -148,7 +149,6 @@ def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMo
                 menu = pygame_menu.Menu('Welcome',
                                         1500, 800,
                                         theme=pygame_menu.themes.THEME_DARK)
-                return
             if IA:
                 if e.type == pygame.KEYDOWN:
                     if e.key == pygame.K_SPACE:
@@ -177,13 +177,12 @@ def initGame(Name, TypeAgent, stageText, InitialCoord, FinalCords, Hide, PriorMo
                             back = player.move(-50, 50)
         # Just added this to make it slightly fun ;)
         if player.rect.colliderect(end_rect):
+            running = False
             surface = pygame.display.set_mode((1500, 800))
 
             menu = pygame_menu.Menu('Welcome',
                                     1500, 800,
                                     theme=pygame_menu.themes.THEME_DARK)
-            return
-
         # Draw the scene
         screen.blit(back, (0, 0))
         # for wall in walls:
@@ -219,6 +218,30 @@ def disableButtons(value: Tuple, enabled: bool) -> None:
         priorEntry2.hide()
         priorEntry3.hide()
         priorEntry4.hide()
+
+
+def disableButtons2(value: Tuple, enabled: bool) -> None:
+    selectorAlgorithm = menu.get_widget('idAlgorithm')
+    selectorMode = menu.get_widget('idMode')
+    priorEntry = menu.get_widget('idPrior')
+    priorEntry1 = menu.get_widget('idPrior1')
+    priorEntry2 = menu.get_widget('idPrior2')
+    priorEntry3 = menu.get_widget('idPrior3')
+    priorEntry4 = menu.get_widget('idPrior4')
+    if value[1] == 2:
+        selectorMode.hide()
+        priorEntry.hide()
+        priorEntry1.hide()
+        priorEntry2.hide()
+        priorEntry3.hide()
+        priorEntry4.hide()
+    else:
+        selectorMode.show()
+        priorEntry.show()
+        priorEntry1.show()
+        priorEntry2.show()
+        priorEntry3.show()
+        priorEntry4.show()
 
 
 # file explorer window
@@ -283,10 +306,10 @@ InitialCoordInput = menu.add.text_input('InitialCoords:', default='10,A', font_s
 FinalCordsInput = menu.add.text_input('FinalCoords:', default='2,O', font_size=20)
 menu.add.vertical_margin(margin=20)
 ############################################### IA ##############################################
-AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2)],
-                                    selector_id="idAlgorithm", font_size=20)
+AlogorithmInput = menu.add.selector('Algorithm :', [('BreadthFirstSearch', 1), ('DepthFirstSearch', 2), ('A*', 3)],
+                                    selector_id="idAlgorithm", font_size=20, onchange=disableButtons2)
 nodeOrStepInput = menu.add.selector('Node or Step :', [('NodeByNode', True), ('StepByStep', False)],
-                                    selector_id="idMode", font_size=20)  #########
+                                    selector_id="idMode", font_size=20)
 PriorInput = menu.add.label('Prior:', label_id="idPrior", font_size=20)
 options = [("Up", Mov.Up), ("Right", Mov.Right), ("Left", Mov.Left), ("Down", Mov.Down)]
 priorInput1 = menu.add.selector('Prior 1', options, selector_id="idPrior1", default=0, font_size=18)

@@ -166,7 +166,8 @@ class Stage:
         # Reopen
         my_image = Image.open(path + '.png')
         image_editable = ImageDraw.Draw(my_image)
-        title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 25)
+        title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 15)
+        # title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 15)
         for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
                 if len(frameY) > 0:
@@ -308,6 +309,10 @@ class Movement:
             self.mov(self.downLeftCord())
 
 
+def distanceManhatan(origen, end):
+    return abs(end[0] - origen[0]) + abs(end[1] - origen[1])
+
+
 class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
     def __init__(self, Name, TypeAgent, InitalCords, stageText, FinalCords, AgentSensor=None, AgentMovs=None,
@@ -396,46 +401,96 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         print(self.stageLetras)
         """
 
-    auxiliarMemory = []
+    ######################
 
-    def aEstrella(self, NodeByNode=False):
+    optiosnMemory = []
+    auxiliarMemory = []
+    CostMemory = []
+
+    def addToOptionsMemory(self, optionsPosition):
+        if not self.optiosnMemory.__contains__(optionsPosition):
+            self.optiosnMemory.append(optionsPosition)
+
+    def deleteToOptionsMemory(self, scaned):
+        for x, ContainOption in enumerate(self.optiosnMemory):
+            if ContainOption.__contains__(scaned):
+                ContainOption.remove(scaned)
+
+    def scanCostAndEvaluation(self, coords):
+        distance = distanceManhatan(coords, self.FinalCords)
+        if not self.isValidPosition(coords):
+            cost = None
+        else:
+            cost = self.giveCost(coords)
+        if cost == 0 or cost is None:
+            return None
+        self.addStageLetras(coords[0], coords[1], f"{distance + cost}")
+        return distance + cost
+
+    def giveOptimalOption(self):
+        indexDelete = 0
+        # validate Final
+        for x, ContainOption in enumerate(self.optiosnMemory[len(self.optiosnMemory) - 1]):
+            if ContainOption[1] == self.FinalCords:
+                return ContainOption
+        # First Value
+        for x, ContainOption in enumerate(self.optiosnMemory):
+            if len(ContainOption) > 0:
+                menorValue = ContainOption[0]
+                indexDelete = x
+        # Scaned
+        for x, ContainOption in enumerate(self.optiosnMemory):
+            for y, Contain in enumerate(ContainOption):
+                if menorValue[0] >= self.optiosnMemory[x][y][0] and not self.memoryCells.__contains__(menorValue[1]):
+                    menorValue = self.optiosnMemory[x][y]
+                    indexDelete = x
+        # Eliminar para enfrente en la memoriaCells y en la options memory ???
+        if indexDelete != len(self.memoryCells) - 1:
+            self.auxiliarMemory = self.auxiliarMemory[:indexDelete + 1]
+            self.CostMemory = self.CostMemory[:indexDelete + 1]
+        self.deleteToOptionsMemory(menorValue)
+        return menorValue
+
+    def scanActualPosition(self):
+        scaned = []
+        if not self.scanCostAndEvaluation(self.upCord()) is None and not self.memoryCells.__contains__(self.upCord()):
+            scaned.append((self.scanCostAndEvaluation(self.upCord()), self.upCord()))
+        if not self.scanCostAndEvaluation(self.downCord()) is None and not self.memoryCells.__contains__(
+                self.downCord()):
+            scaned.append((self.scanCostAndEvaluation(self.downCord()), self.downCord()))
+        if not self.scanCostAndEvaluation(self.leftCord()) is None and not self.memoryCells.__contains__(
+                self.leftCord()):
+            scaned.append((self.scanCostAndEvaluation(self.leftCord()), self.leftCord()))
+        if not self.scanCostAndEvaluation(self.rightCord()) is None and not self.memoryCells.__contains__(
+                self.rightCord()):
+            scaned.append((self.scanCostAndEvaluation(self.rightCord()), self.rightCord()))
+        self.addToOptionsMemory(scaned)
+
+    def aEstrella(self):
+        if self.ActualCords == self.InitialCords:
+            self.auxiliarMemory.append(self.InitialCords)
         if self.ActualCords == self.FinalCords:
-            if NodeByNode:
-                self.auxiliarMemory.append(self.ActualCords)
-                self.memoryCells = self.auxiliarMemory
+            self.unHideActualPosition()
+            self.stageToImage(self.Name)
+            self.memoryCells = self.auxiliarMemory
+            for x in self.memoryCells:
+                self.addStageLetras(x[0], x[1], f"\nC")
+            self.updateStage()
             print("Maze solved!")
-            self.Optimal()
             return
         else:
-            for j, Prior1 in enumerate(self.PriorMovements):
-                find = False
-                arrayValidRows = self.validRoads2()
-                if NodeByNode and len(arrayValidRows) > 1:
-                    self.auxiliarMemory.append(self.ActualCords)
-                if len(arrayValidRows) == 0:
-                    if NodeByNode:
-                        self.auxiliarMemory.append(self.ActualCords)
-                    # return to the last cell decision
-                    LastCellDecision = self.memoryCellsDecisions.pop()
-                    self.memoryCells.append(LastCellDecision)
-                    self.ActualCords = LastCellDecision
-                for i, validRoad in enumerate(arrayValidRows):
-                    if Prior1 == validRoad:
-                        find = True
-                        if Mov.Right == validRoad:
-                            self.movRight()
-                        elif Mov.Left == validRoad:
-                            self.movLeft()
-                        elif Mov.Up == validRoad:
-                            self.movUp()
-                        elif Mov.Down == validRoad:
-                            self.movDown()
-                        self.aEstrella(NodeByNode)
-                        break
-                if find:
-                    break
+            self.scanActualPosition()
+            self.updateStage()
+            optimal = self.giveOptimalOption()
+            cost = optimal[0]
+            self.addToMemory(optimal[1])
+            self.auxiliarMemory.append(optimal[1])
+            self.CostMemory.append(cost)
+            self.ActualCords = optimal[1]
+            self.unHideActualPosition()
+            self.aEstrella()
 
-
+    ######################
     def depthFirstSearch(self, NodeByNode=False):
         if self.ActualCords == self.FinalCords:
             if NodeByNode:
@@ -512,7 +567,8 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         return self.memoryCellsDecisions.__contains__(coords)
 
     def isValidPosition(self, Coords):
-        return len(self.stageLetras) > Coords[0] and len(self.stageLetras[0]) > Coords[1] and self.giveCost(Coords) != 0
+        return 0 <= Coords[0] < len(self.stageLetras) and 0 <= Coords[1] < len(self.stageLetras[0]) \
+               and self.giveCost(Coords) != 0
 
     def giveCost(self, Coords):
         return self.movsCost[self.cellInfo(Coords=Coords).value]
@@ -563,3 +619,8 @@ def giveCords(tuplaNumLetter):
 
 def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
+
+#
+# agent1 = Agent("David", TypeAgent.humano, InitalCords=(10, 'A'), stageText=readFile("../lab4.txt"),
+#               FinalCords=(2, 'O'), Hide=True)
+# agent1.aEstrella()
