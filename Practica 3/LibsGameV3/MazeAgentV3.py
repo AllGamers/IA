@@ -342,6 +342,11 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 self.addToMemoryDecisions(self.ActualCords)
             self.addStageLetras(self.InitialCords[0], self.InitialCords[1], "I")
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
+        ##### Auxiliares para algoritmos #######
+        self.optiosnMemory = []
+        self.auxiliarMemory = []
+        self.CostMemory = []
+        ############
 
     def breadthFirstSearch(self, NodeByNode=False):
         start = self.ActualCords
@@ -402,10 +407,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         """
 
     ######################
-
-    optiosnMemory = []
-    auxiliarMemory = []
-    CostMemory = []
 
     def addToOptionsMemory(self, optionsPosition):
         if not self.optiosnMemory.__contains__(optionsPosition):
