@@ -168,8 +168,8 @@ class Stage:
         # Reopen
         my_image = Image.open(path + '.png')
         image_editable = ImageDraw.Draw(my_image)
-        # title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 15)
-        title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 15)
+        title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 15)
+        #title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 15)
         for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
                 if len(frameY) > 0:
@@ -555,8 +555,8 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         final = []
         CF = []
         for x, precamino in enumerate(self.PreFinalCords):
-            inicio.append(self.aStar(self.InitialCords, giveCords(precamino)))
-            final.append(self.aStar(giveCords(precamino), self.FinalCords))
+            inicio.append(self.aStar(self.InitialCords, giveCords(precamino),x))
+            final.append(self.aStar(giveCords(precamino), self.FinalCords,x))
             CF.append(inicio[x] + final[x])
         print(CF)
         return CF
@@ -564,7 +564,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
     def heuristic(self, actual, end):
         return abs(actual[0] + 1 - end[0] + 1) + abs(actual[1] + 1 - end[1] + 1)
 
-    def aStar(self, start, end):
+    def aStar(self, start, end, car):
         self.updateStage()
         frontier = PriorityQueue()
         frontier.put(start, 0)
@@ -572,25 +572,23 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         costSoFar[start] = 0
         cameFrom = {}
         cameFrom[start] = None
-
+        
         while not frontier.empty():
-
+            """if self.ActualCords == end:
+                print("Maze solved!")
+                break"""
             currCell = frontier.get()
             arrayValidRows = self.validRoads3(currCell)
             # print('currCell',currCell)
 
-            if currCell == end:
-                print("Maze solved!")
-                break
             for validRoad in arrayValidRows:
                 if Mov.Right == validRoad:
                     newCost = costSoFar[currCell] + self.giveCost(self.rightCord(currCell))
                     if self.rightCord(currCell) not in costSoFar or newCost < costSoFar[self.rightCord(currCell)]:
                         costSoFar[self.rightCord(currCell)] = newCost
-
+                        
                         heuristicValue = self.heuristic(self.rightCord(currCell), end)
                         priorityR = newCost + heuristicValue
-                        self.addStageLetras(self.rightCord(currCell)[0], self.rightCord(currCell)[1], "w")
 
                         frontier.put(self.rightCord(currCell), priorityR)
                         cameFrom[self.rightCord(currCell)] = currCell
@@ -602,7 +600,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
                         heuristicValue = self.heuristic(self.leftCord(currCell), end)
                         priorityL = newCost + heuristicValue
-                        self.addStageLetras(self.leftCord(currCell)[0], self.leftCord(currCell)[1], "x")
 
                         frontier.put(self.leftCord(currCell), priorityL)
                         cameFrom[self.leftCord(currCell)] = currCell
@@ -614,7 +611,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
                         heuristicValue = self.heuristic(self.upCord(currCell), end)
                         priorityU = newCost + heuristicValue
-                        self.addStageLetras(self.upCord(currCell)[0], self.upCord(currCell)[1], "y")
 
                         frontier.put(self.upCord(currCell), priorityU)
                         cameFrom[self.upCord(currCell)] = currCell
@@ -626,12 +622,18 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
                         heuristicValue = self.heuristic(self.downCord(currCell), end)
                         priorityD = newCost + heuristicValue
-                        self.addStageLetras(self.downCord(currCell)[0], self.downCord(currCell)[1], "z")
 
                         frontier.put(self.downCord(currCell), priorityD)
                         cameFrom[self.downCord(currCell)] = currCell
 
-        # print('a:',costSoFar[end])
+        fwdPath = {}
+        cell = end
+        while cell != start:
+            fwdPath[cameFrom[cell]]=cell
+            cell=cameFrom[cell]
+        for path in reversed(fwdPath):
+            self.addStageLetras(path[0], path[1], str(car)+"-"+str(costSoFar[path]))
+        
         return costSoFar[end]
 
     ######################
@@ -777,32 +779,23 @@ def giveNumLetter(Coords):
 # MagicStone 3,'O'
 # Final      13,'D'
 
-a = Stage(textPlain=readFile("../lab5.txt"))
-# agent1 = Agent("Humano", TypeAgent.humano, InitalCords=(14, 'C'), FinalCords=(13, 'D'),
-#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
-# agent2 = Agent("Mono", TypeAgent.mono, InitalCords=(14, 'E'), FinalCords=(13, 'D'),
-#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
-# agent3 = Agent("Pulpo", TypeAgent.pulpo, InitalCords=(10, 'B'), FinalCords=(13, 'D'),
-#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
-# CFA1 = agent1.proyecto()
-# CFA2 = agent2.proyecto()
+#a = Stage(textPlain=readFile("./lab5.txt"))
+agent1 = Agent("Humano", TypeAgent.humano, InitalCords=(14, 'C'), FinalCords=(13, 'D'),
+               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("./lab5.txt"), Hide=False)
+agent2 = Agent("Mono", TypeAgent.mono, InitalCords=(14, 'E'), FinalCords=(13, 'D'),
+              PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("./lab5.txt"), Hide=False)
+agent3 = Agent("Pulpo", TypeAgent.pulpo, InitalCords=(10, 'B'), FinalCords=(13, 'D'),
+              PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("./lab5.txt"), Hide=False)
 
+CFA1 = agent1.proyecto()
+CFA2 = agent2.proyecto()
+CFA3 = agent3.proyecto()
 
-agent2 = Agent("Mono", TypeAgent.mono, InitalCords=(14, 'E'), FinalCords=(15, 'N'),
-               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=True)
-
-agent2.aEstrella()
-
-# CFA3 = agent3.proyecto()
-
-# for x in range(3):
-#    print(CFA1[x], CFA2[x], CFA3[x])
-#    if int(CFA1[x]) < int(CFA2[x]) and int(CFA1[x]) < int(CFA3[x]):
-
-# print('El agente uno hara la mision: ', x)
-# elif int(CFA2[x]) < int(CFA1[x]) and int(CFA2[x]) < int(CFA3[x]):
-
-#    print('El agente dos hara la mision: ', x)
-# elif int(CFA3[x]) < int(CFA1[x]) and int(CFA3[x]) < int(CFA1[x]):
-
-#     print('El agente tres hara la mision: ', x)
+for x in range(3):
+    print(CFA1[x], CFA2[x], CFA3[x])
+    if int(CFA1[x]) < int(CFA2[x]) and int(CFA1[x]) < int(CFA3[x]):
+        print('El agente uno hara la mision: ', x)
+    elif int(CFA2[x]) < int(CFA1[x]) and int(CFA2[x]) < int(CFA3[x]):
+        print('El agente dos hara la mision: ', x)
+    elif int(CFA3[x]) < int(CFA1[x]) and int(CFA3[x]) < int(CFA1[x]):
+        print('El agente tres hara la mision: ', x)
