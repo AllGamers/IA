@@ -574,12 +574,9 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         cameFrom[start] = None
         
         while not frontier.empty():
-            """if self.ActualCords == end:
-                print("Maze solved!")
-                break"""
+            
             currCell = frontier.get()
             arrayValidRows = self.validRoads3(currCell)
-            # print('currCell',currCell)
 
             for validRoad in arrayValidRows:
                 if Mov.Right == validRoad:
@@ -632,8 +629,10 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             fwdPath[cameFrom[cell]]=cell
             cell=cameFrom[cell]
         for path in reversed(fwdPath):
+
             self.addStageLetras(path[0], path[1], str(car)+"-"+str(costSoFar[path]))
         
+        self.memoryCells=reversed(fwdPath)
         return costSoFar[end]
 
     ######################
