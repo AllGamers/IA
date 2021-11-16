@@ -434,8 +434,8 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         return distance + cost
 
     def giveOptimalOptions(self):
-        indexDelete = 0
-        indexDeletes = []
+        # indexDelete = 0
+        # indexDeletes = []
         menorValues = []
         # validate Final
         for x, ContainOption in enumerate(self.optiosnMemory[len(self.optiosnMemory) - 1]):
@@ -446,27 +446,29 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         for x, ContainOption in enumerate(self.optiosnMemory):
             if len(ContainOption) > 0:
                 menorValue = ContainOption[0]
-                indexDelete = x
-        # Obtener el menor
+                # indexDelete = x
+        # Obtener el menor costo
         for x, ContainOption in enumerate(self.optiosnMemory):
             for y, Contain in enumerate(ContainOption):
                 if self.optiosnMemory[x][y][0] < menorValue[0] and not self.memoryCells.__contains__(menorValue[1]):
                     menorValue = self.optiosnMemory[x][y]
-                    indexDelete = x
+                    # indexDelete = x
         # Dame los que tienen el menor valor
         for x, ContainOption in enumerate(self.optiosnMemory):
             for y, Contain in enumerate(ContainOption):
                 if self.optiosnMemory[x][y][0] == menorValue[0] and not self.memoryCells.__contains__(menorValue[1]):
                     menorValues.append(self.optiosnMemory[x][y])
-                    indexDeletes.append(x)
+                    # indexDeletes.append(x)
 
         # Eliminar para enfrente en la memoriaCells y en la options memory ???
-        print(f"Limpiar memorias {self.memoryCells}")
-        for indexDelete in indexDeletes:
-            if indexDelete != len(self.memoryCells) - 1:
-                self.auxiliarMemory = self.auxiliarMemory[:indexDelete + 1]
-                self.CostMemory = self.CostMemory[:indexDelete + 1]
-        self.deleteToOptionsMemory(menorValue)
+        # print(f"Limpiar memorias {self.memoryCells}")
+        # for indexDelete in indexDeletes:
+        #     if indexDelete != len(self.memoryCells) - 1:
+        #         self.auxiliarMemory = self.auxiliarMemory[:indexDelete + 1]
+        #         self.CostMemory = self.CostMemory[:indexDelete + 1]
+        for menorValue in menorValues:
+            self.deleteToOptionsMemory(menorValue)
+
         return menorValues
 
     def scanActualPosition(self, coords=None):
@@ -514,23 +516,35 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             self.auxiliarMemory.append(self.InitialCords)
         if self.ActualCords == self.FinalCords:
             print("Maze solved!")
+
+            print(self.memoryCells)
+            print(self.CostMemory)
+            for x in self.memoryCells:
+                self.addStageLetras(x[0], x[1], "x")
+            self.updateStage()
             return
         else:
             self.scanActualPosition()
             self.updateStage()
             posiblesCaminos = self.giveOptimalOptions()
-            self.addToMemory(posiblesCaminos)
             while len(posiblesCaminos) != 1:
                 for Camino in posiblesCaminos:
                     self.updateStage()
                     cost = Camino[0]
                     self.scanActualPosition(Camino[1])  # Escanea los dos posibles caminos
+                    ##añadir a recuerdos
                     self.CostMemory.append(cost)
+                    self.addToMemory(Camino[1])
+
                 posiblesCaminos = self.giveOptimalOptions()
-                self.addToMemory(posiblesCaminos)
-                print(self.memoryCells)
+                # print(self.memoryCells)
             # avanzara hasta que solo haya una posibilidad
+            cost = posiblesCaminos[0][0]
             self.ActualCords = posiblesCaminos[0][1]
+            ##añadir a recuerdos
+            self.CostMemory.append(cost)
+            self.addToMemory(Camino[1])
+
             self.unHideActualPosition()
             self.updateStage()
             self.aEstrella()
