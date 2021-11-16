@@ -168,8 +168,8 @@ class Stage:
         # Reopen
         my_image = Image.open(path + '.png')
         image_editable = ImageDraw.Draw(my_image)
-        title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 15)
-        # title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 15)
+        # title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 15)
+        title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 15)
         for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
                 if len(frameY) > 0:
@@ -211,13 +211,13 @@ class Movement:
             return self.ActualCords[0] + 1, self.ActualCords[1] + 1
 
     def upCord(self, coords=None):
-        if coords == None:
+        if coords is None:
             return self.ActualCords[0] - 1, self.ActualCords[1]
         else:
             return coords[0] - 1, coords[1]
 
     def downCord(self, coords=None):
-        if coords == None:
+        if coords is None:
             return self.ActualCords[0] + 1, self.ActualCords[1]
         else:
             return coords[0] + 1, coords[1]
@@ -317,7 +317,8 @@ def distanceManhatan(origen, end):
 
 class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
-    def __init__(self, Name, TypeAgent, InitalCords, FinalCords, PreFinalCords, stageText, AgentSensor=None, AgentMovs=None,
+    def __init__(self, Name, TypeAgent, InitalCords, FinalCords, PreFinalCords, stageText, AgentSensor=None,
+                 AgentMovs=None,
                  Hide=False, DiagonalMovs=False, PriorMovements=[Mov.Left, Mov.Right, Mov.Up, Mov.Down]):
         global a
         self.Name = Name
@@ -329,7 +330,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         self.memoryCellsDecisions = []
         # Optimal Camino
         self.optimalCamino = []
-        
+
         MovsTerrainCosts.__init__(self, agent=TypeAgent)
         Stage.__init__(self, textPlain=stageText)
         if not self.isValidPosition(giveCords(InitalCords)):
@@ -342,18 +343,20 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             Movement.__init__(self, InitalCords=InitalCords, FinalCords=FinalCords, Hide=Hide,
                               DiagonalMovs=DiagonalMovs)
             self.addToMemory(giveCords(InitalCords))
-            if len(self.validRoads2()) > 1:
-                self.addToMemoryDecisions(self.ActualCords)
+            # if len(self.validRoads2()) > 1:
+            #    self.addToMemoryDecisions(self.ActualCords)
             self.addStageLetras(self.InitialCords[0], self.InitialCords[1], "I")
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], "F")
-            for x,preFinal in enumerate(PreFinalCords):
+
+            for x, preFinal in enumerate(PreFinalCords):
                 if not self.isValidPosition(giveCords(preFinal)):
                     print(f"Error con Cordenadas de elementos extras")
                     exit()
                 else:
                     tmp = giveCords(preFinal)
-                    self.addStageLetras(tmp[0], tmp[1], str(x))
+                    self.addStageLetras(tmp[0], tmp[1], "F" + str(x))
                     self.PreFinalCords = PreFinalCords
+
         ##### Auxiliares para algoritmos #######
         self.optiosnMemory = []
         self.auxiliarMemory = []
@@ -419,148 +422,205 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 ContainOption.remove(scaned)
 
     def scanCostAndEvaluation(self, coords):
-        distance = self.heuristic(coords, self.FinalCords)
+        distance = manhatanDistance(coords, self.FinalCords)
         if not self.isValidPosition(coords):
             cost = None
         else:
             cost = self.giveCost(coords)
         if cost == 0 or cost is None:
             return None
+        self.unHide(Coords=coords)
         self.addStageLetras(coords[0], coords[1], f"{distance + cost}")
         return distance + cost
 
-    def giveOptimalOption(self):
+    def giveOptimalOptions(self):
         indexDelete = 0
+        indexDeletes = []
+        menorValues = []
         # validate Final
         for x, ContainOption in enumerate(self.optiosnMemory[len(self.optiosnMemory) - 1]):
             if ContainOption[1] == self.FinalCords:
-                return ContainOption
-        # First Value
+                menorValues.append(ContainOption)
+                return menorValues
+        # First Value menor value Hipotesis
         for x, ContainOption in enumerate(self.optiosnMemory):
             if len(ContainOption) > 0:
                 menorValue = ContainOption[0]
                 indexDelete = x
-        # Scaned
+        # Obtener el menor
         for x, ContainOption in enumerate(self.optiosnMemory):
             for y, Contain in enumerate(ContainOption):
-                if menorValue[0] >= self.optiosnMemory[x][y][0] and not self.memoryCells.__contains__(menorValue[1]):
+                if self.optiosnMemory[x][y][0] < menorValue[0] and not self.memoryCells.__contains__(menorValue[1]):
                     menorValue = self.optiosnMemory[x][y]
                     indexDelete = x
-        # Eliminar para enfrente en la memoriaCells y en la options memory ???
-        if indexDelete != len(self.memoryCells) - 1:
-            self.auxiliarMemory = self.auxiliarMemory[:indexDelete + 1]
-            self.CostMemory = self.CostMemory[:indexDelete + 1]
-        self.deleteToOptionsMemory(menorValue)
-        return menorValue
+        # Dame los que tienen el menor valor
+        for x, ContainOption in enumerate(self.optiosnMemory):
+            for y, Contain in enumerate(ContainOption):
+                if self.optiosnMemory[x][y][0] == menorValue[0] and not self.memoryCells.__contains__(menorValue[1]):
+                    menorValues.append(self.optiosnMemory[x][y])
+                    indexDeletes.append(x)
 
-    def scanActualPosition(self):
-        scaned = []
-        if not self.scanCostAndEvaluation(self.upCord()) is None and not self.memoryCells.__contains__(self.upCord()):
-            scaned.append((self.scanCostAndEvaluation(self.upCord()), self.upCord()))
-        if not self.scanCostAndEvaluation(self.downCord()) is None and not self.memoryCells.__contains__(
-                self.downCord()):
-            scaned.append((self.scanCostAndEvaluation(self.downCord()), self.downCord()))
-        if not self.scanCostAndEvaluation(self.leftCord()) is None and not self.memoryCells.__contains__(
-                self.leftCord()):
-            scaned.append((self.scanCostAndEvaluation(self.leftCord()), self.leftCord()))
-        if not self.scanCostAndEvaluation(self.rightCord()) is None and not self.memoryCells.__contains__(
-                self.rightCord()):
-            scaned.append((self.scanCostAndEvaluation(self.rightCord()), self.rightCord()))
-        self.addToOptionsMemory(scaned)
+        # Eliminar para enfrente en la memoriaCells y en la options memory ???
+        print(f"Limpiar memorias {self.memoryCells}")
+        for indexDelete in indexDeletes:
+            if indexDelete != len(self.memoryCells) - 1:
+                self.auxiliarMemory = self.auxiliarMemory[:indexDelete + 1]
+                self.CostMemory = self.CostMemory[:indexDelete + 1]
+        self.deleteToOptionsMemory(menorValue)
+        return menorValues
+
+    def scanActualPosition(self, coords=None):
+        if coords is None:
+            scaned = []
+            #################################################################################
+            x = self.scanCostAndEvaluation(self.upCord())
+            if not x is None and not self.memoryCells.__contains__(self.upCord()):
+                scaned.append((x, self.upCord()))
+            #################################################################################
+            x = self.scanCostAndEvaluation(self.downCord())
+            if not x is None and not self.memoryCells.__contains__(self.downCord()):
+                scaned.append((x, self.downCord()))
+            #################################################################################
+            x = self.scanCostAndEvaluation(self.leftCord())
+            if not x is None and not self.memoryCells.__contains__(self.leftCord()):
+                scaned.append((x, self.leftCord()))
+            #################################################################################
+            x = self.scanCostAndEvaluation(self.rightCord())
+            if not x is None and not self.memoryCells.__contains__(self.rightCord()):
+                scaned.append((x, self.rightCord()))
+            self.addToOptionsMemory(scaned)
+        else:
+            scaned = []
+            #################################################################################
+            x = self.scanCostAndEvaluation(self.upCord(coords))
+            if not x is None and not self.memoryCells.__contains__(self.upCord(coords)):
+                scaned.append((x, self.upCord(coords)))
+            #################################################################################
+            x = self.scanCostAndEvaluation(self.downCord(coords))
+            if not x is None and not self.memoryCells.__contains__(self.downCord(coords)):
+                scaned.append((x, self.downCord(coords)))
+            #################################################################################
+            x = self.scanCostAndEvaluation(self.leftCord(coords))
+            if not x is None and not self.memoryCells.__contains__(self.leftCord(coords)):
+                scaned.append((x, self.leftCord(coords)))
+            #################################################################################
+            x = self.scanCostAndEvaluation(self.rightCord(coords))
+            if not x is None and not self.memoryCells.__contains__(self.rightCord(coords)):
+                scaned.append((x, self.rightCord(coords)))
+            self.addToOptionsMemory(scaned)
 
     def aEstrella(self):
         if self.ActualCords == self.InitialCords:
             self.auxiliarMemory.append(self.InitialCords)
         if self.ActualCords == self.FinalCords:
-            self.unHideActualPosition()
-            self.stageToImage(self.Name)
-            self.memoryCells = self.auxiliarMemory
-            for x in self.memoryCells:
-                self.addStageLetras(x[0], x[1], f"\nC")
-            self.updateStage()
             print("Maze solved!")
             return
         else:
             self.scanActualPosition()
             self.updateStage()
-            optimal = self.giveOptimalOption()
-            cost = optimal[0]
-            self.addToMemory(optimal[1])
-            self.auxiliarMemory.append(optimal[1])
-            self.CostMemory.append(cost)
-            self.ActualCords = optimal[1]
+            posiblesCaminos = self.giveOptimalOptions()
+            self.addToMemory(posiblesCaminos)
+            while len(posiblesCaminos) != 1:
+                for Camino in posiblesCaminos:
+                    self.updateStage()
+                    cost = Camino[0]
+                    self.scanActualPosition(Camino[1])  # Escanea los dos posibles caminos
+                    self.CostMemory.append(cost)
+                posiblesCaminos = self.giveOptimalOptions()
+                self.addToMemory(posiblesCaminos)
+                print(self.memoryCells)
+            # avanzara hasta que solo haya una posibilidad
+            self.ActualCords = posiblesCaminos[0][1]
             self.unHideActualPosition()
+            self.updateStage()
             self.aEstrella()
-############################################################################################
+
+    ############################################################################################
     def proyecto(self):
         inicio = []
         final = []
         CF = []
-        for x,precamino in enumerate(self.PreFinalCords):
-            inicio.append(self.aStar(self.InitialCords,giveCords(precamino)))
-            final.append(self.aStar(giveCords(precamino),self.FinalCords))
-            CF.append(inicio[x]+final[x])
+        for x, precamino in enumerate(self.PreFinalCords):
+            inicio.append(self.aStar(self.InitialCords, giveCords(precamino)))
+            final.append(self.aStar(giveCords(precamino), self.FinalCords))
+            CF.append(inicio[x] + final[x])
         print(CF)
         return CF
 
     def heuristic(self, actual, end):
-        return abs(actual[0]+1 - end[0]+1) + abs(actual[1]+1 - end[1]+1)
+        return abs(actual[0] + 1 - end[0] + 1) + abs(actual[1] + 1 - end[1] + 1)
 
     def aStar(self, start, end):
+        self.updateStage()
         frontier = PriorityQueue()
-        frontier.put(start,0)
-        costSoFar={}
-        costSoFar[start]=0
-        cameFrom={}
-        cameFrom[start]=None
-        
+        frontier.put(start, 0)
+        costSoFar = {}
+        costSoFar[start] = 0
+        cameFrom = {}
+        cameFrom[start] = None
+
         while not frontier.empty():
-            if self.ActualCords == end:
-                print("Maze solved!")
-                break
+
             currCell = frontier.get()
             arrayValidRows = self.validRoads3(currCell)
-            #print('currCell',currCell)
-            
-            for validRoad in arrayValidRows:
+            # print('currCell',currCell)
 
+            if currCell == end:
+                print("Maze solved!")
+                break
+            for validRoad in arrayValidRows:
                 if Mov.Right == validRoad:
                     newCost = costSoFar[currCell] + self.giveCost(self.rightCord(currCell))
-                    if self.rightCord(currCell) not in costSoFar or newCost < costSoFar[self.rightCord(currCell)]:                 
+                    if self.rightCord(currCell) not in costSoFar or newCost < costSoFar[self.rightCord(currCell)]:
                         costSoFar[self.rightCord(currCell)] = newCost
-                        priorityR = newCost + self.heuristic(self.rightCord(currCell),end)
+
+                        heuristicValue = self.heuristic(self.rightCord(currCell), end)
+                        priorityR = newCost + heuristicValue
+                        self.addStageLetras(self.rightCord(currCell)[0], self.rightCord(currCell)[1], "w")
+
                         frontier.put(self.rightCord(currCell), priorityR)
                         cameFrom[self.rightCord(currCell)] = currCell
-        
+
                 elif Mov.Left == validRoad:
                     newCost = costSoFar[currCell] + self.giveCost(self.leftCord(currCell))
-                    if self.leftCord(currCell) not in costSoFar or newCost < costSoFar[self.leftCord(currCell)]:                 
+                    if self.leftCord(currCell) not in costSoFar or newCost < costSoFar[self.leftCord(currCell)]:
                         costSoFar[self.leftCord(currCell)] = newCost
-                        priorityL = newCost + self.heuristic(self.leftCord(currCell),end)
+
+                        heuristicValue = self.heuristic(self.leftCord(currCell), end)
+                        priorityL = newCost + heuristicValue
+                        self.addStageLetras(self.leftCord(currCell)[0], self.leftCord(currCell)[1], "x")
+
                         frontier.put(self.leftCord(currCell), priorityL)
                         cameFrom[self.leftCord(currCell)] = currCell
-                            
+
                 elif Mov.Up == validRoad:
                     newCost = costSoFar[currCell] + self.giveCost(self.upCord(currCell))
-                    if self.upCord(currCell) not in costSoFar or newCost < costSoFar[self.upCord(currCell)]:                 
+                    if self.upCord(currCell) not in costSoFar or newCost < costSoFar[self.upCord(currCell)]:
                         costSoFar[self.upCord(currCell)] = newCost
-                        priorityU = newCost + self.heuristic(self.upCord(currCell),end)
+
+                        heuristicValue = self.heuristic(self.upCord(currCell), end)
+                        priorityU = newCost + heuristicValue
+                        self.addStageLetras(self.upCord(currCell)[0], self.upCord(currCell)[1], "y")
+
                         frontier.put(self.upCord(currCell), priorityU)
-                        cameFrom[self.upCord(currCell)] = currCell      
+                        cameFrom[self.upCord(currCell)] = currCell
 
                 elif Mov.Down == validRoad:
                     newCost = costSoFar[currCell] + self.giveCost(self.downCord(currCell))
-                    if self.downCord(currCell) not in costSoFar or newCost < costSoFar[self.downCord(currCell)]:                 
+                    if self.downCord(currCell) not in costSoFar or newCost < costSoFar[self.downCord(currCell)]:
                         costSoFar[self.downCord(currCell)] = newCost
-                        priorityD = newCost + self.heuristic(self.downCord(currCell),end)
+
+                        heuristicValue = self.heuristic(self.downCord(currCell), end)
+                        priorityD = newCost + heuristicValue
+                        self.addStageLetras(self.downCord(currCell)[0], self.downCord(currCell)[1], "z")
+
                         frontier.put(self.downCord(currCell), priorityD)
                         cameFrom[self.downCord(currCell)] = currCell
-                      
-        #print('a:',costSoFar[end])
-        return costSoFar[end]
-                
 
-######################
+        # print('a:',costSoFar[end])
+        return costSoFar[end]
+
+    ######################
     def depthFirstSearch(self, NodeByNode=False):
         if self.ActualCords == self.FinalCords:
             if NodeByNode:
@@ -683,6 +743,10 @@ def readFile(fileName):
     return words
 
 
+def manhatanDistance(coords, objetiveCoords):
+    return abs(objetiveCoords[1] - coords[1]) + abs(objetiveCoords[0] - coords[0])
+
+
 def giveCords(tuplaNumLetter):
     return (tuplaNumLetter[0] - 1), (ord(tuplaNumLetter[1]) - 65)
 
@@ -690,30 +754,41 @@ def giveCords(tuplaNumLetter):
 def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
 
-#Octopus    10,'B'
-#Human      14,'C'
-#Monkey     14,'E'
-#PortalKey  15,'N'
-#DarkTemple 7,'H'
-#MagicStone 3,'O'
-#Final      13,'D'
 
-a = Stage(textPlain=readFile("./lab5.txt"))
-agent1 = Agent("Humano", TypeAgent.humano , InitalCords=(14, 'C'),FinalCords=(13,'D'), PreFinalCords=((15,'N'),(7,'H'),(3,'O')) ,stageText=readFile("./lab5.txt"), Hide=False)
-agent2 = Agent("Mono", TypeAgent.mono , InitalCords=(14, 'E'),FinalCords=(13,'D'), PreFinalCords=((15,'N'),(7,'H'),(3,'O')) ,stageText=readFile("./lab5.txt"), Hide=False)
-agent3 = Agent("Pulpo", TypeAgent.pulpo , InitalCords=(10, 'B'),FinalCords=(13,'D'), PreFinalCords=((15,'N'),(7,'H'),(3,'O')) ,stageText=readFile("./lab5.txt"), Hide=False)
-CFA1 = agent1.proyecto()
-CFA2 = agent2.proyecto()
-CFA3 = agent3.proyecto()
+# Octopus    10,'B'
+# Human      14,'C'
+# Monkey     14,'E'
+# PortalKey  15,'N'
+# DarkTemple 7,'H'
+# MagicStone 3,'O'
+# Final      13,'D'
 
-for x in range(3):
-    print(CFA1[x],CFA2[x],CFA3[x])
-    if int(CFA1[x]) < int(CFA2[x]) and int(CFA1[x]) < int(CFA3[x]):
-        
-        print('El agente uno hara la mision: ',x)
-    elif int(CFA2[x]) < int(CFA1[x]) and int(CFA2[x]) < int(CFA3[x]):
-        
-        print('El agente dos hara la mision: ',x)
-    elif int(CFA3[x]) < int(CFA1[x]) and int(CFA3[x]) < int(CFA1[x]):
-        
-        print('El agente tres hara la mision: ',x)
+a = Stage(textPlain=readFile("../lab5.txt"))
+# agent1 = Agent("Humano", TypeAgent.humano, InitalCords=(14, 'C'), FinalCords=(13, 'D'),
+#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
+# agent2 = Agent("Mono", TypeAgent.mono, InitalCords=(14, 'E'), FinalCords=(13, 'D'),
+#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
+# agent3 = Agent("Pulpo", TypeAgent.pulpo, InitalCords=(10, 'B'), FinalCords=(13, 'D'),
+#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
+# CFA1 = agent1.proyecto()
+# CFA2 = agent2.proyecto()
+
+
+agent2 = Agent("Mono", TypeAgent.mono, InitalCords=(14, 'E'), FinalCords=(15, 'N'),
+               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=True)
+
+agent2.aEstrella()
+
+# CFA3 = agent3.proyecto()
+
+# for x in range(3):
+#    print(CFA1[x], CFA2[x], CFA3[x])
+#    if int(CFA1[x]) < int(CFA2[x]) and int(CFA1[x]) < int(CFA3[x]):
+
+# print('El agente uno hara la mision: ', x)
+# elif int(CFA2[x]) < int(CFA1[x]) and int(CFA2[x]) < int(CFA3[x]):
+
+#    print('El agente dos hara la mision: ', x)
+# elif int(CFA3[x]) < int(CFA1[x]) and int(CFA3[x]) < int(CFA1[x]):
+
+#     print('El agente tres hara la mision: ', x)
