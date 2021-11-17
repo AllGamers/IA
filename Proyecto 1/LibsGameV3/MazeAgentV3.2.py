@@ -447,55 +447,52 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         # Crea las copias
         copyMem = memoriasDeCaminoYCostoYAcumulado[j][::]  # Copia base
         x = len(memoriasDeCaminoYCostoYAcumulado[j]) - 1  # last index memory
-        # print(f"ValueADuplicar{copyMem[x]}")
+        if len(validRoads) > 1:
+            print(f"ValueADuplicar{copyMem[x]}")
+        else:
+            print(f"Ampliar Camino{copyMem[x]}")
         for i, Road in enumerate(validRoads):
+            print(i)
             # Copia del primero elemento
             # var = (Road[0], Road[1], copyMem[x][2] + Road[0])
-            var = (Road[0], Road[1], copyMem[x][2] + costs[i])
-            # print(f"value a insertar{var}")
+            var = (Road[0], Road[1], copyMem[x][2] + costs[i], costs[i])
+            print(f"value a insertar{var}")
             if i == 0:
                 memoriasDeCaminoYCostoYAcumulado[j].append(var)
             else:
                 copyyMem = copyMem[::]
                 copyyMem.append(var)
+                print(copyyMem)
                 memoriasDeCaminoYCostoYAcumulado.append(copyyMem)
         # print(f"Mem{memoriasDeCaminoYCostoYAcumulado}")
 
     def aEstrella(self, InicialPoint, FinalPoint):
         # [
-        # [(Costo,coord,Acumulado),(Costo,coord,Acumulado)],
-        # [(Costo,coord,Acumulado),(Costo,coord,Acumulado)]
+        # [(f(x),coord,CostoAcumulado,CostoParticular),(f(x),coord,CostoAcumulado,CostoParticular)],
+        # [(f(x),coord,CostoAcumulado,CostoParticular),(f(x),coord,CostoAcumulado,CostoParticular)],
         # ]
         memoriasDeCaminoYCostoYAcumulado = [[(0, InicialPoint, 0)]]
         print(memoriasDeCaminoYCostoYAcumulado)
         z = 0
         IndicesAExplorar = [0]
+        caminosFinalizados = []
+        caminosEntroncados = []
         while True:
-            # print("=================================================================")
-            # print(f"j={z}")
-            for j in IndicesAExplorar:
-                # print("------------------------------------------------------------")
-                if memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][1] == FinalPoint:
-                    # agregar camino a otro arreglo y  ponerle un bloqueo como una variable aleatoria false none algo asi
-                    print(f"BestSolutions")
-                    for x in IndicesAExplorar:
-                        print(f"mem={memoriasDeCaminoYCostoYAcumulado[x]}")
 
-                    print("Maze Solved!")
-                    # print(f"Camino:{memoriasDeCaminoYCostoYAcumulado[j]}")
-                    self.memoryCells = memoriasDeCaminoYCostoYAcumulado[j]
-                    self.cost = memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][2]
-                    print(
-                        f"Coste:{memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][2]}")
-                    copyMem = []
-                    for memory in self.memoryCells:
-                        # print(memory)
-                        copyMem.append(memory[1])
-                        self.explorePosition(memoriasDeCaminoYCostoYAcumulado, coords=memory[1], finalCords=FinalPoint)
-                        self.addStageLetras(memory[1][0], memory[1][1], "C")
-                    self.memoryCells = copyMem
-                    self.updateStage()
-                    return
+            # >>>>EXPLORACION<<<<
+            # Imprimir memoria con los indices que se exploraran
+            print("\nIndices a explorar")
+            for x in IndicesAExplorar:
+                print(f"mem1.{x}={memoriasDeCaminoYCostoYAcumulado[x]}")
+            repiteProfundiad = False
+            for j in IndicesAExplorar:
+                print(caminosFinalizados)
+                print(f"------------------Explorando indice {j}------------------")
+                if memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][1] == FinalPoint:
+                    # agregar camino a otro arreglo
+                    caminosFinalizados.append(memoriasDeCaminoYCostoYAcumulado[j][::])
+                    # Eliminar de los validos
+                    IndicesAExplorar.remove(j)
                 else:
                     # print(f"Explorando en memoria:{memoriasDeCaminoYCostoYAcumulado[j]}")
                     # Exploracion de los caminos en las ultimas coordenadas de cada camino
@@ -507,36 +504,71 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                                                              )
                     # print(f"Explorados:{explorados} de mem {j}")
                     # Optine los menos costosos
-                    validRoads, costs = self.giveOptimalOptions(explorados, costs, FinalPoint)
-                    # print(f"MenosCostosos de los validos:{validRoads}  de mem {j}")
-                    # si el costo es el actual va a agregar los caminos y rompera el ciclo y volvera a evaluar
-                    if validRoads[0][0] == memoriasDeCaminoYCostoYAcumulado[j][LastIndex][0]:
-                        # print("Profundidad +")
-                        self.CreaCopias(memoriasDeCaminoYCostoYAcumulado, j, validRoads, costs)
-                        print(f"mem ramificado por mismo coste={memoriasDeCaminoYCostoYAcumulado}")
-                        break
-                    # Crea las copias
-                    self.CreaCopias(memoriasDeCaminoYCostoYAcumulado, j, validRoads, costs)
-                    print(f"mem={memoriasDeCaminoYCostoYAcumulado}")
-            # arreglo con los mejores candidatos
-            # Obtener el menor es decir mejor candidato
-            menorCosto = memoriasDeCaminoYCostoYAcumulado[0][len(memoriasDeCaminoYCostoYAcumulado[0]) - 1][0]
+                    if len(explorados) != 0:
+                        validRoads, costs = self.giveOptimalOptions(explorados, costs, FinalPoint)
+                        # print(f"MenosCostosos de los validos:{validRoads}  de mem {j}")
+
+                        # EN CASO DE QUE EL COSTO SEA IGUAL , SE APLICARA PROFUNDIAD SI CRECER LAS DEMAS RAMAS
+                        # detectar si abra profunidad  PARA BLOQUEAR EL CRECIMIENTO DE LAS RAMAS
+                        for indicesElectos in IndicesAExplorar:
+                            LastIndexxx = len(memoriasDeCaminoYCostoYAcumulado[indicesElectos]) - 1
+                            if validRoads[0][0] == memoriasDeCaminoYCostoYAcumulado[indicesElectos][LastIndexxx][0]:
+                                repiteProfundiad = True
+                        # EN CASO DE PROFUNIDAD SE CRECE LA RAMA
+                        if repiteProfundiad and validRoads[0][0] == memoriasDeCaminoYCostoYAcumulado[j][LastIndex][0]:
+                            print("Profundidad +")
+                            self.CreaCopias(memoriasDeCaminoYCostoYAcumulado, j, validRoads, costs)
+                            # print(f"mem ramificado por mismo coste={memoriasDeCaminoYCostoYAcumulado}")
+                        # En caso de que no se detecte pronfuidad ejecutara el crecimiento de cada rama
+                        if not repiteProfundiad:
+                            # Crea las copias
+                            self.CreaCopias(memoriasDeCaminoYCostoYAcumulado, j, validRoads, costs)
+                    else:
+                        caminosEntroncados.append(memoriasDeCaminoYCostoYAcumulado[j][::])
+            print("=======================Elecion de indices=================================")
+            print(f"z={z}")
+            # Imprimir memoria con los indices que se exploraran
+            for x in IndicesAExplorar:
+                print(f"mem0={memoriasDeCaminoYCostoYAcumulado[x]}")
+            # >>>>>ARREGLO DE MEJORES CANDIDATOS<<<<<
+            exploracion = 0  # 0 = f(x)     2 = costAcumulado     3 = costoParticular
+            # Obtener el menor es decir mejor candidato que no este en caminos finalizados
+            menorCosto = 0
             for i, mems in enumerate(memoriasDeCaminoYCostoYAcumulado):
-                if mems[len(mems) - 1][0] < menorCosto:
-                    menorCosto = mems[len(mems) - 1][0]
-            # print(f"mem={memoriasDeCaminoYCostoYAcumulado}")
+                if not caminosFinalizados.__contains__(mems):
+                    menorCosto = mems[len(mems) - 1][exploracion]  # F(X)
+                    break
+            print(f"menorCosto={menorCosto}")
+            for i, mems in enumerate(memoriasDeCaminoYCostoYAcumulado):
+                if mems[len(mems) - 1][exploracion] < menorCosto  and not caminosFinalizados.__contains__(mems):
+                    menorCosto = mems[len(mems) - 1][exploracion]  # F(X)
             IndicesAExplorar.clear()
             # print(f"MenorCosto:{menorCosto}")
             # Obtener indices a explorar
             for i, mems in enumerate(memoriasDeCaminoYCostoYAcumulado):
-                if mems[len(mems) - 1][0] == menorCosto:
+                if mems[len(mems) - 1][exploracion] == menorCosto and not caminosFinalizados.__contains__(mems) and not caminosEntroncados.__contains__(mems):
                     IndicesAExplorar.append(i)
-            # print(IndicesAExplorar)
-            # Imprimir memoria con los indices que se exploraran
-            # for x in IndicesAExplorar:
-            # print(f"mem={memoriasDeCaminoYCostoYAcumulado[x]}")
+            print(f"IndicesAExplorar{IndicesAExplorar}")
+            if len(IndicesAExplorar) == 0:
+                break
             z += 1
-            self.updateStage()
+        print("MazeSolved")
+        self.updateStage()
+        # Buscar el camino con menor coste
+        print(caminosFinalizados)
+        ValorHipotetico = caminosFinalizados[0] # Suponemos que el camino es el menor
+        cost = ValorHipotetico[len(ValorHipotetico)-1][2]
+        for finalRoad in caminosFinalizados:
+            if finalRoad[len(finalRoad)-1][2] < ValorHipotetico[len(ValorHipotetico)-1][2]:
+                ValorHipotetico = finalRoad
+                cost = finalRoad[len(finalRoad)-1][2]
+        memory = []
+        for mem in ValorHipotetico:
+            memory.append(mem[1])
+        self.memoryCells = memory
+        print(f"Camino:{self.memoryCells}")
+        print(f"Costo:{cost}")
+        return
 
     def unHideActualPosition(self):
         self.unHide(self.ActualCords)
@@ -631,9 +663,9 @@ P = (13, 'D')
 agent1 = Agent("humano", TypeAgent.humano, InitalCords=(14, 'C'), FinalCords=(7, 'H'),
                PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=True)
 
-# agent1.aEstrella(giveCords(HI), giveCords(T))
-# agent1.aEstrella(giveCords(T), giveCords(P))
-# agent1.aEstrella(giveCords(HI), giveCords(S))
+#agent1.aEstrella(giveCords(HI), giveCords(T))
+#agent1.aEstrella(giveCords(T), giveCords(P))
+#agent1.aEstrella(giveCords(HI), giveCords(S))
 # agent1.aEstrella(giveCords(S), giveCords(P))
 agent1.aEstrella(giveCords(HI), giveCords(K))
 # agent1.aEstrella(giveCords(K), giveCords(P))
