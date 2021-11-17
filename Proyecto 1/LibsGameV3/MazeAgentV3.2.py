@@ -160,8 +160,8 @@ class Stage:
                             county * int(hf):(county + 1) * int(hf)] = color
 
                         if (countx == 14):
-                            data[(countx+1 ) * int(wf):(countx + 2) * int(wf),
-                            (county) * int(hf):(county+1) * int(hf)] = [213, 213, 213]
+                            data[(countx + 1) * int(wf):(countx + 2) * int(wf),
+                            (county) * int(hf):(county + 1) * int(hf)] = [213, 213, 213]
                         if (county == 14):
                             data[(countx) * int(wf):(countx + 1 + 1) * int(wf),
                             (county + 1) * int(hf):(county + 1 + 1) * int(hf)] = [213, 213, 213]
@@ -205,7 +205,6 @@ class Movement:
         self.InitialCords = giveCords(InitalCords)
         self.ActualCords = giveCords(InitalCords)
         self.FinalCords = giveCords(FinalCords)
-
         if self.Hide:
             self.hideAllStage()
             self.unHideActualPosition()
@@ -330,13 +329,11 @@ class Movement:
 
 class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
 
-    def __init__(self, Name, TypeAgent, InitalCords, FinalCords, PreFinalCords, stageText, AgentSensor=None,
-                 AgentMovs=None,
-                 Hide=False, DiagonalMovs=False, PriorMovements=[Mov.Left, Mov.Right, Mov.Up, Mov.Down]):
+    def __init__(self, Name, TypeAgent, InitalCords, FinalCords, PreFinalCords, stageText,
+                 Hide=False, ):
         global a
         self.Name = Name
         self.TypeAgent = TypeAgent
-        self.PriorMovements = PriorMovements
         # Memory
         self.memoryCells = []
         # Memory Decisions
@@ -353,8 +350,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             print(f"Error con Cordenadas finales")
             exit()
         else:
-            Movement.__init__(self, InitalCords=InitalCords, FinalCords=FinalCords, Hide=Hide,
-                              DiagonalMovs=DiagonalMovs)
+            Movement.__init__(self, InitalCords=InitalCords, FinalCords=FinalCords, Hide=Hide)
             self.addToMemory(giveCords(InitalCords))
             # if len(self.validRoads2()) > 1:
             #    self.addToMemoryDecisions(self.ActualCords)
@@ -370,22 +366,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                     self.addStageLetras(tmp[0], tmp[1], "F" + str(x))
                     self.PreFinalCords = PreFinalCords
 
-        ##### Auxiliares para algoritmos #######
-        self.optiosnMemory = []
-        self.auxiliarMemory = []
-        self.CostMemory = []
-        ############
-
     ######################
-
-    def addToOptionsMemory(self, optionsPosition):
-        if not self.optiosnMemory.__contains__(optionsPosition):
-            self.optiosnMemory.append(optionsPosition)
-
-    def deleteToOptionsMemory(self, scaned):
-        for x, ContainOption in enumerate(self.optiosnMemory):
-            if ContainOption.__contains__(scaned):
-                ContainOption.remove(scaned)
 
     def scanCostAndEvaluation(self, coords, finalCords):
         distance = distanceManhatan(coords, finalCords)
@@ -394,19 +375,21 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         else:
             cost = self.giveCost(coords)
         if cost == 0 or cost is None:
-            return None
+            return None, None
         self.unHide(Coords=coords)
         self.addStageLetras(coords[0], coords[1], f"{distance + cost}")
-        return distance + cost
+        return distance + cost, cost
 
-    def giveOptimalOptions(self, options, FinalCords):
+    def giveOptimalOptions(self, options, costs, FinalCords):
         print(f"Llego {options}")
         menorValues = []
+        costMenorValues = []
         # validate Final
-        for ContainOption in options:
+        for i, ContainOption in enumerate(options):
             if ContainOption[1] == FinalCords:
                 menorValues.append(ContainOption)
-                return menorValues
+                costMenorValues.append(costs[i])
+                return menorValues, costMenorValues
         print("No es final")
         # First Value menor value Hipotesis
         menorValue = options[0]
@@ -417,11 +400,12 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 menorValue = ContainOption
         print(f"Valor menor{menorValue}")
         # Dame los que tienen el menor valor
-        for ContainOption in options:
+        for i, ContainOption in enumerate(options):
             if ContainOption[0] == menorValue[0]:
                 menorValues.append(ContainOption)
+                costMenorValues.append(costs[i])
         print(f"arreglo de valores menores{menorValues}")
-        return menorValues
+        return menorValues, costMenorValues
 
     # busca coords en la memoria particular
     def existInMemory(self, memoryGeneral, coords):
@@ -431,25 +415,48 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                     return True
         return False
 
-    def explorePosition(self, memoria, coords,finalCords):
+    def explorePosition(self, memoria, coords, finalCords):
         scaned = []
+        costs = []
         #################################################################################
-        x = self.scanCostAndEvaluation(self.upCord(coords),finalCords)
-        if not x is None and not self.existInMemory(memoria, self.upCord(coords)):
+        x, cost = self.scanCostAndEvaluation(self.upCord(coords), finalCords)
+        if not x is None and not cost is None and not self.existInMemory(memoria, self.upCord(coords)):
             scaned.append((x, self.upCord(coords)))
+            costs.append(cost)
         #################################################################################
-        x = self.scanCostAndEvaluation(self.downCord(coords),finalCords)
-        if not x is None and not self.existInMemory(memoria, self.downCord(coords)):
+        x, cost = self.scanCostAndEvaluation(self.downCord(coords), finalCords)
+        if not x is None and not cost is None and not self.existInMemory(memoria, self.downCord(coords)):
             scaned.append((x, self.downCord(coords)))
+            costs.append(cost)
         #################################################################################
-        x = self.scanCostAndEvaluation(self.leftCord(coords),finalCords)
-        if not x is None and not self.existInMemory(memoria, self.leftCord(coords)):
+        x, cost = self.scanCostAndEvaluation(self.leftCord(coords), finalCords)
+        if not x is None and not cost is None and not self.existInMemory(memoria, self.leftCord(coords)):
             scaned.append((x, self.leftCord(coords)))
+            costs.append(cost)
         #################################################################################
-        x = self.scanCostAndEvaluation(self.rightCord(coords),finalCords)
-        if not x is None and not self.existInMemory(memoria, self.rightCord(coords)):
+        x, cost = self.scanCostAndEvaluation(self.rightCord(coords), finalCords)
+        if not x is None and not cost is None and not self.existInMemory(memoria, self.rightCord(coords)):
             scaned.append((x, self.rightCord(coords)))
-        return scaned
+            costs.append(cost)
+        return scaned, costs
+
+    def CreaCopias(self, memoriasDeCaminoYCostoYAcumulado, j, validRoads, costs):
+        # Crea las copias
+        copyMem = memoriasDeCaminoYCostoYAcumulado[j][::]  # Copia base
+        x = len(memoriasDeCaminoYCostoYAcumulado[j]) - 1  # last index memory
+        print(f"ValueADuplicar{copyMem[x]}")
+        for i, Road in enumerate(validRoads):
+            # Copia del primero elemento
+            # var = (Road[0], Road[1], copyMem[x][2] + Road[0])
+            var = (Road[0], Road[1], copyMem[x][2] + costs[i])
+            print(f"value a insertar{var}")
+            if i == 0:
+                memoriasDeCaminoYCostoYAcumulado[j].append(var)
+            else:
+                copyyMem = copyMem[::]
+                copyyMem.append(var)
+                memoriasDeCaminoYCostoYAcumulado.append(copyyMem)
+        print(f"Mem{memoriasDeCaminoYCostoYAcumulado}")
 
     def aEstrella(self, InicialPoint, FinalPoint):
         # [
@@ -459,128 +466,59 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         memoriasDeCaminoYCostoYAcumulado = [[(0, InicialPoint, 0)]]
         print(memoriasDeCaminoYCostoYAcumulado)
         z = 0
+        IndicesAExplorar = [0]
         while True:
             print("=================================================================")
             print(f"j={z}")
-            value = len(memoriasDeCaminoYCostoYAcumulado)
-            if memoriasDeCaminoYCostoYAcumulado[0][len(memoriasDeCaminoYCostoYAcumulado[0])-1][1] == FinalPoint:
-                print("Maze Solved!")
-                print(f"Camino:{memoriasDeCaminoYCostoYAcumulado[0]}")
-                print(f"Coste:{memoriasDeCaminoYCostoYAcumulado[0][len(memoriasDeCaminoYCostoYAcumulado[0])-1][2]}")
-                break
-            else:
-                for j in range(0, value):
-                    print("------------------------------------------------------------")
-                    print(f"Explorando en memoria:{memoriasDeCaminoYCostoYAcumulado.__getitem__(j)}")
+            for j in IndicesAExplorar:
+                print("------------------------------------------------------------")
+                if memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][1] == FinalPoint:
+                    print("Maze Solved!")
+                    print(f"Camino:{memoriasDeCaminoYCostoYAcumulado[j]}")
+                    print(
+                        f"Coste:{memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][2]}")
+                    break
+                else:
+                    print(f"Explorando en memoria:{memoriasDeCaminoYCostoYAcumulado[j]}")
                     # Exploracion de los caminos en las ultimas coordenadas de cada camino
                     # Ultimo indice de memoeria
-                    LastIndex = len(memoriasDeCaminoYCostoYAcumulado.__getitem__(j)) - 1
-                    explorados = self.explorePosition(memoriasDeCaminoYCostoYAcumulado.__getitem__(j),
-                                                      memoriasDeCaminoYCostoYAcumulado.__getitem__(j).__getitem__(
-                                                          LastIndex)[1],
-                                                      FinalPoint
-                                                      )
+                    LastIndex = len(memoriasDeCaminoYCostoYAcumulado[j]) - 1
+                    explorados, costs = self.explorePosition(memoriasDeCaminoYCostoYAcumulado[j],
+                                                             memoriasDeCaminoYCostoYAcumulado[j][LastIndex][1],
+                                                             FinalPoint
+                                                             )
                     print(f"Explorados:{explorados} de mem {j}")
                     # Optine los menos costosos
-                    validRoads = self.giveOptimalOptions(explorados, FinalPoint)
+                    validRoads, costs = self.giveOptimalOptions(explorados, costs, FinalPoint)
                     print(f"MenosCostosos de los validos:{validRoads}  de mem {j}")
-                    # Crea las copias
-                    copyMem = memoriasDeCaminoYCostoYAcumulado.__getitem__(j)[::]  # Copia base
-                    x = len(memoriasDeCaminoYCostoYAcumulado.__getitem__(j)) - 1
-                    for i, Road in enumerate(validRoads):
-                        # Copia del primero elemento
-                        var = (Road[0], Road[1], copyMem[x][2] + Road[0])
-                        if i == 0:
-                            memoriasDeCaminoYCostoYAcumulado.__getitem__(j).append(var)
-                        else:
-                            copyyMem = copyMem[::]
-                            copyyMem.append(var)
-                            memoriasDeCaminoYCostoYAcumulado.append(copyyMem)
-
-                # Limpiar los que no tengan el menor costo
-                # Obtener el menor
-                menorCostoAcumulado = memoriasDeCaminoYCostoYAcumulado[0][len(memoriasDeCaminoYCostoYAcumulado[0])-1][2]
-                IndicesAEliminar=[]
-                for i, mems in enumerate(memoriasDeCaminoYCostoYAcumulado):
-                    if mems[len(mems)-1][2] < menorCostoAcumulado:
-                        menorCostoAcumulado=mems[len(mems)-1][2]
-                print(menorCostoAcumulado)
-                # Obtener indices a eliminar (a escanear)
-                for i, mems in enumerate(memoriasDeCaminoYCostoYAcumulado):
-                    if mems[len(mems)-1][2] != menorCostoAcumulado:
-                        IndicesAEliminar.append(i)
-                # Borra de la memoria
-                print(IndicesAEliminar)
-                if not len(IndicesAEliminar) == 0:
-                    indices=IndicesAEliminar.__reversed__()
-                    print(f"Voy a borrar{indices}")
-                    for i in indices:
-                        memoriasDeCaminoYCostoYAcumulado.pop(i)
-                    print(IndicesAEliminar)
-                print(f"mem={memoriasDeCaminoYCostoYAcumulado}")
-                z += 1
-                self.updateStage()
-            if z == 4:
-                break
-
-            # print(validRoads)
-            # Creamos los caminos posibles
-            # if validRoads != 1:
-            #    for i in validRoads:
-            #        memoriasDeCaminoYCostoYAcumulado.append(memoriasDeCaminoYCostoYAcumulado[::])
-
-            # for memoriaDeCaminoYCostoYAcumulado in memoriasDeCaminoYCostoYAcumulado:
-            #    validRoads = self.giveOptimalOptions(self.explorePosition(memoriaDeCaminoYCostoYAcumulado))
-
-        ############################################################################################
-
-    def depthFirstSearch(self, NodeByNode=False):
-        if self.ActualCords == self.FinalCords:
-            if NodeByNode:
-                self.auxiliarMemory.append(self.ActualCords)
-                self.memoryCells = self.auxiliarMemory
-            print("Maze solved!")
-            self.Optimal()
-            return
-        else:
-            for j, Prior1 in enumerate(self.PriorMovements):
-                find = False
-                arrayValidRows = self.validRoads2()
-                if NodeByNode and len(arrayValidRows) > 1:
-                    self.auxiliarMemory.append(self.ActualCords)
-                if len(arrayValidRows) == 0:
-                    if NodeByNode:
-                        self.auxiliarMemory.append(self.ActualCords)
-                    # return to the last cell decision
-                    LastCellDecision = self.memoryCellsDecisions.pop()
-                    self.memoryCells.append(LastCellDecision)
-                    self.ActualCords = LastCellDecision
-                for i, validRoad in enumerate(arrayValidRows):
-                    if Prior1 == validRoad:
-                        find = True
-                        if Mov.Right == validRoad:
-                            self.movRight()
-                        elif Mov.Left == validRoad:
-                            self.movLeft()
-                        elif Mov.Up == validRoad:
-                            self.movUp()
-                        elif Mov.Down == validRoad:
-                            self.movDown()
-                        self.depthFirstSearch(NodeByNode)
+                    # si el costo es el actual va a agregar los caminos y rompera el ciclo y volvera a evaluar
+                    if validRoads[0][0] == memoriasDeCaminoYCostoYAcumulado[j][LastIndex][0]:
+                        print("Profundidad +")
+                        self.CreaCopias(memoriasDeCaminoYCostoYAcumulado, j, validRoads, costs)
                         break
-                if find:
-                    break
-
-    def Optimal(self):
-        print("Optimal")
-        self.optimalCamino = self.memoryCells[::]
-        for i, x in enumerate(self.optimalCamino):
-            for j in range(i + 1, len(self.optimalCamino) - 1):
-                if self.optimalCamino[i] == self.optimalCamino[j]:
-                    for x in range(i, j):
-                        self.optimalCamino.pop(i)
-                    break
-        print(self.optimalCamino)
+                    # Crea las copias
+                    self.CreaCopias(memoriasDeCaminoYCostoYAcumulado, j, validRoads, costs)
+            # arreglo con los mejores candidatos
+            # Obtener el menor es decir mejor candidato
+            menorCosto = memoriasDeCaminoYCostoYAcumulado[0][len(memoriasDeCaminoYCostoYAcumulado[0]) - 1][0]
+            for i, mems in enumerate(memoriasDeCaminoYCostoYAcumulado):
+                if mems[len(mems) - 1][0] < menorCosto:
+                    menorCosto = mems[len(mems) - 1][0]
+            print(f"mem={memoriasDeCaminoYCostoYAcumulado}")
+            IndicesAExplorar.clear()
+            print(f"MenorCosto:{menorCosto}")
+            # Obtener indices a explorar
+            for i, mems in enumerate(memoriasDeCaminoYCostoYAcumulado):
+                if mems[len(mems) - 1][0] == menorCosto:
+                    IndicesAExplorar.append(i)
+            print(IndicesAExplorar)
+            # Imprimir memoria con los indices que se exploraran
+            for x in IndicesAExplorar:
+                print(f"mem={memoriasDeCaminoYCostoYAcumulado[x]}")
+            z += 1
+            self.updateStage()
+            if z == 25:
+                break
 
     def unHideActualPosition(self):
         self.unHide(self.ActualCords)
@@ -685,7 +623,7 @@ a = Stage(textPlain=readFile("../lab5.txt"))
 
 
 agent1 = Agent("humano", TypeAgent.humano, InitalCords=(14, 'C'), FinalCords=(7, 'H'),
-               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
+               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=True)
 InitalCords = (14, 'C')
 FinalCords = (3, 'O')
 agent1.aEstrella(giveCords(InitalCords), giveCords(FinalCords))
