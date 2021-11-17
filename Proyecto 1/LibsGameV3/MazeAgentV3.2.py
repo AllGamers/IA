@@ -336,10 +336,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         self.TypeAgent = TypeAgent
         # Memory
         self.memoryCells = []
-        # Memory Decisions
-        self.memoryCellsDecisions = []
-        # Optimal Camino
-        self.optimalCamino = []
+        self.cost = 0
 
         MovsTerrainCosts.__init__(self, agent=TypeAgent)
         Stage.__init__(self, textPlain=stageText)
@@ -374,7 +371,11 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             cost = None
         else:
             cost = self.giveCost(coords)
-        if cost == 0 or cost is None:
+        if cost is None:
+            return None, None
+        if cost == 0 and coords[0] < len(self.stageLetras) and coords[1] < len(self.stageLetras):
+            self.unHide(Coords=coords)
+            self.addStageLetras(coords[0], coords[1], f"N/A")
             return None, None
         self.unHide(Coords=coords)
         self.addStageLetras(coords[0], coords[1], f"{distance + cost}")
@@ -475,9 +476,19 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 if memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][1] == FinalPoint:
                     print("Maze Solved!")
                     print(f"Camino:{memoriasDeCaminoYCostoYAcumulado[j]}")
+                    self.memoryCells = memoriasDeCaminoYCostoYAcumulado[j]
+                    self.cost = memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][2]
                     print(
                         f"Coste:{memoriasDeCaminoYCostoYAcumulado[j][len(memoriasDeCaminoYCostoYAcumulado[j]) - 1][2]}")
-                    break
+                    copyMem = []
+                    for memory in self.memoryCells:
+                        print(memory)
+                        copyMem.append(memory[1])
+                        self.explorePosition(memoriasDeCaminoYCostoYAcumulado,coords=memory[1],finalCords=FinalPoint)
+                        self.addStageLetras(memory[1][0], memory[1][1], "C")
+                    self.memoryCells = copyMem
+                    self.updateStage()
+                    return
                 else:
                     print(f"Explorando en memoria:{memoriasDeCaminoYCostoYAcumulado[j]}")
                     # Exploracion de los caminos en las ultimas coordenadas de cada camino
@@ -517,8 +528,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 print(f"mem={memoriasDeCaminoYCostoYAcumulado[x]}")
             z += 1
             self.updateStage()
-            if z == 25:
-                break
 
     def unHideActualPosition(self):
         self.unHide(self.ActualCords)
@@ -534,17 +543,9 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
     def existsInMemory(self, coords):
         return self.memoryCells.__contains__(coords)
 
-    def addToMemoryDecisions(self, coords):
-        if not self.existsInMemoryDecisions(coords):
-            self.addStageLetras(coords[0], coords[1], "D")
-            self.memoryCellsDecisions.append(coords)
-
-    def existsInMemoryDecisions(self, coords):
-        return self.memoryCellsDecisions.__contains__(coords)
-
     def isValidPosition(self, Coords):
         return 0 <= Coords[0] < len(self.stageLetras) and 0 <= Coords[1] < len(self.stageLetras[0]) \
-               and self.giveCost(Coords) != 0
+               and self.giveCost(Coords) >= 0
 
     def giveCost(self, Coords):
         return self.movsCost[self.cellInfo(Coords=Coords).value]
@@ -571,15 +572,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
     def updateStage(self):
         self.stageToImage(self.Name)
 
-    def mov(self, destiny):
-        if self.isValidPosition(destiny):
-            self.ActualCords = destiny
-            self.addStageLetras(self.ActualCords[0], self.ActualCords[1], "C")
-            self.unHideActualPosition()
-            self.updateStage()
-            self.addToMemory(self.ActualCords)
-            print(f"{self.ActualCords}.")
-            self.numMovs += 1
 
 
 def readFile(fileName):
