@@ -9,7 +9,6 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import enum
 import array as arr
-from queue import PriorityQueue
 
 
 class MovsTerrainCosts:
@@ -182,8 +181,8 @@ class Stage:
         # Reopen
         my_image = Image.open(path + '.png')
         image_editable = ImageDraw.Draw(my_image)
-        # title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 13)
-        title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 13)
+        title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 13)
+        # title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 13)
         for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
                 if countx == 14:
@@ -276,8 +275,10 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         arrayResults = []
         for i, pre in enumerate(self.PreFinalCords):
             memory, cost, lastCoord = self.aStart(self.InitialCords, giveCords(pre), str(i))
+            self.memoryCells += memory
             arrayResults.append(cost)
             memory, cost, lastCoord = self.aStart(lastCoord, self.FinalCords, str(i))
+            self.memoryCells += memory
             arrayResults.append(cost)
         return arrayResults
 
@@ -467,13 +468,13 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             print(f">>>>>>>>>>>>>>>>>>>Iteration {z}<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
             print("Memoria general")
             for mem in RoadAndCostAccumulatedMemories:
-               print(mem)
+                print(mem)
             print("Memoria electos")
             for mem in IndexesToExplore:
-               print(RoadAndCostAccumulatedMemories[mem])
+                print(RoadAndCostAccumulatedMemories[mem])
 
-            #self.updateStage()
-            #if z == 3:
+            # self.updateStage()
+            # if z == 3:
             #    return
         #######################################################################################
         # SEARCH IN THE ARRAY roadsComplete
@@ -559,51 +560,3 @@ def giveCords(tuplaNumLetter):
 def giveNumLetter(Coords):
     return (Coords[0] + 1), chr(Coords[1] + 65)
 
-
-# Octopus    10,'B'
-# Human      14,'C'
-# Monkey     14,'E'
-# PortalKey  15,'N'
-# DarkTemple 7,'H'
-# MagicStone 3,'O'
-# Final      13,'D'
-
-
-a = Stage(textPlain=readFile("../lab5.txt"))
-
-OI = (10, 'B')
-HI = (14, 'C')
-MI = (14, 'E')
-K = (15, 'N')
-T = (7, 'H')
-S = (3, 'O')
-P = (13, 'D')
-
-agent1 = Agent("humano", TypeAgent.humano, initialCoords=HI, FinalCords=P,
-               PreFinalCords=(T, S, K), stageText=readFile("../lab5.txt"), Hide=True)
-agent2 = Agent("Octupus", TypeAgent.pulpo, initialCoords=OI, FinalCords=P,
-               PreFinalCords=(T, S, K), stageText=readFile("../lab5.txt"), Hide=True)
-agent3 = Agent("Monkey", TypeAgent.mono, initialCoords=MI, FinalCords=P,
-               PreFinalCords=(T, S, K), stageText=readFile("../lab5.txt"), Hide=True)
-
-costHuman = agent1.proyect()
-costOcutpus = agent2.proyect()
-costMonkey =  agent3.proyect()
-
-#agent1.aStart(giveCords(T), giveCords(P), '1')
-
-print(f"Human:{costHuman}")
-print(f"Octupus:{costOcutpus}")
-print(f"Monkey:{costMonkey}")
-
-# for x in range(3):
-#    print(CFA1[x], CFA2[x], CFA3[x])
-#    if int(CFA1[x]) < int(CFA2[x]) and int(CFA1[x]) < int(CFA3[x]):
-
-# print('El agente uno hara la mision: ', x)
-# elif int(CFA2[x]) < int(CFA1[x]) and int(CFA2[x]) < int(CFA3[x]):
-
-#    print('El agente dos hara la mision: ', x)
-# elif int(CFA3[x]) < int(CFA1[x]) and int(CFA3[x]) < int(CFA1[x]):
-
-#     print('El agente tres hara la mision: ', x)
