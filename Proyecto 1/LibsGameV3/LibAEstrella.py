@@ -89,7 +89,7 @@ class Stage:
             indiceSalto = self.stageLetras[x][y].rfind('\n')
             if indiceSalto == -1:
                 indiceSalto = 0
-            if len(self.stageLetras[x][y][indiceSalto:]) > 7:
+            if len(self.stageLetras[x][y][indiceSalto:]+text) > 10:
                 self.stageLetras[x][y] += "\n"
             self.stageLetras[x][y] += str(text + ",")
 
@@ -181,7 +181,7 @@ class Stage:
         # Reopen
         my_image = Image.open(path + '.png')
         image_editable = ImageDraw.Draw(my_image)
-        title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 13)
+        title_font = ImageFont.truetype("LibsGameV3/Roboto/Roboto-Light.ttf", 12)
         # title_font = ImageFont.truetype("Roboto/Roboto-Light.ttf", 13)
         for countx, frameX in enumerate(self.stageLetras):
             for county, frameY in enumerate(frameX):
@@ -257,7 +257,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             exit()
         else:
             Movement.__init__(self, initialCoords=initialCoords, FinalCords=FinalCords, Hide=Hide)
-            self.addToMemory(giveCords(initialCoords))
             self.addStageLetras(self.InitialCords[0], self.InitialCords[1], " I")
             self.addStageLetras(self.FinalCords[0], self.FinalCords[1], " F")
 
@@ -465,17 +464,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                         and not roadsTruncated.__contains__(mems):
                     IndexesToExplore.append(i)
             z += 1
-            print(f">>>>>>>>>>>>>>>>>>>Iteration {z}<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-            print("Memoria general")
-            for mem in RoadAndCostAccumulatedMemories:
-                print(mem)
-            print("Memoria electos")
-            for mem in IndexesToExplore:
-                print(RoadAndCostAccumulatedMemories[mem])
-
-            # self.updateStage()
-            # if z == 3:
-            #    return
         #######################################################################################
         # SEARCH IN THE ARRAY roadsComplete
         hypotheticalValue = roadsComplete[0]  # Suponemos que el camino es el menor
