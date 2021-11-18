@@ -210,7 +210,6 @@ class Movement:
         self.FinalCords = giveCords(FinalCords)
         if self.Hide:
             self.hideAllStage()
-            self.unHideActualPosition()
         self.stageToImage(self.Name)
 
     def upCord(self, coords=None):
@@ -277,7 +276,12 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         arrayResults = []
         for i, pre in enumerate(self.PreFinalCords):
             memory, cost, lastCoord = self.aStart(self.InitialCords, giveCords(pre), str(i))
-            memory, cost, lastCoord = self.aStart(lastCoord, self.FinalCords, str(i))
+            arrayResults.append(cost)
+            if not (self.TypeAgent == TypeAgent.mono and i == 1):
+                memory, cost, lastCoord = self.aStart(lastCoord, self.FinalCords, str(i))
+                arrayResults.append(cost)
+        return arrayResults
+
 
     ######################
     # scans and returns f (x), cost
@@ -358,11 +362,13 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
     @staticmethod
     # create copies, the method branches memory
     def createCopies(RoadAndCostAccumulatedMemories, j, validRoads, costs):
+        # print(f"j={j}")
         copyMem = RoadAndCostAccumulatedMemories[j][::]  # Base Copy
         x = len(RoadAndCostAccumulatedMemories[j]) - 1  # last index memory
         for i, Road in enumerate(validRoads):
             # create value to insert
             var = (Road[0], Road[1], copyMem[x][2] + costs[i], costs[i])
+            # print(var)
             # if it is the first value, the modification is at the same index in memory
             if i == 0:
                 RoadAndCostAccumulatedMemories[j].append(var)
@@ -372,7 +378,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 auxCopyMem.append(var)
                 RoadAndCostAccumulatedMemories.append(auxCopyMem)
 
-    def aStart(self, initialPoint, FinalPoint, identificador):
+    def aStart(self, initialPoint, FinalPoint, id):
         # [
         # [(f(x),coord,CostAccumulate,particularCost),(f(x),coord,CostAccumulate,particularCost)],
         # [(f(x),coord,CostAccumulate,particularCost),(f(x),coord,CostAccumulate,particularCost)],
@@ -412,11 +418,11 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                         # IF THE COST IS EQUAL TO THE COST OF EXPLORING, THEN YOU WILL EXPLORE THIS BRANCH WITHOUT
                         # EXPLORING THE OTHERS
                         # Detect if cost repeats, then change flag repeatDepth
-                        for indexToExplore in IndexesToExplore:
-                            LastIndex_Repeat = len(RoadAndCostAccumulatedMemories[indexToExplore]) - 1
-                            if validRoads[0][0] == RoadAndCostAccumulatedMemories[indexToExplore][LastIndex_Repeat][0]:
-                                repeatDepth = True
-                                break
+                        # for indexToExplore in IndexesToExplore:
+                        LastIndex_Repeat = len(RoadAndCostAccumulatedMemories[j]) - 1
+                        if validRoads[0][0] == RoadAndCostAccumulatedMemories[j][LastIndex_Repeat][0]:
+                            repeatDepth = True
+                            # break
                         # if repeatDepth  and actual value of memory repeat , create copies
                         if repeatDepth and validRoads[0][0] == RoadAndCostAccumulatedMemories[j][LastIndex][0]:
                             self.createCopies(RoadAndCostAccumulatedMemories, j, validRoads, costs)
@@ -443,10 +449,15 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                     IndexesToExplore.append(i)
             # if the indexes to be explored are 0, it breaks the cycle
             if len(IndexesToExplore) == 0:
-                print(RoadAndCostAccumulatedMemories)
+                # print(RoadAndCostAccumulatedMemories)
                 break
             #
             self.updateStage()
+            z += 1
+            # if z == 3:
+            # print(RoadAndCostAccumulatedMemories)
+            # return
+
         #######################################################################################
         # SEARCH IN THE ARRAY roadsComplete
         hypotheticalValue = roadsComplete[0]  # Suponemos que el camino es el menor
@@ -457,7 +468,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 cost = finalRoad[len(finalRoad) - 1][2]
         memory = []
         for mem in hypotheticalValue:
-            self.addStageLetras(mem[1][0], mem[1][1], f"C{identificador}")
+            self.addStageLetras(mem[1][0], mem[1][1], f"C{id}")
             memory.append(mem[1])
         print("MazeSolved")
         self.updateStage()
@@ -557,12 +568,13 @@ agent2 = Agent("Octupus", TypeAgent.pulpo, initialCoords=OI, FinalCords=P,
                PreFinalCords=(T, S, K), stageText=readFile("../lab5.txt"), Hide=True)
 agent3 = Agent("Monkey", TypeAgent.mono, initialCoords=MI, FinalCords=P,
                PreFinalCords=(T, S, K), stageText=readFile("../lab5.txt"), Hide=True)
-# agent1.proyect()
-# agent2.proyect()
-# agent3.proyect()
+costHuman = agent1.proyect()
+CostOcutpus = agent2.proyect()
+CostMono = agent3.proyect()
 
-#agent3.aStart(giveCords(MI), giveCords(S), "1")
-agent3.aStart(giveCords(S), giveCords(P), "2")
+print(f"Human:{costHuman}")
+print(f"Octupus:{CostOcutpus}")
+print(f"Monkey:{CostMono}")
 
 # for x in range(3):
 #    print(CFA1[x], CFA2[x], CFA3[x])
