@@ -87,7 +87,10 @@ class Stage:
 
     def addStageLetras(self, x, y, text):
         if not self.stageLetras[x][y].__contains__(text):
-            if len(self.stageLetras[x][y] + text) > 8:
+            indiceSalto = self.stageLetras[x][y].rfind('\n')
+            if indiceSalto == -1:
+                indiceSalto = 0
+            if len(self.stageLetras[x][y][indiceSalto:]) > 7:
                 self.stageLetras[x][y] += "\n"
             self.stageLetras[x][y] += str(text + ",")
 
@@ -269,6 +272,13 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                     self.addStageLetras(tmp[0], tmp[1], "F" + str(x))
                     self.PreFinalCords = PreFinalCords
 
+    def proyect(self):
+        print(f"Agente:{self.Name}")
+        arrayResults = []
+        for i, pre in enumerate(self.PreFinalCords):
+            memory, cost, lastCoord = self.aStart(self.InitialCords, giveCords(pre), str(i))
+            memory, cost, lastCoord = self.aStart(lastCoord, self.FinalCords, str(i))
+
     ######################
     # scans and returns f (x), cost
     def scanCostAndEvaluation(self, coords, finalCords):
@@ -362,7 +372,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 auxCopyMem.append(var)
                 RoadAndCostAccumulatedMemories.append(auxCopyMem)
 
-    def aStart(self, initialPoint, FinalPoint):
+    def aStart(self, initialPoint, FinalPoint, identificador):
         # [
         # [(f(x),coord,CostAccumulate,particularCost),(f(x),coord,CostAccumulate,particularCost)],
         # [(f(x),coord,CostAccumulate,particularCost),(f(x),coord,CostAccumulate,particularCost)],
@@ -433,7 +443,10 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                     IndexesToExplore.append(i)
             # if the indexes to be explored are 0, it breaks the cycle
             if len(IndexesToExplore) == 0:
+                print(RoadAndCostAccumulatedMemories)
                 break
+            #
+            self.updateStage()
         #######################################################################################
         # SEARCH IN THE ARRAY roadsComplete
         hypotheticalValue = roadsComplete[0]  # Suponemos que el camino es el menor
@@ -444,14 +457,15 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                 cost = finalRoad[len(finalRoad) - 1][2]
         memory = []
         for mem in hypotheticalValue:
-            self.addStageLetras(mem[1][0], mem[1][1], " C ")
+            self.addStageLetras(mem[1][0], mem[1][1], f"C{identificador}")
             memory.append(mem[1])
-        self.memoryCells = memory
         print("MazeSolved")
         self.updateStage()
-        print(f"Camino:{self.memoryCells}")
+        lastCoord = memory[len(memory) - 1]
+        print(f"Camino:{memory}")
         print(f"Costo:{cost}")
-        return
+        print(f"LastCoord:{lastCoord}")
+        return memory, cost, lastCoord
 
     ######################################################################
 
@@ -521,7 +535,6 @@ def giveNumLetter(Coords):
 # Octopus    10,'B'
 # Human      14,'C'
 # Monkey     14,'E'
-
 # PortalKey  15,'N'
 # DarkTemple 7,'H'
 # MagicStone 3,'O'
@@ -529,31 +542,27 @@ def giveNumLetter(Coords):
 
 
 a = Stage(textPlain=readFile("../lab5.txt"))
-# agent1 = Agent("Humano", TypeAgent.humano, InitalCords=(14, 'C'), FinalCords=(13, 'D'),
-#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
-# agent2 = Agent("Mono", TypeAgent.mono, InitalCords=(14, 'E'), FinalCords=(13, 'D'),
-#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
-# agent3 = Agent("Pulpo", TypeAgent.pulpo, InitalCords=(10, 'B'), FinalCords=(13, 'D'),
-#               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=False)
-# CFA1 = agent1.proyecto()
-# CFA2 = agent2.proyecto()
-# CFA3 = agent3.proyecto()
 
+OI = (10, 'B')
 HI = (14, 'C')
+MI = (14, 'E')
 K = (15, 'N')
 T = (7, 'H')
 S = (3, 'O')
 P = (13, 'D')
 
-agent1 = Agent("humano", TypeAgent.humano, initialCoords=(14, 'C'), FinalCords=(7, 'H'),
-               PreFinalCords=((15, 'N'), (7, 'H'), (3, 'O')), stageText=readFile("../lab5.txt"), Hide=True)
+agent1 = Agent("humano", TypeAgent.humano, initialCoords=HI, FinalCords=P,
+               PreFinalCords=(T, S, K), stageText=readFile("../lab5.txt"), Hide=True)
+agent2 = Agent("Octupus", TypeAgent.pulpo, initialCoords=OI, FinalCords=P,
+               PreFinalCords=(T, S, K), stageText=readFile("../lab5.txt"), Hide=True)
+agent3 = Agent("Monkey", TypeAgent.mono, initialCoords=MI, FinalCords=P,
+               PreFinalCords=(T, S, K), stageText=readFile("../lab5.txt"), Hide=True)
+# agent1.proyect()
+# agent2.proyect()
+# agent3.proyect()
 
-agent1.aStart(giveCords(HI), giveCords(T))
-agent1.aStart(giveCords(T), giveCords(P))
-agent1.aStart(giveCords(HI), giveCords(S))
-agent1.aStart(giveCords(S), giveCords(P))
-agent1.aStart(giveCords(HI), giveCords(K))
-agent1.aStart(giveCords(K), giveCords(P))
+#agent3.aStart(giveCords(MI), giveCords(S), "1")
+agent3.aStart(giveCords(S), giveCords(P), "2")
 
 # for x in range(3):
 #    print(CFA1[x], CFA2[x], CFA3[x])
