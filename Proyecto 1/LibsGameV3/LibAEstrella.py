@@ -274,10 +274,10 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         print(f"Agente:{self.Name}")
         arrayResults = []
         for i, pre in enumerate(self.PreFinalCords):
-            memory, cost, lastCoord = self.aStart(self.InitialCords, giveCords(pre), str(i))
+            memory, cost, lastCoord = self.aStart(self.InitialCords, giveCords(pre), str(i)+'-0')
             self.memoryCells += memory
             arrayResults.append(cost)
-            memory, cost, lastCoord = self.aStart(lastCoord, self.FinalCords, str(i))
+            memory, cost, lastCoord = self.aStart(lastCoord, self.FinalCords, str(i)+'-1')
             self.memoryCells += memory
             arrayResults.append(cost)
         return arrayResults
