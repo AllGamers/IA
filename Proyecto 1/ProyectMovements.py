@@ -7,7 +7,9 @@ __asginatura__ = "Inteligencia Artificial"
 import os
 import pygame
 import pygame_menu
+from humanfriendly import format_timespan
 
+import time
 from LibsGameV3.LibAEstrella import *
 
 
@@ -94,7 +96,7 @@ def initGame(agent1):
     colorrgb = agent1.GiveColor()
 
     pygame.display.set_caption(
-        "Laberinto - David Lopez Hernandez, Alejandro Escamilla Sanchez, Uriel Onofre Resendiz " + str(costHuman))
+        "Laberinto - David Lopez Hernandez, Alejandro Escamilla Sanchez, Uriel Onofre Resendiz ")
     width = len(agent1.stage) * 50 + 50
     height = len(agent1.stage[0]) * 50 + 50
     screen = pygame.display.set_mode((width, height))
@@ -183,6 +185,7 @@ def initGame(agent1):
         pygame.display.flip()
 
 
+begin_time = time.time()
 # Octopus    10,'B'
 # Human      14,'C'
 # Monkey     14,'E'
@@ -199,33 +202,29 @@ K = (15, 'N')
 T = (7, 'H')
 S = (3, 'O')
 P = (13, 'D')
+
+#####################################################################################
 agent1 = Agent("humano", TypeAgent.humano, initialCoords=HI, FinalCords=P,
                PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=True)
 costHuman = agent1.proyect()
-print(f"Costos para el humano:{costHuman}")
+end_time = time.time() - begin_time
+print("Total execution time: ", format_timespan(end_time))
 initGame(agent1)
-
-
+print(f"Costos para el humano:{costHuman}")
+#####################################################################################
 # agent2 = Agent("Octupus", TypeAgent.pulpo, initialCoords=OI, FinalCords=P,
-#               PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=True)
-# agent3 = Agent("Monkey", TypeAgent.mono, initialCoords=MI, FinalCords=P,
-#               PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=True)
+#                PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=False)
 # costOcutpus = agent2.proyect()
-# costMonkey = agent3.proyect()
-# print(f"Human:{costHuman}")
+# end_time = time.time() - begin_time
+# print("Total execution time: ", format_timespan(end_time))
+# initGame(agent2)
 # print(f"Octupus:{costOcutpus}")
+####################################################################################
+# agent3 = Agent("Monkey", TypeAgent.mono, initialCoords=MI, FinalCords=P,
+#                PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=True)
+# costMonkey = agent3.proyect()
+# end_time = time.time() - begin_time
+# print("Total execution time: ", format_timespan(end_time))
+# initGame(agent3)
 # print(f"Monkey:{costMonkey}")
-
-
-
-# for x in range(3):
-#    print(CFA1[x], CFA2[x], CFA3[x])
-#    if int(CFA1[x]) < int(CFA2[x]) and int(CFA1[x]) < int(CFA3[x]):
-
-# print('El agente uno hara la mision: ', x)
-# elif int(CFA2[x]) < int(CFA1[x]) and int(CFA2[x]) < int(CFA3[x]):
-
-#    print('El agente dos hara la mision: ', x)
-# elif int(CFA3[x]) < int(CFA1[x]) and int(CFA3[x]) < int(CFA1[x]):
-
-#     print('El agente tres hara la mision: ', x)
+####################################################################################
