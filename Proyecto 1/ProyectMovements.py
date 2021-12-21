@@ -4,9 +4,10 @@ __author__ = "Alejandro Escamilla Sánchez"
 __name__ = "Practica de laboratorio 2"
 __asginatura__ = "Inteligencia Artificial"
 
-import os
+import os, sys
 import pygame
 import pygame_menu
+from threading import Thread
 from humanfriendly import format_timespan
 
 import time
@@ -185,7 +186,6 @@ def initGame(agent1):
         pygame.display.flip()
 
 
-begin_time = time.time()
 # Octopus    10,'B'
 # Human      14,'C'
 # Monkey     14,'E'
@@ -200,31 +200,66 @@ HI = (14, 'C')
 MI = (14, 'E')
 K = (15, 'N')
 T = (7, 'H')
-S = (3, 'O')
+S = (7, 'O')
 P = (13, 'D')
 
-#####################################################################################
-agent1 = Agent("humano", TypeAgent.humano, initialCoords=HI, FinalCords=P,
-               PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=True)
-costHuman = agent1.proyect()
-end_time = time.time() - begin_time
-print("Total execution time: ", format_timespan(end_time))
-initGame(agent1)
-print(f"Costos para el humano:{costHuman}")
-#####################################################################################
-# agent2 = Agent("Octupus", TypeAgent.pulpo, initialCoords=OI, FinalCords=P,
-#                PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=False)
-# costOcutpus = agent2.proyect()
-# end_time = time.time() - begin_time
-# print("Total execution time: ", format_timespan(end_time))
-# initGame(agent2)
-# print(f"Octupus:{costOcutpus}")
-####################################################################################
-# agent3 = Agent("Monkey", TypeAgent.mono, initialCoords=MI, FinalCords=P,
-#                PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=True)
-# costMonkey = agent3.proyect()
-# end_time = time.time() - begin_time
-# print("Total execution time: ", format_timespan(end_time))
-# initGame(agent3)
-# print(f"Monkey:{costMonkey}")
-####################################################################################
+
+def p3():
+    ####################################################################################
+    begin_time = time.time()
+    x = (6, 'H')
+    y = (6, 'B')
+    agent1 = Agent("Monop3", TypeAgent.mono, initialCoords=x, FinalCords=y,
+                   PreFinalCords=(T, S, K), stageText=readFile("./lab3P2.txt"), Hide=True)
+    x = giveCords(x)
+    y = giveCords(y)
+    memory, cost, lastCoord = agent1.aStart(x, y, 'c')
+    end_time = time.time() - begin_time
+    print("Total execution time: ", format_timespan(end_time))
+    ####################################################################################
+
+
+def humano():
+    ####################################################################################
+    begin_time = time.time()
+    agent1 = Agent("humano", TypeAgent.humano, initialCoords=HI, FinalCords=P,
+                   PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=True)
+    costHuman = agent1.proyect()
+    end_time = time.time() - begin_time
+    print("Total execution time: ", format_timespan(end_time))
+    print(f"Costos para el humano:{costHuman}")
+    initGame(agent1)
+    ####################################################################################
+
+
+def pulpo():
+    ####################################################################################
+    begin_time = time.time()
+    agent2 = Agent("Octupus", TypeAgent.pulpo, initialCoords=OI, FinalCords=P,
+                   PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=False)
+    costOcutpus = agent2.proyect()
+    end_time = time.time() - begin_time
+    print("Total execution time: ", format_timespan(end_time))
+    print(f"Octupus:{costOcutpus}")
+    initGame(agent2)
+    ####################################################################################
+
+
+def mono():
+    ####################################################################################
+    begin_time = time.time()
+    agent3 = Agent("Monkey", TypeAgent.mono, initialCoords=MI, FinalCords=P,
+                   PreFinalCords=(T, S, K), stageText=readFile("./lab5.txt"), Hide=True)
+    costMonkey = agent3.proyect()
+    end_time = time.time() - begin_time
+    print("Total execution time: ", format_timespan(end_time))
+    print(f"Monkey:{costMonkey}")
+    initGame(agent3)
+    ####################################################################################
+
+
+pid = os.getpid()
+print(f"PID:{pid}")
+# humano()
+pulpo()
+# mono()

@@ -4,7 +4,6 @@ __author__ = "Alejandro Escamilla Sánchez"
 __name__ = "Practica de laboratorio 2"
 __asginatura__ = "Inteligencia Artificial"
 
-from typing import Dict
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import enum
@@ -32,8 +31,8 @@ class MovsTerrainCosts:
             self.movsCost[int(Terrain.Snow.value)] = 0
         elif agent == TypeAgent.pulpo:
             self.movsCost[int(Terrain.Mountain.value)] = 0
-            self.movsCost[int(Terrain.Land.value)] = 1
-            self.movsCost[int(Terrain.Water.value)] = 8
+            self.movsCost[int(Terrain.Land.value)] = 2
+            self.movsCost[int(Terrain.Water.value)] = 1
             self.movsCost[int(Terrain.Sand.value)] = 0
             self.movsCost[int(Terrain.Forest.value)] = 3
             self.movsCost[int(Terrain.Swamp.value)] = 2
@@ -187,11 +186,11 @@ class Stage:
             for county, frameY in enumerate(frameX):
                 if countx == 14:
                     image_editable.text((county * wf, int(hf) * (countx + 1)),
-                                        "\n" + str(county), (0, 0, 0),
+                                        "\n" + str(chr(county+65)), (0, 0, 0),
                                         font=title_font)
                 if county == 14:
                     image_editable.text(((county + 1) * wf, int(hf) * (countx)),
-                                        str(countx), (0, 0, 0),
+                                        str(countx+1), (0, 0, 0),
                                         font=title_font)
                 if len(frameY) > 0:
                     image_editable.text((county * wf, int(hf) * countx),
@@ -307,28 +306,32 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         distances = []
         #################################################################################
         x, cost, distance = self.scanCostAndEvaluation(self.upCord(coords), finalCords, memory[len(memory) - 1][2])
-        if not x is None and not cost is None and not self.existInMemory(memory, self.upCord(coords)):
-            scanned.append((x, self.upCord(coords)))
-            costs.append(cost)
-            distances.append(distance)
+        if not x is None and not cost is None:
+            if not self.existInMemory(memory, self.upCord(coords)):
+                scanned.append((x, self.upCord(coords)))
+                costs.append(cost)
+                distances.append(distance)
         #################################################################################
         x, cost, distance = self.scanCostAndEvaluation(self.downCord(coords), finalCords, memory[len(memory) - 1][2])
-        if not x is None and not cost is None and not self.existInMemory(memory, self.downCord(coords)):
-            scanned.append((x, self.downCord(coords)))
-            costs.append(cost)
-            distances.append(distance)
+        if not x is None and not cost is None:
+            if not self.existInMemory(memory, self.downCord(coords)):
+                scanned.append((x, self.downCord(coords)))
+                costs.append(cost)
+                distances.append(distance)
         #################################################################################
         x, cost, distance = self.scanCostAndEvaluation(self.leftCord(coords), finalCords, memory[len(memory) - 1][2])
-        if not x is None and not cost is None and not self.existInMemory(memory, self.leftCord(coords)):
-            scanned.append((x, self.leftCord(coords)))
-            costs.append(cost)
-            distances.append(distance)
+        if not x is None and not cost is None:
+            if not self.existInMemory(memory, self.leftCord(coords)):
+                scanned.append((x, self.leftCord(coords)))
+                costs.append(cost)
+                distances.append(distance)
         #################################################################################
         x, cost, distance = self.scanCostAndEvaluation(self.rightCord(coords), finalCords, memory[len(memory) - 1][2])
-        if not x is None and not cost is None and not self.existInMemory(memory, self.rightCord(coords)):
-            scanned.append((x, self.rightCord(coords)))
-            costs.append(cost)
-            distances.append(distance)
+        if not x is None and not cost is None:
+            if not self.existInMemory(memory, self.rightCord(coords)):
+                scanned.append((x, self.rightCord(coords)))
+                costs.append(cost)
+                distances.append(distance)
         return scanned, costs, distances
 
     # From the series of roads return the best roads
@@ -337,6 +340,7 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
         lowerValues = []
         costMinorValues = []
         distanceMinorValues = []
+        explored = 0
         if len(options) != 0:
             # validate Final
             for i, ContainOption in enumerate(options):
@@ -347,25 +351,33 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                     return lowerValues, costMinorValues, distanceMinorValues
             hypnoticLowerValue = options[0]
             # Obtain the lower Cost
+            print(hypnoticLowerValue[explored])
             for ContainOption in options:
-                if ContainOption[0] < hypnoticLowerValue[0]:
+                if ContainOption[explored] < hypnoticLowerValue[explored]:
                     hypnoticLowerValue = ContainOption
             # return the equal lowerValue
             for i, ContainOption in enumerate(options):
-                if ContainOption[0] == hypnoticLowerValue[0]:
+                if ContainOption[explored] == hypnoticLowerValue[explored]:
                     lowerValues.append(ContainOption)
                     costMinorValues.append(costs[i])
                     distanceMinorValues.append(distances[i])
-            return lowerValues, costMinorValues, distanceMinorValues
         return lowerValues, costMinorValues, distanceMinorValues
+
+    # Search coords in the gen memory
+    @staticmethod
+    def existInMemoryGen(memoryGen, coords):
+        for memoryParticular in memoryGen:
+            for x in memoryParticular:
+                if x[1] == coords:
+                    return True
+        return False
 
     # Search coords in the particular memory
     @staticmethod
-    def existInMemory(memoryGeneral, coords):
-        for memoryCamino in memoryGeneral:
-            for x in memoryCamino:
-                if memoryCamino[1] == coords:
-                    return True
+    def existInMemory(memoryParticular, coords):
+        for memoryCamino in memoryParticular:
+            if memoryCamino[1] == coords:
+                return True
         return False
 
     # create copies, the method branches memory
@@ -405,7 +417,6 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
             # for j in IndexesToExplore:
             #    print(RoadAndCostAccumulatedMemories[j])
             # >>>> EXPLORATION <<<<
-            repeatDepth = False
             for j in IndexesToExplore:
                 # print(f"------------------Explore index {j}------------------")
                 # If the road reached the destination
@@ -428,41 +439,35 @@ class Agent(MovsTerrainCosts, Stage, Movement):  # Create the class Agent
                         roadsTruncated.append(RoadAndCostAccumulatedMemories[j][::])
                     # if the length when exploring it is 0, the path is truncated
                     else:
-                        # Get the best options for the explored paths
-                        validRoads, costss, distancess = self.giveOptimalOptions(explored, costs, distances, FinalPoint)
-                        # if repeatDepth  and actual value of memory repeat , create copies
-                        if repeatDepth and validRoads[0][0] == RoadAndCostAccumulatedMemories[j][LastIndex][0]:
-                            self.createCopies(RoadAndCostAccumulatedMemories, j, validRoads, costss, distancess)
-                        # In case it is not repeated, explore normally, create copies
-                        elif not repeatDepth:
-                            self.createCopies(RoadAndCostAccumulatedMemories, j, explored, costs, distances)
-            # >>>>> ARRAY OF BEST CANDIDATES <<<<<
-            exploration = 0  # 0 for f(x)
-            # [(f(x),coord,CostAccumulate,particularCost),(f(x),coord,CostAccumulate,particularCost,distance)],
-            # Obtain the lowest, that is to say, the best candidate, who is not in the final roads.
-            for i, mems in enumerate(RoadAndCostAccumulatedMemories):
-                if not roadsComplete.__contains__(mems) and not roadsTruncated.__contains__(mems):
-                    hypotheticalLowerCostPart = mems[len(mems) - 1][exploration]  # F(X)
-                    break
-            # Compare the lowest cost with other values, who is not in the final roads.
-            for i, mems in enumerate(RoadAndCostAccumulatedMemories):
-                if mems[len(mems) - 1][exploration] < hypotheticalLowerCostPart and not roadsComplete.__contains__(
-                        mems) and not roadsTruncated.__contains__(mems):
-                    hypotheticalLowerCostPart = mems[len(mems) - 1][exploration]  # F(X)
-                    hypotheticalCost = mems[len(mems) - 1][2]
+                        # create copies and bifurcations
+                        self.createCopies(RoadAndCostAccumulatedMemories, j, explored, costs, distances)
             # Obtain the lowest Road in the completes
             if len(roadsComplete) > 1:
                 self.updateStage()
                 break
+            # >>>>> ARRAY OF BEST CANDIDATES <<<<<
+            exploration = 0  # 0 for f(x)
+            # [(f(x),coord,CostAccumulate,particularCost),(f(x),coord,CostAccumulate,particularCost,distance)],
+            # Obtain the lowest, that is to say, the best candidate, who is not in the final roads.
+            for mems in RoadAndCostAccumulatedMemories:
+                if not roadsTruncated.__contains__(mems):
+                    if not roadsComplete.__contains__(mems):
+                        hypotheticalLowerCostPart = mems[len(mems) - 1][exploration]  # F(X)
+                        break
+            # Compare the lowest cost with other values, who is not in the final roads.
+            for mems in RoadAndCostAccumulatedMemories:
+                if mems[len(mems) - 1][exploration] < hypotheticalLowerCostPart:
+                    if not roadsTruncated.__contains__(mems):
+                        if not roadsComplete.__contains__(mems):
+                            hypotheticalLowerCostPart = mems[len(mems) - 1][exploration]  # F(X)
             # Clear the indexes to explore
             IndexesToExplore.clear()
             # Obtain the indexes with the lower cost
             for i, mems in enumerate(RoadAndCostAccumulatedMemories):
-                # and mems[len(mems) - 1][2] < hypotheticalCost \
-                if mems[len(mems) - 1][exploration] == hypotheticalLowerCostPart \
-                        and not roadsComplete.__contains__(mems) \
-                        and not roadsTruncated.__contains__(mems):
-                    IndexesToExplore.append(i)
+                if mems[len(mems) - 1][exploration] == hypotheticalLowerCostPart:
+                    if not roadsTruncated.__contains__(mems):
+                        if not roadsComplete.__contains__(mems):
+                            IndexesToExplore.append(i)
             z += 1
         #######################################################################################
         # print(roadsComplete)
